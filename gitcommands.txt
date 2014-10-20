@@ -1,0 +1,10 @@
+# clones a local copy of single branch
+git clone -b hJ_gJ --single-branch https://github.com/lposti/fJmodels.git
+
+git status 			# gives info
+git add filename 		# adds filename to branch
+git commit -m "message"		# commits added files with message
+git commit -all			# commits changes/deletions
+
+# finally
+git push origin hJ_gJ
