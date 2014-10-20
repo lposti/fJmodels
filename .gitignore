@@ -1,0 +1,5 @@
+# ignored files by git
+fJmodels
+orb.dat
+models/
+input/
