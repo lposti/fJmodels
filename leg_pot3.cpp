@@ -341,7 +341,7 @@ void potent(char *fname,double (*dens)(double,double),int rd,int prnt){
             for(int np=0; np<npoly; np++) rhl[n][np]=0;
 #pragma omp parallel for
 			for(int i=0; i<ngauss; i++){
-				rho[n][i]=(*dens)(r*si[i],r*ci[i]) - rho[nr-1][i];
+				rho[n][i]=(*dens)(r*si[i],r*ci[i]) - rho[nr-1][i];	
             }
 			for(int np=0; np<npoly; np++)
 				for(int i=0; i<ngauss; i++){
@@ -360,7 +360,7 @@ void potent(char *fname,double (*dens)(double,double),int rd,int prnt){
 			printf("cannot open file %s\n",fname); exit(0);
 		}
 		if (fscanf(ofile,"%d %d %d",&nr,&npoly,&ngauss)==0) printf("[WARNING] read of %s not successful..\n",fname);
-		get(ofile,ar,nr); get2(ofile,rhl,nr,npoly);
+		get(ofile,ar,nr); get2(ofile,rhl,nr,npoly); get2(ofile,rho,nr,ngauss);
 	}
 	fclose(ofile);
 // rhl[n][i] now contains l=2*i legendre coefficient of angular
