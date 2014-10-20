@@ -6,7 +6,7 @@ LIBS    = -L${HOME}/utils/gsl-install/lib
 LDLIBS  = -lgsl -lgslcblas -lm
 
 fJmodels:
-	g++ -o fJmodels $(FLAGS) $(OPT) $(INCLUDE) $(LIBS) *.cpp $(LDLIBS)
+	g++ -o fJmodels $(FLAGS) $(OPT) $(INCLUDE) $(LIBS) fJ_models.cpp delta/*.cpp df/*.cpp integ/*.cpp libs/*.cpp pot/*.cpp uvOrb/*.cpp $(LDLIBS)
 
 clean:
 	rm fJmodels
