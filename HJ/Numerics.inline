@@ -1,0 +1,12 @@
+/*******************************************************************************
+
+Numerics.inline
+
+    C++ code created by Walter Dehnen, 1994
+    Oxford University, Department of Physics, Theoretical Physics.
+    address: 1 Keble Road, Oxford OX1 3NP, United Kingdom
+    e-mail:  dehnen@thphys.ox.ac.uk
+
+*******************************************************************************/
+
+#include "Inline.h"
