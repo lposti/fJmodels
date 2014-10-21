@@ -28,10 +28,11 @@
 								<option id="gnu.cpp.compiler.option.optimization.level.1959263392" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1378640" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.826267769" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${PROJROOT}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${HOME}/utils/gsl-install/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1561811379" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fopenmp" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.optimization.flags.1776808632" superClass="gnu.cpp.compiler.option.optimization.flags" value="-funsafe-math-optimizations  -msse4.1 -Wstrict-aliasing=2 -march=native -mtune=native" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.optimization.flags.1776808632" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-funsafe-math-optimizations  -msse4.1 -Wstrict-aliasing=2 -march=native -mtune=native" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.908315830" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.343930041" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
@@ -44,6 +45,7 @@
 								<option id="gnu.cpp.link.option.paths.673468696" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${HOME}/utils/gsl-install/lib/&quot;"/>
 								</option>
+								<option id="gnu.cpp.link.option.flags.352032157" superClass="gnu.cpp.link.option.flags" value="-fopenmp" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.728092149" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -124,4 +126,5 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope"/>
 </cproject>

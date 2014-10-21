@@ -10,10 +10,11 @@
 
 //#define ISOCHRONE
 //#define NFW
-//#define HERNQUIST
-#define ISOTHERMAL
+#define HERNQUIST
+//#define ISOTHERMAL
 
 #define CONSTOMRATIO
+#define HJGJ
 
 extern double *EofJ,*LzofJ;
 extern int rep;

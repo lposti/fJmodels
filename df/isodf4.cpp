@@ -130,7 +130,13 @@ double hj_hernq(double Jr, double Lz, double Jz, double R){
 	double J=hj(Jr,Lz,Jz,R,J0);
 #endif
 
+#ifdef HJGJ
+	double hJ=J,gJ=Jr+.5*(Lz+Jz);
+	return MAX(0.,pow(J0+hJ,5./3.)/(pow(hJ,5./3.)*pow(J0+gJ,5.-5./3.))/mass  -
+			pow(J0+3.*JM,5./3.)/(pow(3.*JM,5./3.)*pow(J0+3.*JM,5.-5./3.))/mass);
+#else
 	return MAX(0.,pow(J,-5./3.)*pow(J0+J,-5+5./3.)/mass-pow(JM,-5./3.)*pow(J0+JM,-5+5./3.)/mass);
+#endif
 }
 
 /*
