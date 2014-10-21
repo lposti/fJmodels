@@ -96,7 +96,7 @@ int main(int nargs,char **args){
 	double b=1,q=1.;
 	isopot_init(b,q);//compute Phi of flattened isochrone for isopot()
 	double Rmax=100*b;
-	nr=60;	ar = new double[nr]; //allocate storage for potent()
+	nr=30;	ar = new double[nr]; //allocate storage for potent()
 	ngauss=6; npoly=3;
 	double **phil_old, **phil_old2, **Pr_old, **Pr2_old, **Pr_old2, **Pr2_old2;
 	phil_old=dmatrix(nr,npoly); phil_old2=dmatrix(nr,npoly);
@@ -119,13 +119,31 @@ int main(int nargs,char **args){
 	*/
 	char nameInput[40]; strcpy(nameInput,args[1]); printf("%s 1\n",nameInput);
 	FILE *inpf=fopen(nameInput,"r");
-	fscanf(inpf,"%d %d",&restart,&nstep);
+	if (!fscanf(inpf,"%d %d",&restart,&nstep)) {
+		printf("ERROR IN FIRST LINE INPUT!");
+		exit(1);
+	}
 	printf("%d %d \n",restart,nstep);
-	fscanf(inpf,"%lf %lf %lf",&dr,&dphi,&dz);
+	if (!fscanf(inpf,"%lf %lf %lf",&dr,&dphi,&dz)) {
+		printf("ERROR IN SECOND LINE INPUT!");
+		exit(1);
+	}
 	printf("%f %f %f \n",dr,dphi,dz);
+#ifdef HJGJ
+	double dr_g=1,dphi_g=1,dz_g=1;
+	if (!fscanf(inpf,"%lf %lf %lf",&dr_g,&dphi_g,&dz_g)) {
+		printf("ERROR IN THIRD LINE INPUT!");
+		exit(1);
+	}
+	printf("%f %f %f\n",dr_g,dphi_g,dz_g);
+#endif
 	fclose(inpf);
 	
+#ifdef HJGJ
+	setdf(dr,dphi,dz,dr_g,dphi_g,dz_g);
+#else
 	setdf(dr,dphi,dz);
+#endif
 
 	/* initial potential */
 	phil_ini=dmatrix(nr,npoly); Pr_ini=dmatrix(nr,npoly); Pr2_ini=dmatrix(nr,npoly);
@@ -135,7 +153,11 @@ int main(int nargs,char **args){
 
 
 	if(restart!=0){
+#ifdef HJGJ
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%4.2f_%d.out",dphi,dz,dphi_g,dz_g,restart-2);
+#else
 		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%d.out",dr,dphi,dz,restart-2);
+#endif
 		strcpy(fname,base);strcat(fname,stuff);
 		printf("Reading dump %s ..",fname);
 		potent(fname,&rho,1,0);//compute Ylm coeffs using rho_l from fname1
@@ -147,7 +169,11 @@ int main(int nargs,char **args){
 		printf("Restarting: Max shift: %7.4f\n",merge_phil(phil_old,Pr_old,Pr2_old,nr,npoly,0.));
 		kontrl=1;
 	}else{
+#ifdef HJGJ
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%4.2f_-1.out",dphi,dz,dphi_g,dz_g);
+#else
 		sprintf(stuff,"%4.2f_%4.2f_%4.2f_-1.out",dr,dphi,dz);
+#endif
 		strcpy(fname,base);strcat(fname,stuff);
 		printf("Computing Ylm Phi from analytic rho\n");
 #ifdef HERNQUIST
@@ -169,7 +195,11 @@ int main(int nargs,char **args){
 	//test(); if(npoly>0) return 0;
 	tabstuff();
 	for(rep=restart; rep<restart+nstep; rep++){
+#ifdef HJGJ
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%4.2f_%d.acts",dphi,dz,dphi_g,dz_g,rep);
+#else
 		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%d.acts",dr,dphi,dz,rep);
+#endif
 		strcpy(fname,base);strcat(fname,stuff);
 		kontrl=1;
 		if(kontrl==1){
@@ -192,7 +222,11 @@ int main(int nargs,char **args){
 			}
 			if(kontrl==1) return 0;
 		}
+#ifdef HJGJ
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%4.2f_%d.out",dphi,dz,dphi_g,dz_g,rep);
+#else
 		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%d.out",dr,dphi,dz,rep);
+#endif
 		strcpy(fname,base);strcat(fname,stuff);
 		save_phil(phil_old,nr,npoly); save_Pr(Pr_old,Pr2_old,nr,npoly);
 		printf("Computing Ylm Phi from DF..\n");

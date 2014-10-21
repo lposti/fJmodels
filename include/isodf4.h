@@ -14,12 +14,14 @@
 //#define ISOTHERMAL
 
 #define CONSTOMRATIO
-#define HJGJ
+//#define HJGJ
 
 extern double *EofJ,*LzofJ;
 extern int rep;
 
 void setdf(double dr_in, double dphi_in, double dz_in);
+void setdf(double dr_in, double dphi_in, double dz_in,
+		double dr_g_in, double dphi_g_in, double dz_g_in);
 
 double df(double *x,double *v);
 
