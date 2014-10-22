@@ -15,6 +15,7 @@
 #include "moments.h"
 #include "check_acts.h"
 #include "isodf4.h"
+#include "print.h"
 
 int rep=0;
 
@@ -83,7 +84,6 @@ void check_pot(char *fname,double Rmax, double **phil_old2, double **Pr_old2,
 }
 
 int main(int nargs,char **args){
-        int check=0;
 	/*
 	if(nargs<3){
 		printf("Must enter value of restart and nstep\n"); return 0;
@@ -96,7 +96,7 @@ int main(int nargs,char **args){
 	double b=1,q=1.;
 	isopot_init(b,q);//compute Phi of flattened isochrone for isopot()
 	double Rmax=100*b;
-	nr=30;	ar = new double[nr]; //allocate storage for potent()
+	nr=60;	ar = new double[nr]; //allocate storage for potent()
 	ngauss=6; npoly=3;
 	double **phil_old, **phil_old2, **Pr_old, **Pr2_old, **Pr_old2, **Pr2_old2;
 	phil_old=dmatrix(nr,npoly); phil_old2=dmatrix(nr,npoly);
@@ -148,7 +148,7 @@ int main(int nargs,char **args){
 	/* initial potential */
 	phil_ini=dmatrix(nr,npoly); Pr_ini=dmatrix(nr,npoly); Pr2_ini=dmatrix(nr,npoly);
 	char base[30],fname[30],stuff[30];
-        strcpy(base,"models/hernq_hJgJ_");
+        strcpy(base,"models/isoch_hJgJ_");
 	int kontrl=1;
 
 
@@ -191,9 +191,12 @@ int main(int nargs,char **args){
 		/* save initial potential */
 		save_phil(phil_ini,nr,npoly); save_Pr(Pr_ini,Pr2_ini,nr,npoly);
 	}
-
-	//test(); if(npoly>0) return 0;
 	tabstuff();
+
+#ifdef PRINTDFH
+	openDFH();
+#endif
+
 	for(rep=restart; rep<restart+nstep; rep++){
 #ifdef HJGJ
 		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%4.2f_%d.acts",dphi,dz,dphi_g,dz_g,rep);
@@ -211,17 +214,7 @@ int main(int nargs,char **args){
 			get_acts(fname);
 		}
         kontrl=1;
-		if(check==1){
-			for(int j=0;j<5;j++){
-				printf("%d\n",j);
-				double th=1.e-4+j*.5*acos(-1)/4;
-				double r=.2,R=r*sin(th),z=r*cos(th);
-				double x[4]={R,z,Phi(R,z),Phi(0.0001,0)},v[3]={0,.02,0};
-				check_acts(x,v);
-				printf("DF: %f\n",df(x,v));
-			}
-			if(kontrl==1) return 0;
-		}
+
 #ifdef HJGJ
 		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%4.2f_%d.out",dphi,dz,dphi_g,dz_g,rep);
 #else
@@ -231,10 +224,11 @@ int main(int nargs,char **args){
 		save_phil(phil_old,nr,npoly); save_Pr(Pr_old,Pr2_old,nr,npoly);
 		printf("Computing Ylm Phi from DF..\n");
 		potent5(fname,&rho,0,1);//compute Ylm coeffs using DF
+#ifdef PRINTDFH
+		closeDFH();
+#endif
 		printf(">> %f %f %f",Pr_old2[0][0],Pr[0][0],Pr2[0][0]);
 		save_phil(phil_old2,nr,npoly); save_Pr(Pr_old2,Pr2_old2,nr,npoly);
-
-		sprintf(stuff,"_%d.dat",rep);
 
 		/* CHANGED f PARAMETER IN merge_phil: NOW SET TO f=.25, before f=.5 */
 		printf(" done. Max shift: %8.5f\n",merge_phil(phil_old,Pr_old,Pr2_old,nr,npoly,0.25));

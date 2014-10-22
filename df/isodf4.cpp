@@ -11,10 +11,7 @@
 #include "ini_potLEG.h"
 #include "oct_int.h"
 #include "isodf4.h"
-
-#include "gsl/gsl_errno.h"
-#include "gsl/gsl_roots.h"
-#include "gsl/gsl_interp.h"
+#include "print.h"
 
 #define TPI 6.283185307179586
 #define SQRT2 1.4142135623730951
@@ -215,13 +212,18 @@ double df(double *x,double *v){
 	//double Omegar=uvorb.Omegau,Omegaphi=uvorb.Omegaphi;
 
 #if defined(HERNQUIST) || defined(NFW)			// use the same procedure for Hernquist and NFW models
-	return hj_hernq(Jr,Lz,Jz,R);
+	double DF = hj_hernq(Jr,Lz,Jz,R);
 
 #elif defined ISOTHERMAL
-	return hj_isoth(Jr,Lz,Jz,R);
+	double DF = hj_isoth(Jr,Lz,Jz,R);
 
 #elif defined ISOCHRONE
-	return hj_isoch(Jr,Lz,Jz,R);
-
+	double DF = hj_isoch(Jr,Lz,Jz,R);
 #endif
+
+#ifdef PRINTDFH
+	printDFH(Jr,Lz,Jz,DF,H);
+#endif
+
+	return DF;
 }

@@ -8,13 +8,13 @@
 #ifndef ISODF4_H_
 #define ISODF4_H_
 
-//#define ISOCHRONE
+#define ISOCHRONE
 //#define NFW
-#define HERNQUIST
+//#define HERNQUIST
 //#define ISOTHERMAL
 
 #define CONSTOMRATIO
-//#define HJGJ
+#define HJGJ
 
 extern double *EofJ,*LzofJ;
 extern int rep;
