@@ -12,6 +12,8 @@
 
 
 #ifdef PRINTDFH
+static FILE* dfhp;
+
 
 void openDFH(){ dfhp = fopen("DFen.dat","w"); }
 

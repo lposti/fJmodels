@@ -8,9 +8,9 @@
 #ifndef ISODF4_H_
 #define ISODF4_H_
 
-#define ISOCHRONE
+//#define ISOCHRONE
 //#define NFW
-//#define HERNQUIST
+#define HERNQUIST
 //#define ISOTHERMAL
 
 #define CONSTOMRATIO

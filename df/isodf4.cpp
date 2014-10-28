@@ -134,6 +134,9 @@ double hj_isoch(double Jr, double Lz, double Jz, double R){
 	double hJ=hj_COmRatio(Jr,Lz,Jz),gJ=gj_COmRatio(Jr,Lz,Jz);
 	return MAX(0.,1./(pow(J0+gJ,5.))/mass  -
 				1./(pow(J0+3.*JM,5.))/mass);
+	//double gam=2;
+	//return MAX(0.,1./(pow(pow(J0,gam)+pow(gJ,gam),5./gam))/mass  -
+	//				1./(pow(J0+3.*JM,5.))/mass);
 #else
 #	ifdef CONSTOMRATIO
 		double J=hj_COmRatio(Jr,Lz,Jz); //Jr+.5*(Lz+4.*Jz);
@@ -149,12 +152,12 @@ double hj_isoch(double Jr, double Lz, double Jz, double R){
  *  Hernquist model
  */
 double hj_hernq(double Jr, double Lz, double Jz, double R){
-	double mass=0.3e2,J0=1,JM=11.15;
+	double mass=1.8e2,J0=1,JM=11.15;
 
 #ifdef HJGJ
 	double hJ=hj_COmRatio(Jr,Lz,Jz),gJ=gj_COmRatio(Jr,Lz,Jz);
-	return MAX(0.,pow(J0+hJ,5./3.)/(pow(hJ,5./3.)*pow(J0+gJ,5.-5./3.))/mass  -
-				pow(J0+3.*JM,5./3.)/(pow(3.*JM,5./3.)*pow(J0+3.*JM,5.-5./3.))/mass);
+	return MAX(0.,pow(J0+hJ,5./3.)/(pow(hJ,5./3.)*pow(J0+gJ,5.))/mass  -
+				pow(J0+3.*JM,5./3.)/(pow(3.*JM,5./3.)*pow(J0+3.*JM,5.))/mass);
 #else
 #	ifdef CONSTOMRATIO
 		double J=hj_COmRatio(Jr,Lz,Jz);
@@ -175,8 +178,8 @@ double hj_nfw(double Jr, double Lz, double Jz, double R){
 
 #ifdef HJGJ
 	double hJ=hj_COmRatio(Jr,Lz,Jz),gJ=gj_COmRatio(Jr,Lz,Jz);
-	return MAX(0.,pow(J0+hJ,5./3.)/(pow(hJ,5./3.)*pow(J0+gJ,3.-5./3.))/mass  -
-				pow(J0+3.*JM,5./3.)/(pow(3.*JM,5./3.)*pow(J0+3.*JM,3.-5./3.))/mass);
+	return MAX(0.,pow(J0+hJ,5./3.)/(pow(hJ,5./3.)*pow(J0+gJ,3.))/mass  -
+				pow(J0+3.*JM,5./3.)/(pow(3.*JM,5./3.)*pow(J0+3.*JM,3.))/mass);
 #else
 #	ifdef CONSTOMRATIO
 		double J=hj_COmRatio(Jr,Lz,Jz);

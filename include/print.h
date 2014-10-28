@@ -13,7 +13,6 @@
 
 
 #ifdef PRINTDFH
-static FILE* dfhp;
 void openDFH();
 void printDFH(double Jr, double Jphi, double Jz, double DF, double E);
 void closeDFH();

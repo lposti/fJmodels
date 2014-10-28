@@ -148,7 +148,7 @@ int main(int nargs,char **args){
 	/* initial potential */
 	phil_ini=dmatrix(nr,npoly); Pr_ini=dmatrix(nr,npoly); Pr2_ini=dmatrix(nr,npoly);
 	char base[30],fname[30],stuff[30];
-        strcpy(base,"models/isoch_hJgJ_");
+        strcpy(base,"models/hernq_hJgJ_");
 	int kontrl=1;
 
 
