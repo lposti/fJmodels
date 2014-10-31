@@ -370,7 +370,7 @@ void potent(char *fname,double (*dens)(double,double),int rd,int prnt){
 		I_int[0][i]=0; I_ext[0][i]=0;//integrals from zero to zero
 	}
 
-#if defined(HERNQUIST) || defined(NFW)
+#if defined(HERNQUIST) || defined(NFW) || defined(JAFFE)
 	/*
 	 * 	Corrections for singular models (e.g. Hernquist)
 	 */
@@ -685,7 +685,7 @@ void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,do
 		I_int[0][i]=0; I_ext[0][i]=0;//integrals from zero to zero
 	}
 
-#if defined(HERNQUIST) || defined(NFW)
+#if defined(HERNQUIST) || defined(NFW) || defined(JAFFE)
 	/*
 	 * 	Corrections for singular models (e.g. Hernquist)
 	 */

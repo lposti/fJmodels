@@ -96,7 +96,7 @@ int main(int nargs,char **args){
 	double b=1,q=1.;
 	isopot_init(b,q);//compute Phi of flattened isochrone for isopot()
 	double Rmax=100*b;
-	nr=60;	ar = new double[nr]; //allocate storage for potent()
+	nr=90;	ar = new double[nr]; //allocate storage for potent()
 	ngauss=6; npoly=3;
 	double **phil_old, **phil_old2, **Pr_old, **Pr2_old, **Pr_old2, **Pr2_old2;
 	phil_old=dmatrix(nr,npoly); phil_old2=dmatrix(nr,npoly);
@@ -148,7 +148,7 @@ int main(int nargs,char **args){
 	/* initial potential */
 	phil_ini=dmatrix(nr,npoly); Pr_ini=dmatrix(nr,npoly); Pr2_ini=dmatrix(nr,npoly);
 	char base[30],fname[30],stuff[30];
-        strcpy(base,"models/hernq_hJgJ_");
+        strcpy(base,"models/Jaffe_");
 	int kontrl=1;
 
 
@@ -184,6 +184,8 @@ int main(int nargs,char **args){
 		potent(fname,&rho_isoth,0,0);//compute Ylm coeffs for flattened Hernquist
 #elif defined ISOCHRONE
 		potent(fname,&isoden,0,0);//compute Ylm coeffs for flattened isochrone
+#elif defined JAFFE
+		potent(fname,&rho_Hern,0,0);//use Hernquist for the moment
 #else
 		printf("\n [ERROR]: must choose either Isochrone, Hernquist or NFW model in isodf4.h");
 		exit(1);

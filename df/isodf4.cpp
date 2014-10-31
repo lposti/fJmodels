@@ -174,12 +174,12 @@ double hj_hernq(double Jr, double Lz, double Jz, double R){
  *  NFW model
  */
 double hj_nfw(double Jr, double Lz, double Jz, double R){
-	double mass=1.4e1,J0=1,JM=11.15;
+	double mass=1.4e2,J0=1,JM=11.15;
 
 #ifdef HJGJ
 	double hJ=hj_COmRatio(Jr,Lz,Jz),gJ=gj_COmRatio(Jr,Lz,Jz);
-	return MAX(0.,pow(J0+hJ,5./3.)/(pow(hJ,5./3.)*pow(J0+gJ,3.))/mass  -
-				pow(J0+3.*JM,5./3.)/(pow(3.*JM,5./3.)*pow(J0+3.*JM,3.))/mass);
+	return MAX(0.,pow(J0+hJ,1.67)/(pow(hJ,1.67)*pow(J0+gJ,3.))/mass  -
+				pow(J0+3.*JM,1.67)/(pow(3.*JM,1.67)*pow(J0+3.*JM,3.))/mass);
 #else
 #	ifdef CONSTOMRATIO
 		double J=hj_COmRatio(Jr,Lz,Jz);
@@ -189,6 +189,29 @@ double hj_nfw(double Jr, double Lz, double Jz, double R){
 	return MAX(0.,pow(J,-5./3.)*pow(J0+J,-3+5./3.)/mass-pow(JM,-5./3.)*pow(J0+JM,-3+5./3.)/mass);
 #endif /* not HJGJ */
 }
+
+/*
+ *  f(J)=f[H(J)] \propto h(J)^-2 * h(J)^-5+2
+ *  Jaffe model
+ */
+double hj_jaffe(double Jr, double Lz, double Jz, double R){
+	double mass=4.5e2,J0=1,JM=11.15;
+
+#ifdef HJGJ
+	double hJ=hj_COmRatio(Jr,Lz,Jz),gJ=gj_COmRatio(Jr,Lz,Jz);
+	return MAX(0.,pow(J0+hJ,2)/(pow(hJ,2)*pow(J0+gJ,5.))/mass  -
+				pow(J0+3.*JM,2)/(pow(3.*JM,2)*pow(J0+3.*JM,5.))/mass);
+#else
+#	ifdef CONSTOMRATIO
+		double J=hj_COmRatio(Jr,Lz,Jz);
+#	else
+		double J=hj(Jr,Lz,Jz,R,J0);
+#	endif /* not CONSTOMRATIO */
+	return MAX(0.,pow(J,-5./3.)*pow(J0+J,-5+5./3.)/mass-pow(JM,-5./3.)*pow(J0+JM,-5+5./3.)/mass);
+#endif /* not HJGJ */
+
+}
+
 
 double df(double *x,double *v){
 	double R=x[0],Lz=R*v[1],Phigl=x[2];
@@ -214,7 +237,7 @@ double df(double *x,double *v){
 	//uvorb.GetFreqs();
 	//double Omegar=uvorb.Omegau,Omegaphi=uvorb.Omegaphi;
 
-#if defined(HERNQUIST) || defined(NFW)			// use the same procedure for Hernquist and NFW models
+#ifdef HERNQUIST			// use the same procedure for Hernquist and NFW models
 	double DF = hj_hernq(Jr,Lz,Jz,R);
 
 #elif defined ISOTHERMAL
@@ -222,6 +245,12 @@ double df(double *x,double *v){
 
 #elif defined ISOCHRONE
 	double DF = hj_isoch(Jr,Lz,Jz,R);
+
+#elif defined NFW
+	double DF = hj_nfw(Jr,Lz,Jz,R);
+
+#elif defined JAFFE
+	double DF = hj_jaffe(Jr,Lz,Jz,R);
 #endif
 
 #ifdef PRINTDFH

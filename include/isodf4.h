@@ -10,8 +10,9 @@
 
 //#define ISOCHRONE
 //#define NFW
-#define HERNQUIST
+//#define HERNQUIST
 //#define ISOTHERMAL
+#define JAFFE
 
 #define CONSTOMRATIO
 #define HJGJ
