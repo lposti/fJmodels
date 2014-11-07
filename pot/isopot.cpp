@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "press.h"
+#include "isodf4.h"
 
 #define npt 2000
 #define SMALL .00001
@@ -204,7 +205,8 @@ int main(void){
 #define TPI 6.283185307179586
 
 double rho_Hern(double r){
-	return 1./(r/b*pow(1.+r/b,3))/TPI;
+	//double kM=0.16071432611403202;
+	return mass/(r/r0*pow(r0+r,3))/TPI;
 }
 
 double rho_Hern(double R, double z){

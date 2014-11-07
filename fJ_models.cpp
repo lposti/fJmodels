@@ -96,7 +96,7 @@ int main(int nargs,char **args){
 	double b=1,q=1.;
 	isopot_init(b,q);//compute Phi of flattened isochrone for isopot()
 	double Rmax=100*b;
-	nr=90;	ar = new double[nr]; //allocate storage for potent()
+	nr=120;	ar = new double[nr]; //allocate storage for potent()
 	ngauss=6; npoly=3;
 	double **phil_old, **phil_old2, **Pr_old, **Pr2_old, **Pr_old2, **Pr2_old2;
 	phil_old=dmatrix(nr,npoly); phil_old2=dmatrix(nr,npoly);
@@ -146,9 +146,10 @@ int main(int nargs,char **args){
 #endif
 
 	/* initial potential */
+	setMJ0(1.,1.);
 	phil_ini=dmatrix(nr,npoly); Pr_ini=dmatrix(nr,npoly); Pr2_ini=dmatrix(nr,npoly);
 	char base[30],fname[30],stuff[30];
-        strcpy(base,"models/Jaffe_");
+        strcpy(base,"models/hernq_newInPot_");
 	int kontrl=1;
 
 
@@ -198,6 +199,9 @@ int main(int nargs,char **args){
 #ifdef PRINTDFH
 	openDFH();
 #endif
+#ifdef PRINTXVJ
+	openXVJ();
+#endif
 
 	for(rep=restart; rep<restart+nstep; rep++){
 #ifdef HJGJ
@@ -228,6 +232,9 @@ int main(int nargs,char **args){
 		potent5(fname,&rho,0,1);//compute Ylm coeffs using DF
 #ifdef PRINTDFH
 		closeDFH();
+#endif
+#ifdef PRINTXVJ
+		closeXVJ();
 #endif
 		printf(">> %f %f %f",Pr_old2[0][0],Pr[0][0],Pr2[0][0]);
 		save_phil(phil_old2,nr,npoly); save_Pr(Pr_old2,Pr2_old2,nr,npoly);

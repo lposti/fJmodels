@@ -10,7 +10,7 @@ double df(double*,double*);
 static double vscale,vmax;
 
 double fL(double L){
-	return tanh(L);
+	return 0;//tanh(L);
 }
 double rhoi(double *Rz,double VR,double Vphi,double Vz){//integrand for density etc
 	double v[3]={VR,Vphi,Vz};

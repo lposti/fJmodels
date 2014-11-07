@@ -16,7 +16,7 @@
 //extern FILE *efile;
 double *ar,**Pr,**Pr2,**rhl,**vbarl,**sigRl,**sigpl,**sigzl,**sigRzl,**phil;
 int nr,ngauss,npoly;
-const double G=1,TPI=2*acos(-1);
+const double G=1;
 static int iter=0;
 
 void setgrid(double a_scale,double rmax){

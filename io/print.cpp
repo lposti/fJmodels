@@ -24,3 +24,16 @@ void printDFH(double Jr, double Jphi, double Jz, double DF, double E){
 void closeDFH(){ fclose(dfhp); }
 
 #endif
+
+#ifdef PRINTXVJ
+static FILE* xvjp;
+
+void openXVJ(){ xvjp = fopen("xvJ.dat","w"); }
+
+void printXVJ(double *x, double *v, double Jr, double Jphi, double Jz){
+	fprintf(xvjp, "%e %e %e %e %e %e %e %e\n",x[0],x[1],v[0],v[1],v[2],Jr,Jphi,Jz);
+}
+
+void closeXVJ(){ fclose(xvjp); }
+
+#endif
