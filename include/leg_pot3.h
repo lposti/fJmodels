@@ -9,7 +9,7 @@ float ev_dens(float,float,float*,float*,float*,float*,float*);
 double evpot(double,double);
 void get_Ylm(double**,double**,int,int,int);
 void potent(char*,double (*)(double,double),int,int);
-void potent5(char*,double (*)(double,double,double*,double*,double*,double*,double*,double),int,int);
+void potent5(char*,double (*)(double,double,double*,double*,double*,double*,double*),int,int);
 double phileg(double,double);
 double dPhir(double,double,double*);
 double dPhitheta(double,double);

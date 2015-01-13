@@ -27,24 +27,6 @@ static double dr_g,dphi_g,dz_g;
 #endif
 static int count;
 
-static double Rcfn_ini(double *Lp,double R){//what vanishes at Rc for given Lz
-	double x[2]={R,0},f[2]; dPhi_ini(x,f);
-	return (*Lp)/pow(R,3)-f[0];
-}
-static double GetRc_ini(double Lzsq,double R){
-	double Ri,Ro,dfRi,dfRo,dfRt=Rcfn_ini(&Lzsq,R);
-	if(dfRt>0){//inside
-		while(dfRt>0){
-			Ri=R; dfRi=dfRt; R*=1.2; dfRt=Rcfn_ini(&Lzsq,R);
-		} Ro=R; dfRo=dfRt;
-	}else{//outside
-		while(dfRt<0){
-			Ro=R; dfRo=dfRt; R*=.8; dfRt=Rcfn_ini(&Lzsq,R);
-		} Ri=R; dfRi=dfRt;
-	}
-	return zbrent(&Lzsq,&Rcfn_ini,Ri,Ro,dfRi,dfRo,TINY,20);
-}
-
 
 void setdf(double dr_in, double dphi_in,double dz_in){
 	dr=dr_in; dphi=dphi_in; dz=dz_in;
@@ -133,13 +115,12 @@ double hj(double Jr, double Lz, double Jz, double R, double J0){
  *  Isothermal model
  */
 double hj_isoth(double Jr, double Lz, double Jz, double R){
-	double mass=2e2, J0=1, JM=100;//21.15;
 
 #ifdef HJGJ
-	double hJ=hj_COmRatio(Jr,Lz,Jz),gJ=gj_COmRatio(Jr,Lz,Jz);
-	return MAX(0.,1./(pow(J0+gJ,2.))/mass  -
-					//1./(pow(J0+3.*JM,2.))/mass);
-					1./(1.+pow(gj_COmRatio(JM,JM,JM),2))/mass);
+	double gJ=gj_COmRatio(Jr,Lz,Jz);
+	double rt=100,Jt=sqrt(rt*pow(TPI,3.));
+	return mass/pow(J0,3)*MAX(0.,1./(pow(1+gJ/J0,2))-1./(pow(1.+Jt/J0,2))) / pow(TPI,3.);
+
 #else
 #	ifdef CONSTOMRATIO
 		double J=hj_COmRatio(Jr,Lz,Jz);
@@ -155,15 +136,11 @@ double hj_isoth(double Jr, double Lz, double Jz, double R){
  *  Isochrone model
  */
 double hj_isoch(double Jr, double Lz, double Jz, double R){
-	double mass=1.4e1,J0=1,JM=11.15;
 
 #ifdef HJGJ
-	double hJ=hj_COmRatio(Jr,Lz,Jz),gJ=gj_COmRatio(Jr,Lz,Jz);
-	return MAX(0.,1./(pow(J0+gJ,5.))/mass  -
-				1./(pow(J0+3.*JM,5.))/mass);
-	//double gam=2;
-	//return MAX(0.,1./(pow(pow(J0,gam)+pow(gJ,gam),5./gam))/mass  -
-	//				1./(pow(J0+3.*JM,5.))/mass);
+	double gJ=gj_COmRatio(Jr,Lz,Jz);
+	return mass/pow(J0,3)*MAX(0.,1./(pow(J0+gJ,5.5))) / pow(TPI,3.);
+
 #else
 #	ifdef CONSTOMRATIO
 		double J=hj_COmRatio(Jr,Lz,Jz); //Jr+.5*(Lz+4.*Jz);
@@ -179,19 +156,11 @@ double hj_isoch(double Jr, double Lz, double Jz, double R){
  *  Hernquist model
  */
 double hj_hernq(double Jr, double Lz, double Jz, double R){
-	//double mass=2.6e2,J0=1,JM=11.15;
 
 #ifdef HJGJ
 	double hJ=hj_COmRatio(Jr,Lz,Jz),gJ=gj_COmRatio(Jr,Lz,Jz);
-	double kM=1.;//0.57;
-	return mass/pow(J0,3)*MAX(0.,pow(1.+J0/hJ,5./3.)/(pow(1.+gJ/J0,5.))) / (pow(TPI,3.)*kM) ;
-			//-pow(J0+3.*JM,5./3.)/(pow(3.*JM,5./3.)*pow(J0+3.*JM,5.))/mass);
-
-	double Rc=GetRc_ini(pow(Jr+fabs(Lz)+Jz,2),R);
-	double kappa,nu,Omega;
-	getfreqs_ini(Rc,&kappa,&nu,&Omega);
-	hJ=Jr+kappa/Omega*fabs(Lz)+kappa/Omega*Jz;
-	return mass/pow(J0,3)*MAX(0.,pow(1.+J0/hJ,5./3.)/(pow(1.+gJ/J0,5.))) / (pow(TPI,3.)*kM) ;
+	if (hJ<1e-4) return 0.;
+	else return mass/pow(J0,3)*MAX(0.,pow(1.+J0/hJ,1.5)/(pow(1.+gJ/J0,5.))) / (pow(TPI,3.)) ;
 
 #else
 #	ifdef CONSTOMRATIO
@@ -209,18 +178,11 @@ double hj_hernq(double Jr, double Lz, double Jz, double R){
  *  NFW model
  */
 double hj_nfw(double Jr, double Lz, double Jz, double R){
-	double mass=1.4e2,J0=1,JM=11.15;
 
 #ifdef HJGJ
 	double hJ=hj_COmRatio(Jr,Lz,Jz),gJ=gj_COmRatio(Jr,Lz,Jz);
-	//return MAX(0.,pow(J0+hJ,5./3.)/(pow(hJ,5./3.)*pow(J0+gJ,3.))/mass  -
-	//			pow(J0+3.*JM,5./3.)/(pow(3.*JM,5./3.)*pow(J0+3.*JM,3.))/mass);
+	return mass/pow(J0,3)*MAX(0.,pow(1.+J0/hJ,5./3.)/(pow(1.+gJ/J0,2.9))) / pow(TPI,3.) ;
 
-	double Rc=GetRc_ini(pow(Jr+abs(Lz)+Jz,2),R);
-	double kappa,nu,Omega;
-	getfreqs_ini(Rc,&kappa,&nu,&Omega);
-	hJ=Jr+kappa/Omega*Lz+kappa/Omega*Jz;
-	return MAX(0.,pow(J0+hJ,3./2.)/(pow(hJ,3./2.)*pow(J0+gJ,3.))/mass);
 #else
 #	ifdef CONSTOMRATIO
 		double J=hj_COmRatio(Jr,Lz,Jz);
@@ -236,12 +198,11 @@ double hj_nfw(double Jr, double Lz, double Jz, double R){
  *  Jaffe model
  */
 double hj_jaffe(double Jr, double Lz, double Jz, double R){
-	double mass=2.5e2,J0=1,JM=11.15;
 
 #ifdef HJGJ
 	double hJ=hj_COmRatio(Jr,Lz,Jz),gJ=gj_COmRatio(Jr,Lz,Jz);
-	return MAX(0.,pow(J0+hJ,2)/(pow(hJ,2)*pow(J0+gJ,5.))/mass);
-			//-pow(J0+3.*JM,1.9)/(pow(3.*JM,1.9)*pow(J0+3.*JM,5.))/mass);
+	return mass/pow(J0,3)*MAX(0.,pow(1.+J0/hJ,1.885)/(pow(1.+gJ/J0,5.))) / (pow(TPI,3.)) ;
+
 #else
 #	ifdef CONSTOMRATIO
 		double J=hj_COmRatio(Jr,Lz,Jz);

@@ -102,7 +102,7 @@ int main(int nargs,char **args){
 	phil_old=dmatrix(nr,npoly); phil_old2=dmatrix(nr,npoly);
 	Pr_old=dmatrix(nr,npoly); Pr2_old=dmatrix(nr,npoly);
 	Pr_old2=dmatrix(nr,npoly); Pr2_old2=dmatrix(nr,npoly);
-	setgrid(.03*b,Rmax);
+	setgrid(.001*b,Rmax);
 	rhl=dmatrix(nr,npoly); phil=dmatrix(nr,npoly);
 	Pr=dmatrix(nr,npoly); Pr2=dmatrix(nr,npoly);
 
@@ -149,7 +149,7 @@ int main(int nargs,char **args){
 	setMJ0(1.,1.);
 	phil_ini=dmatrix(nr,npoly); Pr_ini=dmatrix(nr,npoly); Pr2_ini=dmatrix(nr,npoly);
 	char base[30],fname[30],stuff[30];
-        strcpy(base,"models/hernq_newInPot_");
+        strcpy(base,"models/Isoth_rt_");
 	int kontrl=1;
 
 
@@ -186,7 +186,7 @@ int main(int nargs,char **args){
 #elif defined ISOCHRONE
 		potent(fname,&isoden,0,0);//compute Ylm coeffs for flattened isochrone
 #elif defined JAFFE
-		potent(fname,&rho_Hern,0,0);//use Hernquist for the moment
+		potent(fname,&rho_Jaffe,0,0);//use Hernquist for the moment
 #else
 		printf("\n [ERROR]: must choose either Isochrone, Hernquist or NFW model in isodf4.h");
 		exit(1);

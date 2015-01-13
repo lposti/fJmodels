@@ -10,6 +10,9 @@ double rho_Hern(double,double);
 double phi_Hern(double);
 double phi_iso(double);
 
+double rho_Jaffe(double);
+double rho_Jaffe(double,double);
+
 double rho_NFW(double);
 double rho_NFW(double,double);
 double phi_NFW(double);

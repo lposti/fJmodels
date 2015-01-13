@@ -222,6 +222,15 @@ double phi_iso(double r){
 	return -1./(1.+sqrt(1.+r*r));
 }
 
+double rho_Jaffe(double r){
+	return mass/(pow(r/r0,2)*pow(r0+r,2))/(TPI);
+}
+
+double rho_Jaffe(double R, double z){
+	double m=sqrt(R*R+z*z/q2);
+	return rho_Jaffe(m);
+}
+
 
 /*
  *  NFW stuff
@@ -229,7 +238,7 @@ double phi_iso(double r){
 #define FPI 12.5663706143592
 
 double rho_NFW(double r){
-	return 1./(r/b*pow(1.+r/b,2))/FPI;
+	return mass/(r/r0*pow(r0+r,2))/FPI;
 }
 double rho_NFW(double R,double z){
 	double m=sqrt(R*R+z*z/q2);
@@ -252,7 +261,7 @@ double sig=1.;
  */
 double rho_isoth(double r){
 	//double mass=2*sig*sig*50.*b;
-	return sig*sig/pow(1.+r,2)/TPI;// /mass;
+	return mass/pow(1.+r/r0,2)/TPI;// /mass;
 }
 double rho_isoth(double R, double z){
 	double m=sqrt(R*R+z*z/q2);

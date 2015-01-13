@@ -12,6 +12,8 @@
 #include "gsl/gsl_integration.h"
 
 #define TINY 1e-6
+#define FPI 12.566370614359172
+
 
 //extern FILE *efile;
 double *ar,**Pr,**Pr2,**rhl,**vbarl,**sigRl,**sigpl,**sigzl,**sigRzl,**phil;
@@ -331,9 +333,6 @@ void potent(char *fname,double (*dens)(double,double),int rd,int prnt){
 		rho[0][0]=(*dens)(ar[0],0);
 		printf("rho0 %g ",rho[0][0]);
 
-		/* smooth truncation of density */
-		for(int i=0; i<ngauss; i++) rho[nr-1][i]=(*dens)(ar[nr-1]*si[i],ar[nr-1]*ci[i]);
-
 		for(int j=1; j<ngauss; j++) rho[0][j]=rho[0][0];
 		for(int n=1; n<nr; n++){//Get density @ grid pts
 			if(prnt==1) printf("%d ",n);
@@ -341,7 +340,7 @@ void potent(char *fname,double (*dens)(double,double),int rd,int prnt){
             for(int np=0; np<npoly; np++) rhl[n][np]=0;
 #pragma omp parallel for
 			for(int i=0; i<ngauss; i++){
-				rho[n][i]=(*dens)(r*si[i],r*ci[i]) - rho[nr-1][i];	
+				rho[n][i]=(*dens)(r*si[i],r*ci[i]);
             }
 			for(int np=0; np<npoly; np++)
 				for(int i=0; i<ngauss; i++){
@@ -370,7 +369,7 @@ void potent(char *fname,double (*dens)(double,double),int rd,int prnt){
 		I_int[0][i]=0; I_ext[0][i]=0;//integrals from zero to zero
 	}
 
-#if defined(HERNQUIST) || defined(NFW) || defined(JAFFE)
+#if defined(HERNQUIST) || defined(NFW)
 	/*
 	 * 	Corrections for singular models (e.g. Hernquist)
 	 */
@@ -410,6 +409,28 @@ void potent(char *fname,double (*dens)(double,double),int rd,int prnt){
 			a=b; p1=p2;
 		}
 	}
+#elif defined JAFFE
+	for(int np=0; np<npoly; np++){
+			int l=2*np;
+			double r=ar[0],a,p1=0;
+			p1=pow(ar[0],2*l+1); a=rhl[0][np]/pow(ar[0],l-2);
+			for(int n=1; n<nc; n++){//leading terms in all integrals
+				r=ar[n]; double p2=pow(r,2*l+1);
+				double b=rhl[n][np]/pow(r,l-2), arg=.5*(a+b);
+				I_int[n][np]=I_int[n-1][np]+arg*(p2-p1)/(double)(2*l+1);
+				I_ext[n][np]=I_ext[n-1][np]+arg*(r-ar[n-1]);
+				a=b; p1=p2;
+			}
+			a*=pow(r,l); p1=pow(r,l+3);
+			for(int n=nc; n<nr; n++){
+				r=ar[n]; double p2=pow(r,l+3);
+				double b=rhl[n][np], arg=.5*(a+b);
+				I_int[n][np]=I_int[n-1][np]+arg*(p2-p1)/(double)(l+3);
+				if(l!=2) I_ext[n][np]=I_ext[n-1][np]+arg*(pow(r,2-l)-pow(ar[n-1],2-l))/(double)(2-l);
+				else I_ext[n][np]=I_ext[n-1][np]+arg*(log(r)-log(ar[n-1]));
+				a=b; p1=p2;
+			}
+		}
 #elif defined ISOTHERMAL
 	/*
 	 * 	Corrections for singular isothermal models
@@ -549,7 +570,7 @@ void potent(char *fname,double (*dens)(double,double),int rd,int prnt){
 	fclose(rhof); iter++;	delmatrix(poly,npoly); delmatrix(rho,nr);
 	delmatrix(I_int,nr); delmatrix(I_ext,nr);
 }
-void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,double*,double*,double),int rd,int prnt){
+void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,double*,double*),int rd,int prnt){
 // Puts into rhl and phil Legendre poly coefficients of density & potential associated
 // with mass density dens; if rd==0 compute rhl, otherwise read it
 	double **poly,**rho,**Vbar,**sigR,**sigp,**sigz,**sigRz,**I_int,**I_ext;
@@ -584,44 +605,22 @@ void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,do
 		 *  is kept.
 		 */
 
-		/* smooth truncation of density */
-		for(int i=0; i<ngauss; i++)
-			rho[nr-1][i]=(*dens)(ar[nr-1]*si[i],ar[nr-1]*ci[i],Vbar[nr-1]+i,
-				sigR[nr-1]+i,sigp[nr-1]+i,sigz[nr-1]+i,sigRz[nr-1]+i,
-				sqrt(-2*(Phi(ar[nr-1]*si[i],ar[nr-1]*ci[i])-Phi(100,100))));
-
 		/* initialize bar */
 		ProgressBar bar(60);
 		bar.init(nr);
 		int nn=0;
 
-		for(int n=nr-1; n>0; n--){//Get density @ grid pts
+		//for(int n=nr-1; n>0; n--){//Get density @ grid pts
+		for(int n=0; n<nr-1; n++){
 			/* update bar*/
 			bar.update(nn+1); nn++;
-
-			//if(prnt==1) printf("%d ",n);
-			double Vscale;
 			double r=ar[n];
 			for(int np=0; np<npoly; np++) rhl[n][np]=0;
 #pragma omp parallel for
 			for(int i=0; i<ngauss; i++){
-				// OLDER THAN 19/02: control on the velocity integration-limits
 
-				   // for the innermost grid points I set the integration limit to be 2*sigma[k-1]
-				 	if (n<nr/10){
-				 		Vscale=2.*sqrt(pow(*(sigR[n+1]+i),2)+pow(*(sigp[n+1]+i),2)+pow(*(sigz[n+1]+i),2));
-				 		//Vscale=sqrt(-2*(Phi(r*si[i],r*ci[i])-Phi(100,100)));
-				 		rho[n][i]=(*dens)(r*si[i],r*ci[i],Vbar[n]+i,sigR[n]+i,sigp[n]+i,sigz[n]+i,sigRz[n]+i,Vscale) - rho[nr-1][i];
-				 	}
-				 	else {
-				 		Vscale=sqrt(-2*(Phi(r*si[i],r*ci[i])-Phi(100,100)));
-				 		rho[n][i]=(*dens)(r*si[i],r*ci[i],Vbar[n]+i,sigR[n]+i,sigp[n]+i,sigz[n]+i,sigRz[n]+i,Vscale) - rho[nr-1][i];
-				 	}
-
-
-				//rho[n][i]=(*dens)(r*si[i],r*ci[i],Vbar[n]+i,sigR[n]+i,sigp[n]+i,sigz[n]+i,sigRz[n]+i);
+				rho[n][i]=(*dens)(r*si[i],r*ci[i],Vbar[n]+i,sigR[n]+i,sigp[n]+i,sigz[n]+i,sigRz[n]+i);
 				if(isnan(rho[n][i])){
-					rho[n][i]=(*dens)(r*si[i],r*ci[i],Vbar[n]+i,sigR[n]+i,sigp[n]+i,sigz[n]+i,sigRz[n]+i,Vscale);
 					printf("in potent5: %d %d %g\n",n,i,rho[n][i]);
 					exit(0);
 				}
@@ -630,13 +629,6 @@ void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,do
 		}
 		/* finalize bar */
 		bar.fillSpace("..done potential computation!!\n\n");
-
-		/**************************************************************
-		 *  the radial grid starts at TINY now..
-		 */
-		double Vscale=2.*sqrt(pow(*(sigR[1]),2)+pow(*(sigp[1]),2)+pow(*(sigz[1]),2));
-		rho[0][0]=(*dens)(ar[0],0,Vbar[0],sigR[0],sigp[0],sigz[0],sigRz[0],Vscale);
-		//sigp[0][0]=sqrt(sigp[0][0]+pow(Vbar,2));
 
 		/*
 		 * 03/09/14: linear interpolation in the first grid point!
@@ -685,7 +677,7 @@ void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,do
 		I_int[0][i]=0; I_ext[0][i]=0;//integrals from zero to zero
 	}
 
-#if defined(HERNQUIST) || defined(NFW) || defined(JAFFE)
+#if defined(HERNQUIST) || defined(NFW)
 	/*
 	 * 	Corrections for singular models (e.g. Hernquist)
 	 */
@@ -725,6 +717,28 @@ void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,do
 			a=b; p1=p2;
 		}
 	}
+#elif defined JAFFE
+	for(int np=0; np<npoly; np++){
+			int l=2*np;
+			double r=ar[0],a,p1=0;
+			p1=pow(ar[0],2*l+2); a=rhl[0][np]/pow(ar[0],l-1);
+					for(int n=1; n<nc; n++){//leading terms in all integrals
+						r=ar[n]; double p2=pow(r,2*l+2);
+						double b=rhl[n][np]/pow(r,l-1), arg=.5*(a+b);
+						I_int[n][np]=I_int[n-1][np]+arg*(p2-p1)/(double)(2*l+2);
+						I_ext[n][np]=I_ext[n-1][np]+arg*(r-ar[n-1]);
+						a=b; p1=p2;
+					}
+			a*=pow(r,l); p1=pow(r,l+3);
+			for(int n=nc; n<nr; n++){
+				r=ar[n]; double p2=pow(r,l+3);
+				double b=rhl[n][np], arg=.5*(a+b);
+				I_int[n][np]=I_int[n-1][np]+arg*(p2-p1)/(double)(l+3);
+				if(l!=2) I_ext[n][np]=I_ext[n-1][np]+arg*(pow(r,2-l)-pow(ar[n-1],2-l))/(double)(2-l);
+				else I_ext[n][np]=I_ext[n-1][np]+arg*(log(r)-log(ar[n-1]));
+				a=b; p1=p2;
+			}
+		}
 #elif defined ISOTHERMAL
 	/*
 	 * 	Corrections for singular isothermal models
