@@ -15,22 +15,8 @@
 #include "moments.h"
 #include "check_acts.h"
 #include "isodf4.h"
+#include "print.h"
 
-/* Fermani's H(J) includes */
-#include "HJ/Structure.h"
-#include "HJ/surf_lib.h"
-#include "HJ/tools.h"
-#include "HJ/potential_obj.h"
-#include "HJ/numericPot.h"
-#include "HJ/EtildeJ.h"
-
-
-double **surf_LIB; surf_lib *sl; EtildeJ *EtJ;
-double df(double*,double*);
-double rho_iso(double);
-void setdf(double,double);
-//extern FILE *efile;
-//int nw,ni;
 int rep=0;
 
 void test(void){
@@ -98,40 +84,81 @@ void check_pot(char *fname,double Rmax, double **phil_old2, double **Pr_old2,
 }
 
 int main(int nargs,char **args){
-    int check=0;
+	/*
 	if(nargs<3){
 		printf("Must enter value of restart and nstep\n"); return 0;
 	}
 	int restart; sscanf(args[1],"%d",&restart);
 	int nstep; sscanf(args[2],"%d",&nstep);
+	*/
+	int restart,nstep;
 	time_t startTime = clock();
 	double b=1,q=1.;
 	isopot_init(b,q);//compute Phi of flattened isochrone for isopot()
 	double Rmax=100*b;
-	nr=60;	ar = new double[nr]; //allocate storage for potent()
+	nr=120;	ar = new double[nr]; //allocate storage for potent()
 	ngauss=6; npoly=3;
 	double **phil_old, **phil_old2, **Pr_old, **Pr2_old, **Pr_old2, **Pr2_old2;
 	phil_old=dmatrix(nr,npoly); phil_old2=dmatrix(nr,npoly);
 	Pr_old=dmatrix(nr,npoly); Pr2_old=dmatrix(nr,npoly);
 	Pr_old2=dmatrix(nr,npoly); Pr2_old2=dmatrix(nr,npoly);
-	setgrid(.03*b,Rmax);
+	setgrid(.001*b,Rmax);
 	rhl=dmatrix(nr,npoly); phil=dmatrix(nr,npoly);
 	Pr=dmatrix(nr,npoly); Pr2=dmatrix(nr,npoly);
 
+	double dr=1,dphi=1,dz=1;
+	/*
+	if (scanf("%d %d \n",&restart,&nstep)==0){
+		printf("$$$ Problem reading first line of input file\n");
+		exit(1);
+	}
+	if (scanf("%lf %lf %lf \n",&dr,&dphi,&dz)==0){
+		printf("$$$ Problem reading second line of input file\n");
+		exit(2);
+	}
+	*/
+	char nameInput[40]; strcpy(nameInput,args[1]); printf("%s 1\n",nameInput);
+	FILE *inpf=fopen(nameInput,"r");
+	if (!fscanf(inpf,"%d %d",&restart,&nstep)) {
+		printf("ERROR IN FIRST LINE INPUT!");
+		exit(1);
+	}
+	printf("%d %d \n",restart,nstep);
+	if (!fscanf(inpf,"%lf %lf %lf",&dr,&dphi,&dz)) {
+		printf("ERROR IN SECOND LINE INPUT!");
+		exit(1);
+	}
+	printf("%f %f %f \n",dr,dphi,dz);
+#ifdef HJGJ
+	double dr_g=1,dphi_g=1,dz_g=1;
+	if (!fscanf(inpf,"%lf %lf %lf",&dr_g,&dphi_g,&dz_g)) {
+		printf("ERROR IN THIRD LINE INPUT!");
+		exit(1);
+	}
+	printf("%f %f %f\n",dr_g,dphi_g,dz_g);
+#endif
+	fclose(inpf);
+	
+#ifdef HJGJ
+	setdf(dr,dphi,dz,dr_g,dphi_g,dz_g);
+#else
+	setdf(dr,dphi,dz);
+#endif
+
 	/* initial potential */
+	setMJ0(1.,1.);
 	phil_ini=dmatrix(nr,npoly); Pr_ini=dmatrix(nr,npoly); Pr2_ini=dmatrix(nr,npoly);
-	double aphi=-0.3,az=0.4; setdf(aphi,az);
 	char base[30],fname[30],stuff[30];
-    strcpy(base,"models/Hern_gh4eq");
+        strcpy(base,"models/Isoth_rt_");
 	int kontrl=1;
 
-	/* Fermani's quadratic H(J) fit declarations */
-	eveq_p a;
-	char *fname_HJ;
-	double coeff2[2]={1.e12,1.0};
 
 	if(restart!=0){
-		sprintf(stuff,"_%d.out",restart-2);
+#ifdef HJGJ
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%4.2f_%d.out",dphi,dz,dphi_g,dz_g,restart-2);
+#else
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%d.out",dr,dphi,dz,restart-2);
+#endif
 		strcpy(fname,base);strcat(fname,stuff);
 		printf("Reading dump %s ..",fname);
 		potent(fname,&rho,1,0);//compute Ylm coeffs using rho_l from fname1
@@ -143,7 +170,11 @@ int main(int nargs,char **args){
 		printf("Restarting: Max shift: %7.4f\n",merge_phil(phil_old,Pr_old,Pr2_old,nr,npoly,0.));
 		kontrl=1;
 	}else{
-		sprintf(stuff,"_-1.out");
+#ifdef HJGJ
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%4.2f_-1.out",dphi,dz,dphi_g,dz_g);
+#else
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_-1.out",dr,dphi,dz);
+#endif
 		strcpy(fname,base);strcat(fname,stuff);
 		printf("Computing Ylm Phi from analytic rho\n");
 #ifdef HERNQUIST
@@ -154,6 +185,8 @@ int main(int nargs,char **args){
 		potent(fname,&rho_isoth,0,0);//compute Ylm coeffs for flattened Hernquist
 #elif defined ISOCHRONE
 		potent(fname,&isoden,0,0);//compute Ylm coeffs for flattened isochrone
+#elif defined JAFFE
+		potent(fname,&rho_Jaffe,0,0);//use Hernquist for the moment
 #else
 		printf("\n [ERROR]: must choose either Isochrone, Hernquist or NFW model in isodf4.h");
 		exit(1);
@@ -161,89 +194,50 @@ int main(int nargs,char **args){
 		/* save initial potential */
 		save_phil(phil_ini,nr,npoly); save_Pr(Pr_ini,Pr2_ini,nr,npoly);
 	}
-
-	/* numericPot initialization */
-	/*
-	potential_obj * Isopot; Isopot = new potential_obj(3,2,&coeff2[0],fname_HJ); // 0 for Hernquist
-	numericPot *num; num = new numericPot(2,&coeff2[0],fname_HJ);
-	// The object potential is passed by pointer via the structure variable eveq_p (i.e. "evolution equation parameters"). At this stage, all the other subvariables (energy, Lz, etc.) are in fact irrelevant.
-	a.p=num; a.energy=-4.780171; a.Lz=0.0; a.L=0.0;
-
-	surf_LIB = new double* [nsurf];
-	for(int k=0;k<nsurf;k++) surf_LIB[k] = new double[10];
-
-	char surflib_fname[100];
-	strcpy(surflib_fname,base); strcat(surflib_fname,"_surflib.dat");
-	sl=new surf_lib(a,surflib_fname,nsurf);
-
-	if (fopen(surflib_fname,"r")==NULL){
-		sl->build();
-		sl->save(*(&surf_LIB));
-	}
-	int surflib_length=sl->read(*(&surf_LIB));
-	printf("\n== read Surface Library: %s\n",surflib_fname);
-
-	// The evaluation of H(J) using the library of fitted surfaces of constant energy is done within the object EtildeJ
-	EtJ = new EtildeJ(surf_LIB,surflib_length);
-	*/
-
-	//test(); if(npoly>0) return 0;
 	tabstuff();
+
+#ifdef PRINTDFH
+	openDFH();
+#endif
+#ifdef PRINTXVJ
+	openXVJ();
+#endif
+
 	for(rep=restart; rep<restart+nstep; rep++){
-		sprintf(stuff,"_%d.acts",rep);
+#ifdef HJGJ
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%4.2f_%d.acts",dphi,dz,dphi_g,dz_g,rep);
+#else
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%d.acts",dr,dphi,dz,rep);
+#endif
 		strcpy(fname,base);strcat(fname,stuff);
 		kontrl=1;
 		if(kontrl==1){
 			printf("tabulating JR(Lz,E,Iu) for n=\n");
 			if (rep>0) check_pot(fname,Rmax,phil_old2,Pr_old2,Pr2_old2,nr,npoly);
 			else tab_acts(fname,Rmax);
-#if defined(HERNQUIST) || defined(ISOCHRONE) || defined(NFW)
-			build_df_grid();
-#endif
-			//build_EofJ();
 		} else {
 			printf("reading JR(Lz,E,Er)..\n");
 			get_acts(fname);
 		}
         kontrl=1;
-		if(check==1){
-			for(int j=0;j<5;j++){
-				printf("%d\n",j);
-				double th=1.e-4+j*.5*acos(-1)/4;
-				double r=.2,R=r*sin(th),z=r*cos(th);
-				double x[4]={R,z,Phi(R,z),Phi(0.0001,0)},v[3]={0,.02,0};
-				check_acts(x,v);
-				printf("DF: %f\n",df(x,v));
-			}
-			if(kontrl==1) return 0;
-		}
-		sprintf(stuff,"_%d.out",rep);
+
+#ifdef HJGJ
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%4.2f_%d.out",dphi,dz,dphi_g,dz_g,rep);
+#else
+		sprintf(stuff,"%4.2f_%4.2f_%4.2f_%d.out",dr,dphi,dz,rep);
+#endif
 		strcpy(fname,base);strcat(fname,stuff);
 		save_phil(phil_old,nr,npoly); save_Pr(Pr_old,Pr2_old,nr,npoly);
 		printf("Computing Ylm Phi from DF..\n");
 		potent5(fname,&rho,0,1);//compute Ylm coeffs using DF
+#ifdef PRINTDFH
+		closeDFH();
+#endif
+#ifdef PRINTXVJ
+		closeXVJ();
+#endif
 		printf(">> %f %f %f",Pr_old2[0][0],Pr[0][0],Pr2[0][0]);
 		save_phil(phil_old2,nr,npoly); save_Pr(Pr_old2,Pr2_old2,nr,npoly);
-
-		sprintf(stuff,"_%d.dat",rep);
-
-		/* get the new potential */
-		/*
-		strcpy(surflib_fname,base); strcat(surflib_fname,"_surflib");
-		strcat(surflib_fname,stuff);
-
-		num = new numericPot(2,&coeff2[0],fname_HJ);
-		a.p=num; a.energy=-4.780171; a.Lz=0.0; a.L=0.0;
-
-		sl=new surf_lib(a,surflib_fname,nsurf);
-		if (fopen(surflib_fname,"r")==NULL){
-			sl->build();
-			sl->save(*(&surf_LIB));
-		}
-		int surflib_length=sl->read(*(&surf_LIB));
-		printf("\n== read Surface Library: %s\n",surflib_fname);
-		EtJ = new EtildeJ(surf_LIB,surflib_length);
-		*/
 
 		/* CHANGED f PARAMETER IN merge_phil: NOW SET TO f=.25, before f=.5 */
 		printf(" done. Max shift: %8.5f\n",merge_phil(phil_old,Pr_old,Pr2_old,nr,npoly,0.25));

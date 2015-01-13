@@ -1,0 +1,10 @@
+# ignored files by git
+fJmodels
+orb.dat
+# gitcommands.txt
+models/
+input/
+Debug/
+rhof*out
+DFen.dat
+xvJ.dat
