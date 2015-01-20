@@ -245,10 +245,6 @@ double rho_NFW(double R,double z){
 	return rho_NFW(m);
 }
 
-double phi_NFW(double r){
-	return -log(1.+r/b)/(r/b);
-}
-
 
 /*
  *  Isothermal sphere stuff
@@ -273,3 +269,29 @@ double rho_isoth(double R, double z){
 double phi_isoth(double r){
 	return 2.*sig*sig*(log(r+b)-log((50.+1.)*b));
 }
+
+/*
+ *   NFW External Potential
+ */
+double aNFW=1.,GM_NFW=.1;
+double phiNFW(double R, double z){
+	double r = sqrt(R*R+q2*z*z);
+	return -GM_NFW * log(r/aNFW+1)/(r/aNFW);
+}
+double dphidrNFW(double R, double z){
+	double r = sqrt(R*R+q2*z*z);
+	return ((r+aNFW)*log((r+aNFW)/aNFW)-r)/(r*r*(r+aNFW));
+}
+double d2phidr2NFW(double R, double z){
+	double r = sqrt(R*R+q2*z*z);
+	return -((2*r*r+4*aNFW*r+2*aNFW*aNFW)*log((r+aNFW)/aNFW)-3*r*r-2*aNFW*r)/(r*r*r*pow(r+aNFW,2));
+}
+double rhoNFW(double r){
+	return GM_NFW/(r/aNFW*pow(aNFW+r,2))/FPI;
+	//return GM_NFW/(pow(r/aNFW,.5)*pow(aNFW+r,2.5))/FPI;
+}
+double rhoNFW(double R,double z){
+	double m=sqrt(R*R+z*z/q2);
+	return rhoNFW(m);
+}
+

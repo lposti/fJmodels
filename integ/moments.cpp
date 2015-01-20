@@ -1,7 +1,9 @@
+#include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
 #include "oct_int.h"
 #include "potLEG.h"
+#include "cuba.h"
 
 #define LMAX 3
 #define MAX(A,B) ((A)>(B)?(A):(B))
@@ -44,6 +46,80 @@ double rho_sinh(double R,double z,double *Vrot,double *sigmaR,double *sigmaP,dou
 	*sigmaP=sqrt(*sigmaP/I0);
 	*sigmaR=sqrt(*sigmaR/I0); *sigmaZ=sqrt(*sigmaZ/I0); *sigmaRZ/=I0;
 	return 4*I0;
+}
+
+/*
+ * 19/01/15: Cuba integration
+ */
+struct CubaPars {double * Rz; double Ve;};
+static int CubaInteg(const int *ndim, const double x[],
+		  const int *ncomp, double f[], void * userdata){
+	struct CubaPars * CP = (struct CubaPars *) (userdata);
+	double * Rz = (CP->Rz);
+	double Ve   = (CP->Ve);
+
+	/* rescaling the integral to [0,1]x[0,1]x[0,1] */
+	double V[3] = {1e-6+Ve*x[0], 1e-6-Ve+2.*Ve*x[1], Ve*x[2]};
+	double jacob = 2.*Ve*Ve*Ve;
+
+	//printf("%f %f %f %f %f\n",df(Rz,V),V[0],V[1],V[2],Ve);
+	f[0] = df(Rz,V)*jacob;
+	f[1] = f[0]*V[0]*V[0];
+	f[2] = f[0]*V[1]*V[1];
+	f[3] = f[0]*V[2]*V[2];
+
+	return 0;
+}
+double rhoCuba(double R, double z, double * sigmaR, double * sigmaP, double * sigmaZ){
+	double Phigl=Phi(R,z);
+	double Rz[4]={R,z,Phigl,Phi(0,0)},Ve=sqrt(-2*(Phigl-Phi(100,100)));
+	//return 4*oct_int(Rz,&rhoi,-Ve,Ve,1e-6*Ve,Ve,0,Vze,LMAX);
+
+	struct CubaPars CP = {Rz,Ve};
+	void * userdata = (void *) &CP;
+
+	/* inputs */
+	int NDIM=3,NCOMP=4,NVEC=4,
+		VERBOSE=0,SEED=0,MINEVAL=0,MAXEVAL=50000,
+		NSTART=1000,NINCREASE=500,NBATCH=1000,
+		GRIDNO=0;
+	double epsabs=1e-10,epsrel=1e-8;
+
+	/* outputs */
+	int neval,fail;
+	double integral[NCOMP],error[NCOMP],prob[NCOMP];
+
+
+	 Vegas(NDIM, NCOMP, CubaInteg, userdata, NVEC,
+	    epsrel, epsabs, VERBOSE, SEED,
+	    MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH,
+	    GRIDNO, NULL, NULL,
+	    &neval, &fail, integral, error, prob);
+
+	 /*
+	  * Suave is alternative, but has been tweaked.
+	  * Cuhre is not working properly
+
+	int nreg;
+	Suave(NDIM, NCOMP, CubaInteg, userdata, NVEC,
+		 	    epsrel, epsabs, VERBOSE, SEED,
+		 	    MINEVAL, MAXEVAL, 50000, 500, 4.,
+		 	    NULL, NULL,
+		 	    &nreg, &neval, &fail, integral, error, prob);
+
+	 Cuhre(NDIM, NCOMP, CubaInteg, userdata, NVEC,
+	 	    epsrel, epsabs, VERBOSE,
+	 	    MINEVAL, MAXEVAL, 9,
+	 	    NULL, NULL,
+	 	    &nreg, &neval, &fail, integral, error, prob);
+	*/
+
+	 //double rho(double,double);
+	 //printf("%e %e\n",4*integral[0],rho(R,z)); exit(1);
+	 *sigmaR=sqrt(integral[1]/integral[0]);
+	 *sigmaP=sqrt(integral[2]/integral[0]);
+	 *sigmaZ=sqrt(integral[3]/integral[0]);
+	 return 4*integral[0];
 }
 
 /*

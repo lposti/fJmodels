@@ -20,3 +20,9 @@ double phi_NFW(double);
 double rho_isoth(double);
 double rho_isoth(double,double);
 double phi_isoth(double);
+
+double phiNFW(double,double);
+double dphidrNFW(double,double);
+double d2phidr2NFW(double,double);
+double rhoNFW(double);
+double rhoNFW(double,double);

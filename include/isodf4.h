@@ -14,6 +14,7 @@
 //#define ISOTHERMAL
 //#define JAFFE
 
+#define EXTERNPOT
 #define CONSTOMRATIO
 #define HJGJ
 
