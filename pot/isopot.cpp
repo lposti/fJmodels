@@ -273,7 +273,7 @@ double phi_isoth(double r){
 /*
  *   NFW External Potential
  */
-double aNFW=1.,GM_NFW=.1;
+double aNFW=25.,GM_NFW=10.;
 double phiNFW(double R, double z){
 	double r = sqrt(R*R+q2*z*z);
 	return -GM_NFW * log(r/aNFW+1)/(r/aNFW);

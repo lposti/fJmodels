@@ -149,7 +149,7 @@ int main(int nargs,char **args){
 	setMJ0(1.,1.);
 	phil_ini=dmatrix(nr,npoly); Pr_ini=dmatrix(nr,npoly); Pr2_ini=dmatrix(nr,npoly);
 	char base[30],fname[30],stuff[30];
-        strcpy(base,"models/Hern_NFWext2_");
+        strcpy(base,"models/Hern_NFWself_");
 	int kontrl=1;
 
 

@@ -33,7 +33,7 @@
 									<listOptionValue builtIn="false" value="&quot;${HOME}/utils/gsl-install/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1561811379" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fopenmp" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.optimization.flags.1776808632" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-funsafe-math-optimizations  -msse4.1 -Wstrict-aliasing=2 -march=native -mtune=native" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.optimization.flags.1776808632" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-funsafe-math-optimizations  -msse4.1 -Wstrict-aliasing=2 -march=corei7-avx -mtune=native" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.dialect.std.321923422" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.908315830" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>

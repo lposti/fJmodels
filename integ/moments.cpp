@@ -5,7 +5,7 @@
 #include "potLEG.h"
 #include "cuba.h"
 
-#define LMAX 3
+#define LMAX 4
 #define MAX(A,B) ((A)>(B)?(A):(B))
 
 double df(double*,double*);
@@ -79,15 +79,16 @@ double rhoCuba(double R, double z, double * sigmaR, double * sigmaP, double * si
 	void * userdata = (void *) &CP;
 
 	/* inputs */
-	int NDIM=3,NCOMP=4,NVEC=4,
-		VERBOSE=0,SEED=0,MINEVAL=0,MAXEVAL=50000,
-		NSTART=1000,NINCREASE=500,NBATCH=1000,
+	int NDIM=3,NCOMP=4,NVEC=1,
+		VERBOSE=0,SEED=0,MINEVAL=0,MAXEVAL=5000,
+		NSTART=2000,NINCREASE=2000,NBATCH=1000,
 		GRIDNO=0;
-	double epsabs=1e-10,epsrel=1e-8;
+	double epsabs=1e-8,epsrel=1e-6;
 
 	/* outputs */
 	int neval,fail;
 	double integral[NCOMP],error[NCOMP],prob[NCOMP];
+
 
 
 	 Vegas(NDIM, NCOMP, CubaInteg, userdata, NVEC,
@@ -98,7 +99,7 @@ double rhoCuba(double R, double z, double * sigmaR, double * sigmaP, double * si
 
 	 /*
 	  * Suave is alternative, but has been tweaked.
-	  * Cuhre is not working properly
+	  * Divonne, Cuhre are not working properly
 
 	int nreg;
 	Suave(NDIM, NCOMP, CubaInteg, userdata, NVEC,
@@ -107,6 +108,15 @@ double rhoCuba(double R, double z, double * sigmaR, double * sigmaP, double * si
 		 	    NULL, NULL,
 		 	    &nreg, &neval, &fail, integral, error, prob);
 
+	 Divonne(NDIM, NCOMP, CubaInteg, userdata, NVEC,
+	    epsrel, epsabs, VERBOSE, SEED,
+	    MINEVAL, MAXEVAL, 47, 1, 1, 5,
+	    0., 10., .25,
+	    0, NDIM, NULL, 0, NULL,
+	    NULL, NULL,
+	    &nreg, &neval, &fail, integral, error, prob);
+
+
 	 Cuhre(NDIM, NCOMP, CubaInteg, userdata, NVEC,
 	 	    epsrel, epsabs, VERBOSE,
 	 	    MINEVAL, MAXEVAL, 9,
@@ -114,12 +124,10 @@ double rhoCuba(double R, double z, double * sigmaR, double * sigmaP, double * si
 	 	    &nreg, &neval, &fail, integral, error, prob);
 	*/
 
-	 //double rho(double,double);
-	 //printf("%e %e\n",4*integral[0],rho(R,z)); exit(1);
 	 *sigmaR=sqrt(integral[1]/integral[0]);
 	 *sigmaP=sqrt(integral[2]/integral[0]);
 	 *sigmaZ=sqrt(integral[3]/integral[0]);
-	 return 4*integral[0];
+	 return 4.*integral[0];
 }
 
 /*

@@ -587,9 +587,9 @@ void potent(char *fname,double (*dens)(double,double),int rd,int prnt){
 
 	for (int n=0;n<nr;n++)
 		for (int np=0;np<npoly;np++){
-			phil[n][np] = philH[n][np];
-			Pr[n][np]   = PrH[n][np];
-			Pr2[n][np]  = Pr2H[n][np];
+			phil[n][np] += philH[n][np];
+			Pr[n][np]   += PrH[n][np];
+			Pr2[n][np]  += Pr2H[n][np];
 		}
 
 	delmatrix(philH,nr); delmatrix(PrH,nr); delmatrix(Pr2H,nr);
@@ -886,6 +886,40 @@ void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,do
 		fprintf(rhof,"%e %e %e %e %e %e\n",ar[i],rho[i][0],evpot(ar[i]*ar[i],0),phi_isoth(ar[i]),rho_isoth(ar[i]),phil[i][0]);
 	}
 	fclose(rhof); iter++;
+
+#if defined EXTERNPOT
+	/*
+	 * non self-consistent potential
+	 */
+	int potleg(double (*dens)(double,double),double **philT,double **PrT,double **Pr2T);
+	double **philH,**PrH,**Pr2H;
+	philH=dmatrix(nr,npoly); PrH=dmatrix(nr,npoly); Pr2H=dmatrix(nr,npoly);
+	potleg(&rhoNFW,philH,PrH,Pr2H);
+
+
+	/*
+	for (int n=0; n<nr; n++) {
+	    double r=ar[n];
+	    for(int np=0; np<npoly; np++)
+	    	for(int i=0; i<ngauss; i++){
+	    		philH[n][np]+=poly[np][i]*phiNFW(r*si[i],r*ci[i]);
+	    		PrH[n][np]  +=poly[np][i]*dphidrNFW(r*si[i],r*ci[i]);
+	    		Pr2H[n][np] +=poly[np][i]*d2phidr2NFW(r*si[i],r*ci[i]);
+	    	}
+	}
+	*/
+
+
+
+	for (int n=0;n<nr;n++)
+		for (int np=0;np<npoly;np++){
+			phil[n][np] += philH[n][np];
+			Pr[n][np]   += PrH[n][np];
+			Pr2[n][np]  += Pr2H[n][np];
+		}
+
+	delmatrix(philH,nr); delmatrix(PrH,nr); delmatrix(Pr2H,nr);
+#endif
 
 	// debug purposes
 	for (int n=0;n<nr;n++) printf(">> phil[%d][0]=%f rhl[%d][0]=%f rho[%d][0]=%f\n",n,phil[n][0],n,rhl[n][0],n,rho[n][0]);
