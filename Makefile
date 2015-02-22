@@ -7,11 +7,11 @@ LIBS        = -L${HOME}/utils/gsl-install/lib
 LDLIBS      = -lgsl -lgslcblas -lm
 
 gnu:
-	g++ -o fJmodels $(FLAGS_GNU) $(OPT_GNU) $(INCLUDE) $(LIBS) fJmodels.cpp pot/*.cpp delta/*.cpp $(LDLIBS)
+	g++ -o fJmodels $(FLAGS_GNU) $(OPT_GNU) $(INCLUDE) $(LIBS) fJmodels.cpp pot/*.cpp delta/*.cpp uvOrb/* $(LDLIBS)
 
 
 intel:
-	icpc -o fJmodels $(FLAGS_INTEL) $(OPT_INTEL) $(INCLUDE) $(LIBS) fJmodels.cpp pot/*.cpp delta/*.cpp $(LDLIBS)
+	icpc -o fJmodels $(FLAGS_INTEL) $(OPT_INTEL) $(INCLUDE) $(LIBS) fJmodels.cpp pot/*.cpp delta/*.cpp uvOrb/* $(LDLIBS)
 
 clean:
 	rm fJmodels *.optrpt

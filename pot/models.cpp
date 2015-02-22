@@ -6,6 +6,7 @@
  */
 #include <math.h>
 #include "models.h"
+#include "Utils.h"
 
 double rhoHern(double R, double z){
 	double m=sqrt(R*R+z*z/q2);

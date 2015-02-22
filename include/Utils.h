@@ -13,6 +13,7 @@
 #include "Potential.h"
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_roots.h>
+#include <gsl/gsl_integration.h>
 
 
 #define MIN(A,B) ((A)<(B)?(A):(B))
@@ -21,6 +22,14 @@
 #define EPSRELROOTS 1e-6
 #define EPSABSODE   1e-10
 #define EPSRELODE   1e-9
+#define EPSABSINTEG 1e-6
+#define EPSRELINTEG 1e-4
+#define WRKSP 1000
+#define PI  3.141592653589793
+#define PIH 1.570796326794897
+#define TPI 6.283185307179586
+#define FPI 12.56637061435917
+#define TINY 1e-12
 
 /************************************************************************************
  *  Templates for arrays and matrices allocations
@@ -137,6 +146,24 @@ template <typename T> T wrp_GSLroots(gsl_function F, T low, T high){
 
 	gsl_root_fsolver_free (s);
 	return Rout;
+}
+
+/*************************************************************************************
+ *  My-Wrapper for GSL Integration
+ *************************************************************************************/
+/* 1D QAGS integration */
+template <typename T> T wrp_GSLinteg(gsl_function F, T a, T b){
+	gsl_integration_workspace * w
+	  = gsl_integration_workspace_alloc (WRKSP);
+
+	T result, error;
+
+	gsl_integration_qags (&F, a, b, EPSABSINTEG, EPSRELINTEG, WRKSP,
+	                        w, &result, &error);
+
+	gsl_integration_workspace_free (w);
+
+	return result;
 }
 
 /*************************************************************************************
@@ -302,7 +329,7 @@ template <typename T> void intpo2(T r,T *phip,T *dphip,T *d2phip){
 			d2phip[k]=(2*k+2)*(2*k+1)*phil[nr-1][k]*pow(ar[nr-1]/r,2*k+1)/r/r;
 		}
 	} else {
-		int top,bot;
+		int top=0,bot=0;
 		topbottom(ar,nr,r,&bot,&top);
 		double db=r-ar[bot], f1=db/(ar[top]-ar[bot]);
 		for(int k=0; k<npoly; k++){// linear interpolation

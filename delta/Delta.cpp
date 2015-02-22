@@ -165,7 +165,6 @@ double Delta::getJr0(){
 /*
  *  Derivatives of s^2 w.r.t. v and Delta2
  */
-#define PIH 1.5707963267948966
 
 double Delta::ds2dv(const double v){
 	return 2*(zi*sqDR*sin(v)-cos(v)*(Ri*R0+D2*sin(v)));

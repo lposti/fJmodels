@@ -12,41 +12,17 @@
 #include "Potential.h"
 #include "models.h"
 #include "Delta.h"
+#include "Tabulate.h"
+#include "uvOrb.h"
 //#include "press.h"
 
 const double q=1,q2=q*q;
 const double mass=1.,J0=1.,r0=pow(J0,2)/mass;
 double ar[NR], rhl[NR][NPOLY], phil[NR][NPOLY], Pr[NR][NPOLY], Pr2[NR][NPOLY];
+double Dgrid[NGRID], Egrid[NGRID];
 
 double Hpot(double r){
 	return -1./(1.+r);
-}
-
-void testDelta(Potential *p){
-	double * Lzgrid = arr<double>(NR), * Vmax = arr<double>(NR), * Ecgrid = arr<double>(NR), * Rgrid = arr<double>(NR);
-	double Rmax=ar[NR-1];
-	double Lzmax=Rmax*0.98*sqrt(-2*(*p)(Rmax,0)), Rmin=1e-3*Rmax;
-	double Lzmin=Rmin*sqrt(Rmin*p->dR(Rmin,0)),R=.01*Rmax;
-
-	for(int i=0; i<NR; i++){
-		Lzgrid[i]=Lzmin+i*(Lzmax-Lzmin)/(double)(NR-1);
-		double Lzsq=pow(Lzgrid[i],2); R=Rgrid[i]=GetRc<double>(Lzsq,R,p);
-		double vc2=R*p->dR(R,0);
-		Ecgrid[i]=.5*vc2+(*p)(R,0);//Ecirc at R
-		Vmax[i]=.98*sqrt(-2*Ecgrid[i]);//Range of Egrid at R
-
-	}
-
-	for(int nE=0; nE<NGRID*(NR-1)/NR; nE++){//loop over E
-		double E=Ecgrid[1]+.5*pow(Vmax[1]*(nE+1)/(double)(NGRID*(NR-1)/NR),2);
-
-		struct eqsPar par; par.p = *p; par.R0=Rgrid[1]; par.E=E; par.Lz=.25*Lzgrid[1]; par.L=0;
-		Delta * dd = new Delta (&par);
-		//printf("(E,LZ)=(%f,%f) Mine:%f Binn:%f\n",E,par.Lz,dd->getBestDelta(),get_closed(RcE(E,Rgrid[1],p),.25*Lzgrid[1],E,p));
-		printf("(E,LZ)=(%f,%f) Mine:%f Rc:%f\n",E,par.Lz,dd->getBestDelta(),RcE<double>(E,1,p));
-
-		delete dd;
-	}
 }
 
 int main(int argc, char **argv){
@@ -70,7 +46,15 @@ int main(int argc, char **argv){
 		//printf("%f %f\n",d.getBestDelta(),get_closed(d.R0,par.Lz,par.E,&p));
 
 		printf("\n-----TEST\n");
-		testDelta(&p);
+		tabulateDelta(&p);
+
+		double *x=arr<double>(3),*v=arr<double>(3);
+		x[0]=ar[NR-3]; x[1]=ar[0]; x[2]=p(x[0],x[1]); v[0]=sqrt(-2*(x[2]-p(100,100)))/5; v[1]=sqrt(-2*(x[2]-p(100,100)))/10; v[2]=sqrt(-2*(x[2]-p(100,100)))/20;
+
+		double R=x[0],Lz=R*v[1],Phigl=x[2];
+		double H=.5*(pow(v[0],2)+pow(v[1],2)+pow(v[2],2))+Phigl,DD=Deltafn(H);
+		uvOrb uv(DD,Lz,Phigl,x,v,&p);
+		printf("Ju=%e Jv=%e\n",uv.Ju(),uv.Jv());
 	}
 
 	printf("\n----> Elapsed time of computation: %7.5f s\n",(clock()-start) / (double) CLOCKS_PER_SEC);
