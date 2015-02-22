@@ -8,6 +8,10 @@ double bessi1(double);
 double bessk0(double);
 double bessk1(double);
 
+#include "Potential.h"
+double get_closed(double,double,double,Potential *);
+double GetRc(double Lzsq,double R, Potential *p);
+double RcE(double E,double Rc, Potential *p);
 double qsimp(double (*)(double),double,double);
 double qsimpi(double (*)(double),double,double);
 int topbottom(double*,int,double,int*,int*);

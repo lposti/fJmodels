@@ -5,6 +5,5 @@ orb.dat
 models/
 input/
 Debug/
-rhof*out
-DFen.dat
-xvJ.dat
+binney/
+*.optrpt

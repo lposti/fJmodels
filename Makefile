@@ -1,12 +1,17 @@
-FLAGS = -g3 -fopenmp
-#OPT   = -O3 -funsafe-math-optimizations  -msse4.1 -Wstrict-aliasing=2 -march=native -mtune=native
-OPT    = -O2 -march=native -mtune=native
-INCLUDE = -I${PWD}/include/ -I${HOME}/utils/gsl-install/include
-LIBS    = -L${HOME}/utils/gsl-install/lib
-LDLIBS  = -lgsl -lgslcblas -lm
+FLAGS_GNU   = -g3 -fopenmp
+OPT_GNU     = -O3 -ftree-vectorizer-verbose=1 -march=corei7-avx -mtune=corei7-avx -mavx
+FLAGS_INTEL = -g3 -parallel -openmp
+OPT_INTEL   = -O3 -qopt-report=3 -ip -ipo -xavx -axavx -fno-alias -fno-fnalias
+INCLUDE     = -I${PWD}/include/ -I${HOME}/utils/gsl-install/include
+LIBS        = -L${HOME}/utils/gsl-install/lib
+LDLIBS      = -lgsl -lgslcblas -lm
 
-fJmodels:
-	g++ -o fJmodels $(FLAGS) $(OPT) $(INCLUDE) $(LIBS) fJ_models.cpp delta/*.cpp df/*.cpp integ/*.cpp libs/*.cpp pot/*.cpp uvOrb/*.cpp $(LDLIBS)
+gnu:
+	g++ -o fJmodels $(FLAGS_GNU) $(OPT_GNU) $(INCLUDE) $(LIBS) fJmodels.cpp pot/*.cpp delta/*.cpp $(LDLIBS)
+
+
+intel:
+	icpc -o fJmodels $(FLAGS_INTEL) $(OPT_INTEL) $(INCLUDE) $(LIBS) fJmodels.cpp pot/*.cpp delta/*.cpp $(LDLIBS)
 
 clean:
-	rm fJmodels
+	rm fJmodels *.optrpt
