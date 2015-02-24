@@ -5,25 +5,7 @@
  *      Author: morpheus
  */
 
-#define QUADORD 12
-
-static double xpt11[QUADORD]={-0.981560634,-0.904117256,-0.769902674,
-                              -0.587317954,-0.367831499,-0.125233409,
-                               0.125233409,0.367831499,0.587317954,
-                               0.769902674,0.904117256,0.981560634},
-              xw11[QUADORD]  ={0.047175336387,0.10693932600,0.16007832854,
-                               0.20316742672,0.23349253654,0.24914704581,
-                               0.24914704581,0.23349253654,0.20316742672,
-                               0.16007832854,0.10693932600,0.047175336387};
-
-static double xpt01[QUADORD] ={0.00921968288,0.0479413718,0.1150486629,
-                               0.2063410229,0.316084251,0.437383296,
-                               0.562616704,0.683915749,0.793658977,
-                               0.884951337,0.952058628,0.990780317},
-              xw01[QUADORD]  ={0.023587668193,0.053469662998,0.08003916427,
-                               0.10158371336,0.11674626827,0.12457352291,
-                               0.12457352291,0.11674626827,0.10158371336,
-                               0.08003916427,0.053469662998,0.023587668193};
+#include "GaussQuad.h"
 
 double Int1D_11 (double (*f)(double)){
 	double sum=0.;
@@ -78,5 +60,27 @@ double Int3D_011101 (double (*f)(double,double,double,void*), void * params){
 			for (unsigned k=0; k<QUADORD; k++)
 				sum+=xw01[i]*xw11[j]*xw01[k]*f(xpt01[i],xpt11[j],xpt01[k],params);
 
+	return sum;
+}
+
+/* Version with also sigma integration: a double ptr with dimension 5 must be passed */
+double Int3D_011101_vec (struct vec5d (*f)(double,double,double,void*), void * params, double * out){
+	double sum=0,sum1=0,sum2=0,sum3=0,sum4=0;
+	struct vec5d res;
+
+#pragma omp parallel for collapse(3) reduction(+:sum,sum1,sum2,sum3,sum4)
+	for (unsigned i=0; i<QUADORD; i++)
+		for (unsigned j=0; j<QUADORD; j++)
+			for (unsigned k=0; k<QUADORD; k++){
+				res=f(xpt01[i],xpt11[j],xpt01[k],params);
+				sum +=xw01[i]*xw11[j]*xw01[k]*res.x0;
+				sum1+=xw01[i]*xw11[j]*xw01[k]*res.x1;
+				sum2+=xw01[i]*xw11[j]*xw01[k]*res.x2;
+				sum3+=xw01[i]*xw11[j]*xw01[k]*res.x3;
+				sum4+=xw01[i]*xw11[j]*xw01[k]*res.x4;
+			}
+
+	out[0]=sum;  out[1]=sum1; out[2]=sum2;
+	out[3]=sum3; out[4]=sum4;
 	return sum;
 }

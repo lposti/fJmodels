@@ -13,6 +13,7 @@
 #include "models.h"
 #include "Grid.h"
 #include "Utils.h"
+#include "UtilsLeg.h"
 #include "gsl/gsl_integration.h"
 
 Potential::Potential() {
@@ -162,7 +163,7 @@ void Potential::computePhil(){
 		}
 	}
 
-	canEv = true;
+	canEv = true; Ints = false; // automatically reset the potential to re-compute the integrals
 }
 
 /*

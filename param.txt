@@ -3,7 +3,7 @@
 #
 	
 model		Hernquist
-h(J):dphi	0.5
-h(J):dz		0.5
+h(J):dphi	0.55
+h(J):dz		0.55
 g(J):dphi	1.
 g(J):dz		1.

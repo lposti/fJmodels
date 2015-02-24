@@ -18,7 +18,7 @@
 #include "uvOrb.h"
 #include "DF.h"
 #include "Integ.h"
-//#include "press.h"
+#include "potLeg.h"
 #include <iostream>
 
 const double q=1,q2=q*q;
@@ -32,9 +32,12 @@ double Hpot(double r){
 
 void testInteg(Potential *p){
 
+	double sigR,sigp,sigz,sigRz;
 	FILE*fp=fopen("rho.dat","w");
-	for(int n=0; n<NR; n++)
-		fprintf(fp,"%f %f\n",ar[n],rhofDF(ar[n],0.,p));
+	for(int n=0; n<NR; n++){
+		double rhoh=rhofDF(ar[n],0.,p,&sigR,&sigp,&sigz,&sigRz);
+		fprintf(fp,"%f %f %f %f %f %f\n",ar[n],rhoh,sigR,sigp,sigz,sigRz);
+	}
 }
 
 int main(int argc, char **argv){
@@ -53,10 +56,8 @@ int main(int argc, char **argv){
 		Potential p;
 		p.selectGuessRho(fJP.modName);
 		p.computeGuessRhl(); p.computePhil();
-		for (int i=0; i<NR; i++) printf("%f %f %f %f %f %f %f\n",ar[i],p.rhoGuess(ar[i],0.),rhl[i][0],phil[i][0],p(ar[i],0),p(0,ar[i]),Hpot(ar[i]));
+		for (int i=0; i<NR; i++) printf("%f %f\n",ar[i],phil[i][0]);
 
-		//struct eqsPar par; par.p = p; par.R0=1.7; par.E=-0.2; par.Lz=0.03; par.L=0;//par.E = p(ar[5],0); par.Lz=.2*ar[1]*sqrt(-2*p(ar[1],0)); par.L = par.Lz; par.R0 = ar[1];
-		//Delta d(&par);
 		printf("\n=============================================\n");
 
 		printf("\n-----TEST\n");
@@ -64,6 +65,8 @@ int main(int argc, char **argv){
 
 		setDF(fJP.dphi_h_in,fJP.dz_h_in,fJP.dphi_g_in,fJP.dz_g_in,&p);
 		testInteg(&p);
+		//computeNewPhi(&p);
+		//for (int i=0; i<NR; i++) printf("%f %f\n",ar[i],phil[i][0]);
 	}
 
 	printf("\n----> Elapsed time of computation: %7.5f s\n",(clock()-start) / (double) CLOCKS_PER_SEC);

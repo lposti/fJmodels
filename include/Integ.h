@@ -11,6 +11,7 @@
 #include "Potential.h"
 
 double rhofDF(double, double, Potential *);
+double rhofDF(double, double, Potential *, double *, double *, double *, double *);
 
 
 #endif /* INCLUDE_INTEG_H_ */
