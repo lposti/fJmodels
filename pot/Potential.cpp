@@ -180,6 +180,7 @@ double Potential::operator() (double R,double z){
 
 	double phi=phip[0];
 	for(int np=1; np<NPOLY; np++) phi+=phip[np]*pol[np];
+	//printf("%f %f\n",R,phi);
 	return phi;
 }
 

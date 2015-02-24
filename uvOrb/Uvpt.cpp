@@ -8,7 +8,7 @@
 #include <math.h>
 #include "Uvpt.h"
 
-pt::pt(double Delta0,double *x,double *p){
+pt::pt(const double Delta0,const double *x,const double *p){
 	Delta=Delta0; Delta2=Delta*Delta;
 	R=x[0]; z=x[1]; R2=R*R; z2=z*z; r2=R2+z2;
 	shu2 =.5*(r2-Delta2+sqrt(pow(Delta2-r2,2)+4*Delta2*R2))/Delta2;
@@ -22,7 +22,7 @@ pt::pt(double Delta0,double *x,double *p){
 	pu=Delta*(pR*chu*sv+pz*shu*cv);
 	pv=Delta*(pR*shu*cv-pz*chu*sv);
 }
-pt::pt(double Delta0,double ui,double vi){
+pt::pt(const double Delta0,const double ui,const double vi){
 	Delta=Delta0; u=ui; v=vi;
 	R=Delta*sinh(u)*sin(v);
 	z=Delta*cosh(u)*cos(v);

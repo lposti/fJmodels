@@ -11,8 +11,8 @@
 class pt{
 public:
 	/* Constructors */
-	pt(double,double,double);    // get (u,v,pu,pv) given (R,z,pR,pz)
-	pt(double,double*,double*);  // get (R,z) given (u,v)
+	pt(const double, const double, const double);    // get (u,v,pu,pv) given (R,z,pR,pz)
+	pt(const double, const double*, const double*);  // get (R,z) given (u,v)
 
 	/* data */
 	double Delta,Delta2;

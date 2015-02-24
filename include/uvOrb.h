@@ -11,36 +11,36 @@
 #include "Potential.h"
 
 class uvOrb{
-	public:
-		uvOrb(double,double,double,double*,double*,Potential *);
+public:
+	uvOrb(const double,const double,const double,const double*,const double*,Potential *);
 
-		Potential *pot;
-		double Delta,u,v,pv,Iu,Iv;
-		double E,Er,Lz,Omegau,Omegav,Omegaphi;
-		double uinner,uouter,umid,vturn;
+	Potential *pot;
+	double Delta,u,v,pv,Iu,Iv;
+	double E,Er,Lz,Omegau,Omegav,Omegaphi;
+	double uinner,uouter,umid,vturn;
 
-		double Rc(void);
-		double Ju(void);
-		double Jv(void);
-		void GetThetas(double*,double*,double*,double*,double*);
-		void GetFreqs(void);
-		double Phiu(double);
-		double dU(double);
-		double dPhiu(double,double*);
-		double uturnfn(double);
-		double duturnfn(double);
-		double Rcfn(double);
-		double Juint(double);
-		double dpudE(double);
-		double dpudI3(double);
-		double dpudLz(double);
-		double Phiv(double);
-		double dV(double);
-		double vturnfn(double);
-		double Jvint(double);
-		double dpvdE(double);
-		double dpvdI3(double);
-		double dpvdLz(double);
+	double Rc(void);
+	double Ju(void);
+	double Jv(void);
+	void GetThetas(double*,double*,double*,double*,double*);
+	void GetFreqs(void);
+	double Phiu(double);
+	double dU(double);
+	double dPhiu(double,double*);
+	double uturnfn(double);
+	double duturnfn(double);
+	double Rcfn(double);
+	double Juint(double);
+	double dpudE(double);
+	double dpudI3(double);
+	double dpudLz(double);
+	double Phiv(double);
+	double dV(double);
+	double vturnfn(double);
+	double Jvint(double);
+	double dpvdE(double);
+	double dpvdI3(double);
+	double dpvdLz(double);
 
 private:
 	double Rc1,Ju1,Jv1,I3u,I3v;

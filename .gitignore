@@ -1,6 +1,7 @@
 # ignored files by git
 fJmodels
 orb.dat
+rho.dat
 # gitcommands.txt
 models/
 input/

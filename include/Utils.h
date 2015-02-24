@@ -22,8 +22,8 @@
 #define EPSRELROOTS 1e-6
 #define EPSABSODE   1e-10
 #define EPSRELODE   1e-9
-#define EPSABSINTEG 1e-6
-#define EPSRELINTEG 1e-4
+#define EPSABSINTEG 1e-5
+#define EPSRELINTEG 1e-3
 #define WRKSP 1000
 #define PI  3.141592653589793
 #define PIH 1.570796326794897

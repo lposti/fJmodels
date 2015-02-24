@@ -12,8 +12,8 @@
 
 static const double us=58,rtwo=sqrt(2);
 
-uvOrb::uvOrb(double Delta0, double Lz0, double Phi0,
-             double *x, double *p, Potential *pot_in){
+uvOrb::uvOrb(const double Delta0, const double Lz0, const double Phi0,
+             const double *x, const double *p, Potential *pot_in){
 	pot = pot_in;
 	Lz=Lz0; Lzsq=Lz*Lz; Delta=Delta0; sh1sq=pow(sinh(1),2); ch1sq=pow(cosh(1),2);
 	pt X(Delta0,x,p);
@@ -25,7 +25,6 @@ uvOrb::uvOrb(double Delta0, double Lz0, double Phi0,
 		sh1sq=pow(sinh(us),2); ch1sq=pow(cosh(us),2); Phiu1=Phiu(us);
 		Iu=E*(X.shu2-sh1sq)-.5*pow(X.pu,2)/(X.Delta2)-.5*Lzsq/(X.Delta2)*(1/X.shu2-1/sh1sq)-dU(X.u);
 		Er=-E*(X.shu2-sh1sq)/ch1sq+.5*pow(X.pu,2)/(X.Delta2*ch1sq)+.5*Lzsq/(X.Delta2*ch1sq)*(1/X.shu2-1/sh1sq)+dU(X.u)/ch1sq;
-		printf("Er %f\n",Er);
 		Getu0(us);
 		sh1sq=pow(sinh(umid),2); ch1sq=pow(cosh(umid),2); Phiu1=Phiu(umid);
 		Iu=E*(X.shu2-sh1sq)-.5*pow(X.pu,2)/(X.Delta2)-.5*Lzsq/(X.Delta2)*(1/X.shu2-1/sh1sq)-dU(X.u);
