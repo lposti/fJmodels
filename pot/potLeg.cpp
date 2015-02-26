@@ -18,17 +18,15 @@
  */
 void computeRhl(Potential *p){
 
-	double **rho  = mat<double>(NR,NGAUSS);
-	double **poly = mat<double>(NPOLY,NGAUSS);
+	double **rho  = mat<double>(NR,NGAUSS), **vrot  = mat<double>(NR,NGAUSS);
+	double **sigR = mat<double>(NR,NGAUSS), **sigp  = mat<double>(NR,NGAUSS),
+		   **sigz = mat<double>(NR,NGAUSS), **sigRz = mat<double>(NR,NGAUSS);
 
-	double pol[NPOLY],ci[NGAUSS],si[NGAUSS],wi[NGAUSS];
+	double ci[NGAUSS],si[NGAUSS],wi[NGAUSS];
+
 	gauleg<double>(0,1,ci,wi);
-
-	for(int i=0; i<NGAUSS; i++){
-			si[i]=sqrt(1-ci[i]*ci[i]);
-			evenlegend(pol,ci[i]);
-			for(int np=0; np<NPOLY; np++) poly[np][i]=2*pol[np]*wi[i];
-		}
+	for(int i=0; i<NGAUSS; i++)
+		si[i]=sqrt(1-ci[i]*ci[i]);
 
 	/* initialize bar */
 	ProgressBar bar(60);
@@ -38,25 +36,21 @@ void computeRhl(Potential *p){
 	for(int nr=0; nr<NR; nr++)
 		for(int ng=0; ng<NGAUSS; ng++){
 			bar.update(nr*NGAUSS+ng+1);
-			rho[nr][ng]=rhofDF(ar[nr]*si[ng],ar[nr]*ci[ng],p);
+			rho[nr][ng]=rhofDF(ar[nr]*si[ng],ar[nr]*ci[ng],p,vrot[nr]+ng,sigR[nr]+ng,sigp[nr]+ng,sigz[nr]+ng,sigRz[nr]+ng);
 		}
 
 	/* finalize bar */
 	bar.fillSpace("..done potential computation!!\n\n");
 
-	/* set rhl to zeros */
-	for(int nr=0; nr<NR; nr++)
-		for(int np=0; np<NPOLY; np++)
-			rhl[nr][np]=0.;
+	/*
+	 * 03/09/14: linear interpolation in the first grid point!
+	 * 			 it was causing troubles in the potential computation
+	 * 			 since the density was extremely large, implying very large Phi
+	 */
+	rho[0][0] = (rho[2][0]-rho[1][0])/(ar[2]-ar[1])*(ar[0]-ar[1])+rho[1][0];
+	get_Ylm<double>(rho,rhl,vrot,vrotl,sigR,sigRl,sigp,sigpl,sigz,sigzl,sigRz,sigRzl);
 
-	/* compute rhl from new rho */
-	for (int nr=0; nr<NR; nr++)
-		for(int np=0; np<NPOLY; np++)
-			for(int ng=0; ng<NGAUSS; ng++)
-				rhl[nr][np]+=poly[np][ng]*rho[nr][ng];
 
-	rhl[0][0]=2*rho[0][0];
-	for(int i=1;i<NPOLY;i++) rhl[0][i]=0;
 }
 
 /*

@@ -12,6 +12,7 @@
 #include "Grid.h"
 #include "Potential.h"
 #include <gsl/gsl_errno.h>
+#include <gsl/gsl_math.h>
 #include <gsl/gsl_roots.h>
 #include <gsl/gsl_integration.h>
 
@@ -73,7 +74,7 @@ template <typename T> inline void SetGrid (T const& a_scale, T const& rmax){
 
 // logarithmic Grid
 template <typename T> inline void SetGrid (T const& rmax){
-	T rmin=1e-4*rmax;  // minimum radius
+	T rmin=8e-5*rmax;  // minimum radius
 
 	for (int i=0;i<NR;i++)
 		ar[i] = pow(10.,log10(rmin)+(log10(rmax)-log10(rmin))*i/(NR-1));
@@ -123,6 +124,13 @@ template <typename T> T linterp(T *xm, T *ym, int np,T x){
  *************************************************************************************/
 
 template <typename T> T wrp_GSLroots(gsl_function F, T low, T high){
+
+	if (isnan(low)==1 or isnan(high)==1 or !(low<high)
+		or isnan(GSL_FN_EVAL(&F,low))==1 or isnan(GSL_FN_EVAL(&F,high)))
+		    printf("GSL: %f %f %f %f\n",low,high,GSL_FN_EVAL(&F,low),GSL_FN_EVAL(&F,high));
+
+	if (fabs(GSL_FN_EVAL(&F,low)) <1e-4) return low;
+	if (fabs(GSL_FN_EVAL(&F,high))<1e-4) return high;
 
 	const gsl_root_fsolver_type *Type;
 	gsl_root_fsolver *s;
@@ -191,6 +199,7 @@ template <typename T> T GetRc(T Lzsq,T R, Potential *p){
 	F.function = &Rcfn<T>;
 	F.params   = &par;
 
+	if (!(Ri<Ro)) printf("GetRc: %f %f\n",Ri,Ro);
 	return wrp_GSLroots(F,Ri,Ro);
 }
 
@@ -212,6 +221,7 @@ template <typename T> T RcE(double E, double Rc, Potential *p){
 	F.function = &RcEfn<T>;
 	F.params   = &par;
 
+	if (!(R0<R1)) printf("GetRc: %f %f\n",R0,R1);
 	return wrp_GSLroots(F,R0,R1);
 }
 

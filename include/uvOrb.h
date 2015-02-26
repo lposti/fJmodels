@@ -43,6 +43,7 @@ public:
 	double dpvdLz(double);
 
 private:
+	bool bound;
 	double Rc1,Ju1,Jv1,I3u,I3v;
 	double JuE,JuI,JuL,JvE,JvI,JvL;
 	double Lzsq,psivmax,Deltau;
@@ -54,7 +55,7 @@ private:
 	double GetJv(void);
 	void Getu0(double);
 	void GetRc(double);
-	void infinity();
+	void unbound();
 };
 
 

@@ -177,11 +177,11 @@ double Potential::operator() (double R,double z){
 
 	double pol[NPOLY],phip[NPOLY];
 	double c=z/sqrt(R*R+z*z), r=sqrt(R*R+z*z);
+
 	intpo2<double>(r,phip); evenlegend<double>(pol,c);
 
 	double phi=phip[0];
 	for(int np=1; np<NPOLY; np++) phi+=phip[np]*pol[np];
-	//printf("%f %f\n",R,phi);
 	return phi;
 }
 
@@ -214,13 +214,17 @@ double Potential::dtheta(const double r, const double c) {
  *  Cylindrical derivatives of the Potential
  */
 double Potential::dR(const double R, const double z) {//derivative of Phi with respect to cylindrical R
-	double r = sqrt(z*z + R*R), s=R/r, c=z/r;
+	double r = sqrt(z*z + R*R);
+	if (r<ar[0]) r=ar[0]; // 25\02\15 LP edit: avoiding nans...
+	double s=R/r, c=z/r;
 	if(c==1) c-=1e-8; // 15\05\14 LP edit: just removing tiny value for z>>r (otherwise nans)
 	double theta=acos(c), d2;
 	return this->dtheta(r, c)*(c/r) + this->dr(r, theta, &d2)*s; //chain rule
 }
 double Potential::dz(const double R, const double z) {//derivative of Phi with respect to cylindrical z
-	double r = sqrt(z*z + R*R), s=R/r, c=z/r;
+	double r = sqrt(z*z + R*R);
+	if (r<ar[0]) r=ar[0]; // 25\02\15 LP edit: avoiding nans...
+	double s=R/r, c=z/r;
 	if(c==1) c-=1e-8; // 15\05\14 LP edit: just removing tiny value for z<<r (otherwise nans)
 	double theta=acos(c), d2;
 	return this->dtheta(r, c)*(-s/r) + this->dr(r, theta, &d2)*c; //chain rule

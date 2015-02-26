@@ -7,9 +7,10 @@ OPT_GNU     = -O3 -ftree-vectorizer-verbose=1 -march=corei7-avx -mtune=corei7-av
 #
 # Intel flags & Opts.
 # for some reason I can't use Interprocedural Optimization on multiple files (-ipo)
+# 25/02: Can't use also -fno-alias and -fno-fnalias
 #
 FLAGS_INTEL = -g3 -parallel -openmp
-OPT_INTEL   = -O3 -qopt-report=3 -ip -xavx -axavx -fno-alias -fno-fnalias
+OPT_INTEL   = -O3 -qopt-report=3 -ip -xavx -axavx
 
 #
 # Includes & Libs 

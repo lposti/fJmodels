@@ -148,6 +148,96 @@ template <typename T> void intpo2(T r,T *phip,T *dphip,T *d2phip){
 	}
 }
 
+/*
+ * Calculates Legendre poly coeffs Ql for the quantity Q
+ */
+template <typename T> void get_Ylm(T **Q,T **Ql){
+
+	int nr=NR,ngauss=NGAUSS,npoly=NPOLY;
+	double ci[ngauss],wi[ngauss],pol[npoly],**poly;
+
+	poly=mat<T>(npoly,ngauss);
+	gauleg<T>(0,1,ci,wi);
+
+	/* store Leg. polys in pol */
+	for(int ng=0; ng<ngauss; ng++)
+		evenlegend<T>(pol,ci[ng]);
+
+	for(int ng=0; ng<ngauss; ng++)
+		for(int np=0; np<npoly; np++)
+			poly[np][ng]=2*pol[np]*wi[ng];
+
+	/* first set to zeros */
+	for(int n=1; n<nr; n++)
+		for(int np=0; np<npoly; np++)
+			Ql[n][np]=0;
+
+	/* compute */
+	for(int n=1; n<nr; n++)
+		for(int np=0; np<npoly; np++)
+			for(int ng=0; ng<ngauss; ng++)
+				Ql[n][np]+=poly[np][ng]*Q[n][ng];
+
+
+	Ql[0][0]=2*Q[0][0];
+	for(int np=1; np<npoly; np++) Ql[0][np]=0;
+
+	delMat(poly,npoly);
+}
+
+/*
+ *  Compute Legendre poly coeffs for rho,sigR,sigp,sigz,sigRz
+ */
+template <typename T> void get_Ylm(T **rho,T **rhL,T **vrot,T **vrotL,
+								   T **sigR,T **sigRL,T **sigp,T **sigpL,
+								   T **sigz,T **sigzL,T **sigRz,T **sigRzL){
+
+	int nr=NR,ngauss=NGAUSS,npoly=NPOLY;
+	double ci[ngauss],wi[ngauss],pol[npoly],**poly;
+
+	poly=mat<T>(npoly,ngauss);
+	gauleg<T>(0,1,ci,wi);
+
+	/* store Leg. polys in pol */
+	for(int ng=0; ng<ngauss; ng++)
+		evenlegend<T>(pol,ci[ng]);
+
+	for(int ng=0; ng<ngauss; ng++)
+		for(int np=0; np<npoly; np++)
+			poly[np][ng]=2*pol[np]*wi[ng];
+
+	/* first set to zeros */
+	for(int n=0; n<nr; n++)
+		for(int np=0; np<npoly; np++){
+			rhL[n][np]=0;   vrotL[n][np]=0;
+			sigRL[n][np]=0; sigpL[n][np]=0;
+			sigzL[n][np]=0; sigRzL[n][np]=0;
+		}
+
+	/* compute */
+	for(int n=0; n<nr; n++)
+		for(int np=0; np<npoly; np++)
+			for(int ng=0; ng<ngauss; ng++){
+				rhL[n][np]+=poly[np][ng]*rho[n][ng];
+				vrotL[n][np]+=poly[np][ng]*vrot[n][ng];
+				sigRL[n][np]+=poly[np][ng]*sigR[n][ng];
+				sigpL[n][np]+=poly[np][ng]*sigp[n][ng];
+				sigzL[n][np]+=poly[np][ng]*sigz[n][ng];
+				sigRzL[n][np]+=poly[np][ng]*sigRz[n][ng];
+			}
+
+
+	rhL[0][0]=2*rho[0][0]; vrotL[0][0]=2*vrot[0][0]; sigRL[0][0]=2*sigR[0][0];
+	sigpL[0][0]=2*sigp[0][0]; sigzL[0][0]=2*sigz[0][0]; sigRzL[0][0]=2*sigRz[0][0];
+
+	for(int np=1; np<npoly; np++){
+		rhL[0][np]=0; vrotL[0][np]=0; sigRL[0][np]=0;
+		sigpL[0][np]=0; sigzL[0][np]=0; sigRzL[0][np]=0;
+	}
+
+	delMat(poly,npoly);
+}
+
 /************************************************************************************
  *  Density stuff
  ************************************************************************************/
@@ -163,6 +253,26 @@ template <typename T> void int_dens(T r,T *densp){
 		double f=(r-ar[bot])/(ar[top]-ar[bot]);
 		for(int i=0; i<NPOLY; i++){
 			densp[i]=f*rhl[top][i]+(1-f)*rhl[bot][i];
+		}
+	}
+}
+
+template <typename T> void int_dens(T r,T *densp,T *Vrotp,
+									T *sigup,T *sigpp,T *sigvp){
+	if(r>ar[NR-1]){
+		for(int i=0; i<NPOLY; i++){
+			densp[i]=0; Vrotp[i]=0; sigup[i]=0; sigpp[i]=0; sigvp[i]=0;
+		}
+	}else{
+		int top,bot;
+		topbottom<T>(ar,NR,r,&bot,&top);
+		float f=(r-ar[bot])/(ar[top]-ar[bot]);
+		for(int i=0; i<NPOLY; i++){
+			densp[i]=f*rhl[top][i]+(1-f)*rhl[bot][i];
+			sigup[i]=f*sigRl[top][i]+(1-f)*sigRl[bot][i];
+			sigpp[i]=f*sigpl[top][i]+(1-f)*sigpl[bot][i];
+			sigvp[i]=f*sigzl[top][i]+(1-f)*sigzl[bot][i];
+			//Vrotp[i]=f*vbarl[top][i]+(1-f)*vbarl[bot][i];
 		}
 	}
 }

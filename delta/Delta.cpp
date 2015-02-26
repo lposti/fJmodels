@@ -159,6 +159,7 @@ double Delta::getJr0(){
 	F.function = &wrp_getDR;
 	F.params   = this;
 
+	if (!(low<high)) printf("Delta::getJr0: %f %f\n",low,high);
 	return wrp_GSLroots<double>(F,low,high);
 }
 
@@ -198,6 +199,7 @@ double Delta::getv(){
 			F.function = &wrp_ds2dv;
 			F.params   = this;
 
+			if (!(low<high)) printf("Delta::getv: %f %f\n",low,high);
 			v0 = wrp_GSLroots(F,low,high);
 		}
 
@@ -276,6 +278,7 @@ double Delta::getBestDelta(){
 			F.function = &wrp_ds2dD2TOT;
 			F.params   = &p_Rz;
 
+			if (!(low<high)) printf("Delta::getBestDelta: %f %f\n",low,high);
 			D2out = wrp_GSLroots(F,low,high);
 		}
 

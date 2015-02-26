@@ -20,8 +20,9 @@ uvOrb::uvOrb(const double Delta0, const double Lz0, const double Phi0,
 	u=X.u; v=X.v; shu2=X.shu2; sv=X.sv; cv=X.cv; sv2=X.sv2;
 	pv=X.pv;
 	E=.5*X.p2+.5*Lzsq/pow(x[0],2)+Phi0;
-	if(E>=0) infinity();//unbound particle
+	if(E>=0 or isnan(E)==1) {bound=false; unbound();}//unbound particle
 	else{
+		bound=true;
 		sh1sq=pow(sinh(us),2); ch1sq=pow(cosh(us),2); Phiu1=Phiu(us);
 		Iu=E*(X.shu2-sh1sq)-.5*pow(X.pu,2)/(X.Delta2)-.5*Lzsq/(X.Delta2)*(1/X.shu2-1/sh1sq)-dU(X.u);
 		Er=-E*(X.shu2-sh1sq)/ch1sq+.5*pow(X.pu,2)/(X.Delta2*ch1sq)+.5*Lzsq/(X.Delta2*ch1sq)*(1/X.shu2-1/sh1sq)+dU(X.u)/ch1sq;
@@ -34,7 +35,7 @@ uvOrb::uvOrb(const double Delta0, const double Lz0, const double Phi0,
 	}
 }
 
-void uvOrb::infinity(){
+void uvOrb::unbound(){
 	Omegau=Omegav=Omegaphi=0; Rc1=Ju1=Jv1=1e31;
 }
 
@@ -121,8 +122,10 @@ void uvOrb::Getu0(double utry){
 	F.function = &wrp_duturnfn;
 	F.params   = this;
 
-	if (ui<uo) umid = wrp_GSLroots<double>(F,ui,uo);
-	else umid = wrp_GSLroots<double>(F,uo,ui);
+	if (!(ui<uo) or isinf(duturnfn(ui))!=0 or isinf(duturnfn(uo))!=0
+		or isnan(duturnfn(ui))==1 or isnan(duturnfn(uo))==1)
+		    printf("Getu0: %f %f %f %f\n",ui,uo,duturnfn(ui),duturnfn(uo));
+	umid = wrp_GSLroots<double>(F,ui,uo);
 }
 
 void uvOrb::GetTurnu(double utry){// finds apo. utry an allowed coord
@@ -192,7 +195,7 @@ void uvOrb::GetTurnu(double utry){// finds apo. utry an allowed coord
 	F.function = &wrp_uturnfn;
 	F.params   = this;
 
-	if (uinner>u1 or u2>uouter) printf("u: %f %f %f %f\n",uinner,u1,u2,uouter);
+	if (!(uinner<u1) or !(u2<uouter)) printf("GetTurnu: %f %f %f %f\n",uinner,u1,u2,uouter);
 	uinner = wrp_GSLroots<double>(F,uinner,u1);
 	uouter = wrp_GSLroots<double>(F,u2,uouter);
 }
@@ -216,8 +219,8 @@ double uvOrb::GetTurnv(double vtry){// finds apo. vtry an allowed height
 	F.function = &wrp_vturnfn;
 	F.params   = this;
 
-	if (vbot<vtop) return wrp_GSLroots<double>(F,vbot,vtop);
-	else return wrp_GSLroots<double>(F,vtop,vbot);
+	if (!(vbot<vtop)) return wrp_GSLroots<double>(F,vtop,vbot);
+	else return wrp_GSLroots<double>(F,vbot,vtop);
 }
 
 double uvOrb::GetJu(){//evaluates radial action
@@ -236,6 +239,7 @@ double uvOrb::GetJu(){//evaluates radial action
 }
 
 double uvOrb::Ju(){
+	if(!bound) return Ju1;
 	if(Ju1==-1) GetJu();
 	return Ju1;
 }
@@ -252,6 +256,7 @@ double uvOrb::GetJv(void){//evaluates vert action
 	return Jv1;
 }
 double uvOrb::Jv(void){
+	if(!bound) return Jv1;
 	if(Jv1==-1) GetJv();
 	return Jv1;
 }
