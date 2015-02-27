@@ -58,9 +58,28 @@ struct fJParams readParam(){
 					if (par=="h(J):dz")	    fJP.dz_h_in   = readVal(lineStream);
 					if (par=="g(J):dphi")   fJP.dphi_g_in = readVal(lineStream);
 					if (par=="g(J):dz")     fJP.dz_g_in   = readVal(lineStream);
+					if (par=="mass")	    fJP.mass	  = readVal(lineStream);
+					if (par=="r0")     		fJP.r0		  = readVal(lineStream);
+					if (par=="q")     		fJP.q		  = readVal(lineStream);
 
 			}
 
 	}
 	return fJP;
+}
+
+
+void printParam(struct fJParams fJP){
+
+	cout << "\n======================================================================" << endl;
+	cout <<   "= f(J) Model computation" << endl;
+	cout <<   "=\n" << endl;
+	cout <<   "PARAMETERS of the model:\n" << endl;
+	cout <<   " - Classical model:\t" << fJP.modName << endl;
+	cout <<   " - h(J) :\t\tJr + " << fJP.dphi_h_in << " Jphi + " << fJP.dz_h_in << " Jz" << endl;
+	cout <<   " - g(J) :\t\tJr + " << fJP.dphi_g_in << " Jphi + " << fJP.dz_g_in << " Jz" << endl;
+	cout <<   " - Mass :\t\t" << fJP.mass << endl;
+	cout <<   " - r0   :\t\t" << fJP.r0 << endl;
+	cout <<   " - Flattening :\t\t" << fJP.q << endl;
+	cout << endl;
 }

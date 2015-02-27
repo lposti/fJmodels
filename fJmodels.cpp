@@ -22,9 +22,8 @@
 #include "potLeg.h"
 #include "GaussPts.h"
 #include "Stats.h"
+#include "writeOut.h"
 
-const double q=1,q2=q*q;
-const double mass=1.,J0=1.,r0=pow(J0,2)/mass;
 double ar[NR], phil[NR][NPOLY], Pr[NR][NPOLY], Pr2[NR][NPOLY];
 double Dgrid[NGRID], Egrid[NGRID];
 double **rhl,**vrotl,**sigRl,**sigpl,**sigzl,**sigRzl;
@@ -54,18 +53,18 @@ int main(int argc, char **argv){
 	rhl = mat<double>(NR,NPOLY);   vrotl = mat<double>(NR,NPOLY);
 	sigRl = mat<double>(NR,NPOLY); sigpl = mat<double>(NR,NPOLY);
 	sigzl = mat<double>(NR,NPOLY); sigRzl = mat<double>(NR,NPOLY);
-	SetGrid(50.);
 
-	struct fJParams fJP = readParam();
-	std::cout << fJP.modName << " " << fJP.dphi_h_in << " " << fJP.dz_h_in << " " << fJP.dphi_g_in << " " << fJP.dz_g_in << std::endl;
+	struct fJParams fJP = readParam(); printParam(fJP);
+
+	SetGrid(50.); SetModel(fJP);
 
 	if (1) {
 		Potential p;
 		p.selectGuessRho(fJP.modName);
 		p.computeGuessRhl(); p.computePhil();
-		for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
+		//for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
 
-		printf("\n=============================================\n");
+		printf("\n======================================================================\n");
 
 		printf("\n-----TEST %d\n",QUADORD);
 		tabulateDelta(&p);
@@ -76,7 +75,8 @@ int main(int argc, char **argv){
 		for (int k=0; k<4; k++){
 			printf("\n Iter:%d\n",k);
 			computeNewPhi(&p);
-			for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
+			writeOut(fJP,k);
+			//for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
 			vir2(&p);
 		}
 	}

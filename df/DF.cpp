@@ -41,6 +41,7 @@ void setDF(struct fJParams fJP, Potential *p){
 	else if (modClassic=="Isochrone") {alpha[0] = .0;    alpha[1]=5.;}
 	else {printf("\n--> ERROR: currently only Isochrone and Hernquist models supported!\n"); exit(1);}
 
+	J0=sqrt(fJP.mass*fJP.r0);
 	setDF(fJP.dphi_h_in,fJP.dz_h_in,fJP.dphi_g_in,fJP.dz_g_in,p);
 }
 

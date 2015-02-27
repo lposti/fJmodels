@@ -7,6 +7,15 @@
 #include <math.h>
 #include "models.h"
 #include "Utils.h"
+#include "readParam.h"
+
+double mass,J0,r0;
+double q,q2;
+
+void SetModel(struct fJParams fJP){
+	mass=fJP.mass; r0=fJP.r0;
+	q=fJP.q; q2=q*q;
+}
 
 double rhoHern(double R, double z){
 	double m=sqrt(R*R+z*z/q2);
