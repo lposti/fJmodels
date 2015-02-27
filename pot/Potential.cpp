@@ -15,6 +15,7 @@
 #include "Utils.h"
 #include "UtilsLeg.h"
 #include "gsl/gsl_integration.h"
+#include "gsl/gsl_errno.h"
 
 Potential::Potential() {
 	poly = mat<double>(NPOLY,NGAUSS);
@@ -25,7 +26,6 @@ Potential::Potential() {
 	pol = arr<double>(NPOLY);
 	this->rhoGuess = 0;
 
-	Ints = false;
 	if (phil[0][0]<0) canEv = true;
 	else canEv = false;
 
@@ -99,7 +99,7 @@ double I_external(double x, void * params){
  *  Compute internal and external integrals to get
  *  the coefficients of the Potential multipole expansion
  */
-#define EPSABS   1e-5
+#define EPSABS   1e-4
 #define EPSREL   1e-3
 #define WORKSIZE 1000
 void Potential::computeInts(){
@@ -128,7 +128,14 @@ void Potential::computeInts(){
 			this->I_int[nr][np] = res;
 
 			// External Integral
-			gsl_integration_qagiu (&G, ar[nr], EPSABS, EPSREL, WORKSIZE, w, &res, &err);
+			gsl_set_error_handler_off();
+			double epsabs=EPSABS,epsrel=EPSREL;
+			int status=1;
+
+			while(status!=GSL_SUCCESS){
+				status = gsl_integration_qagiu (&G, ar[nr], epsabs, epsrel, WORKSIZE, w, &res, &err);
+				epsabs*=2; epsrel*=2;
+			}
 			this->I_ext[nr][np] = res;
 
 		}
@@ -136,7 +143,6 @@ void Potential::computeInts(){
 	}
 
 	gsl_integration_workspace_free (w);
-	this->Ints = true;
 }
 
 /*
@@ -148,7 +154,7 @@ void Potential::computeInts(){
 void Potential::computePhil(){
 
 	// Compute Internal and External Integrals, if not done before.
-	if (!this->Ints) this->computeInts();
+	this->computeInts();
 
 	for (int np=0; np<NPOLY; np++){
 		int l=2*np; double G=1;
@@ -163,7 +169,7 @@ void Potential::computePhil(){
 		}
 	}
 
-	canEv = true; Ints = false; // automatically reset the potential to re-compute the integrals
+	canEv = true;
 }
 
 /*

@@ -148,13 +148,13 @@ template <typename T> void intpo2(T r,T *phip,T *dphip,T *d2phip){
 	}
 }
 
-/*
+/**************************************************************************************
  * Calculates Legendre poly coeffs Ql for the quantity Q
- */
+ **************************************************************************************/
 template <typename T> void get_Ylm(T **Q,T **Ql){
 
 	int nr=NR,ngauss=NGAUSS,npoly=NPOLY;
-	double ci[ngauss],wi[ngauss],pol[npoly],**poly;
+	T ci[ngauss],wi[ngauss],pol[npoly],**poly;
 
 	poly=mat<T>(npoly,ngauss);
 	gauleg<T>(0,1,ci,wi);
@@ -193,18 +193,23 @@ template <typename T> void get_Ylm(T **rho,T **rhL,T **vrot,T **vrotL,
 								   T **sigz,T **sigzL,T **sigRz,T **sigRzL){
 
 	int nr=NR,ngauss=NGAUSS,npoly=NPOLY;
-	double ci[ngauss],wi[ngauss],pol[npoly],**poly;
+	T ci[ngauss],wi[ngauss],pol[npoly],**poly;
 
 	poly=mat<T>(npoly,ngauss);
 	gauleg<T>(0,1,ci,wi);
 
-	/* store Leg. polys in pol */
-	for(int ng=0; ng<ngauss; ng++)
+	/* store Leg. polys in pol   *
+	 * (DO NOT UNROLL THIS LOOP! *
+	 *  pol depends on ng)       */
+	for(int ng=0; ng<ngauss; ng++){
 		evenlegend<T>(pol,ci[ng]);
-
-	for(int ng=0; ng<ngauss; ng++)
 		for(int np=0; np<npoly; np++)
 			poly[np][ng]=2*pol[np]*wi[ng];
+	}
+
+	/* monopole term */
+	for(int j=1; j<NGAUSS; j++)
+		rho[0][j]=rho[0][0];
 
 	/* first set to zeros */
 	for(int n=0; n<nr; n++)
@@ -249,7 +254,7 @@ template <typename T> void int_dens(T r,T *densp){
 		}
 	}else{
 		int top,bot;
-		topbottom(ar,NR,r,&bot,&top);
+		topbottom<T>(ar,NR,r,&bot,&top);
 		double f=(r-ar[bot])/(ar[top]-ar[bot]);
 		for(int i=0; i<NPOLY; i++){
 			densp[i]=f*rhl[top][i]+(1-f)*rhl[bot][i];
@@ -272,12 +277,13 @@ template <typename T> void int_dens(T r,T *densp,T *Vrotp,
 			sigup[i]=f*sigRl[top][i]+(1-f)*sigRl[bot][i];
 			sigpp[i]=f*sigpl[top][i]+(1-f)*sigpl[bot][i];
 			sigvp[i]=f*sigzl[top][i]+(1-f)*sigzl[bot][i];
-			//Vrotp[i]=f*vbarl[top][i]+(1-f)*vbarl[bot][i];
+			Vrotp[i]=f*vrotl[top][i]+(1-f)*vrotl[bot][i];
 		}
 	}
 }
 
 template <typename T> T ev_dens(T R,T z){//returns dens from rhl
+
 	double pol[NPOLY],densp[NPOLY];
 	double c=z/sqrt(R*R+z*z), r=sqrt(R*R+z*z);
 	evenlegend<T>(pol,c); int_dens<T>(r,densp);
@@ -290,5 +296,20 @@ template <typename T> T ev_dens(T R,T z){//returns dens from rhl
 }
 
 
+template <typename T> T ev_dens(T R,T z,T *Vrot,T *sigu,T *sigp,T *sigv,T *sigRz){//returns dens from rhl
+
+	double pol[NPOLY],densp[NPOLY],Vrotp[NPOLY],sigup[NPOLY],sigpp[NPOLY],sigvp[NPOLY];
+	double c=z/sqrt(R*R+z*z), r=sqrt(R*R+z*z);
+	evenlegend(pol,c); int_dens(r,densp,Vrotp,sigup,sigpp,sigvp);
+	double dens=.5*densp[0];
+	(*Vrot)=.5*Vrotp[0]; (*sigu)=.5*sigup[0]; (*sigp)=.5*sigpp[0]; (*sigv)=.5*sigvp[0];
+	for(int np=1; np<NPOLY; np++){
+		double fac=.5*(4*np+1);
+		dens+=fac*densp[np]*pol[np]; (*sigu)+=fac*sigup[np]*pol[np];
+		(*sigp)+=fac*sigpp[np]*pol[np]; (*sigv)+=fac*sigvp[np]*pol[np];
+		(*Vrot)+=fac*Vrotp[np]*pol[np];
+	}
+	return dens;
+}
 
 #endif /* INCLUDE_UTILSLEG_H_ */

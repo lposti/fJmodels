@@ -10,6 +10,7 @@
 #include <time.h>
 #include "Grid.h"
 #include "Utils.h"
+#include "UtilsLeg.h"
 #include "readParam.h"
 #include "Potential.h"
 #include "models.h"
@@ -20,6 +21,7 @@
 #include "Integ.h"
 #include "potLeg.h"
 #include "GaussPts.h"
+#include "Stats.h"
 
 const double q=1,q2=q*q;
 const double mass=1.,J0=1.,r0=pow(J0,2)/mass;
@@ -61,7 +63,7 @@ int main(int argc, char **argv){
 		Potential p;
 		p.selectGuessRho(fJP.modName);
 		p.computeGuessRhl(); p.computePhil();
-		for (int i=0; i<NR; i++) printf("%f %f\n",ar[i],phil[i][0]);
+		for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
 
 		printf("\n=============================================\n");
 
@@ -70,8 +72,13 @@ int main(int argc, char **argv){
 
 		setDF(fJP,&p);
 		//testInteg(&p);
-		computeNewPhi(&p);
-		for (int i=0; i<NR; i++) printf("%f %f\n",ar[i],phil[i][0]);
+
+		for (int k=0; k<4; k++){
+			printf("\n Iter:%d\n",k);
+			computeNewPhi(&p);
+			for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
+			vir2(&p);
+		}
 	}
 
 	printf("\n----> Elapsed time of computation: %7.5f s\n",(clock()-start) / (double) CLOCKS_PER_SEC);

@@ -74,7 +74,7 @@ template <typename T> inline void SetGrid (T const& a_scale, T const& rmax){
 
 // logarithmic Grid
 template <typename T> inline void SetGrid (T const& rmax){
-	T rmin=8e-5*rmax;  // minimum radius
+	T rmin=5e-5*rmax;  // minimum radius
 
 	for (int i=0;i<NR;i++)
 		ar[i] = pow(10.,log10(rmin)+(log10(rmax)-log10(rmin))*i/(NR-1));
@@ -125,12 +125,14 @@ template <typename T> T linterp(T *xm, T *ym, int np,T x){
 
 template <typename T> T wrp_GSLroots(gsl_function F, T low, T high){
 
+	if (fabs(GSL_FN_EVAL(&F,low)) <5e-4) return low;
+	if (fabs(GSL_FN_EVAL(&F,high))<5e-4) return high;
+
 	if (isnan(low)==1 or isnan(high)==1 or !(low<high)
-		or isnan(GSL_FN_EVAL(&F,low))==1 or isnan(GSL_FN_EVAL(&F,high)))
+		or isnan(GSL_FN_EVAL(&F,low))==1 or isnan(GSL_FN_EVAL(&F,high))
+	    or GSL_FN_EVAL(&F,low)*GSL_FN_EVAL(&F,high)>=0)
 		    printf("GSL: %f %f %f %f\n",low,high,GSL_FN_EVAL(&F,low),GSL_FN_EVAL(&F,high));
 
-	if (fabs(GSL_FN_EVAL(&F,low)) <1e-4) return low;
-	if (fabs(GSL_FN_EVAL(&F,high))<1e-4) return high;
 
 	const gsl_root_fsolver_type *Type;
 	gsl_root_fsolver *s;

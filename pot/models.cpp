@@ -16,7 +16,7 @@ double rhoHern(double R, double z){
 double rhoIsoch(double R, double z){
 	double m=sqrt(R*R+z*z/q2);
 	double a=sqrt(r0*r0+m*m);
-	return 1./FPI/(q*pow((a+r0)*a,2)*a)*r0*(r0+2*a);
+	return mass/FPI/(q*pow((a+r0)*a,2)*a)*r0*(r0+2*a);
 }
 
 

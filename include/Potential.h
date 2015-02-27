@@ -20,7 +20,7 @@ public:
 	/* data */
 	double ** __restrict poly, ** __restrict I_int, ** __restrict I_ext;
 	double * __restrict ci, * __restrict wi, * __restrict__ si, * __restrict pol;
-	bool Ints,canEv;
+	bool canEv;
 
 	/* methods */
 	// Guess density methods

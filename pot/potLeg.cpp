@@ -50,7 +50,6 @@ void computeRhl(Potential *p){
 	rho[0][0] = (rho[2][0]-rho[1][0])/(ar[2]-ar[1])*(ar[0]-ar[1])+rho[1][0];
 	get_Ylm<double>(rho,rhl,vrot,vrotl,sigR,sigRl,sigp,sigpl,sigz,sigzl,sigRz,sigRzl);
 
-
 }
 
 /*
@@ -60,7 +59,7 @@ void computeRhl(Potential *p){
 void computeNewPhi(Potential *p){
 
 	computeRhl(p);
-	if (p->canEv) p->computePhil();
+	p->computePhil();
 }
 
 
