@@ -26,7 +26,8 @@
 
 double ar[NR], phil[NR][NPOLY], Pr[NR][NPOLY], Pr2[NR][NPOLY];
 double Dgrid[NGRID], Egrid[NGRID];
-double **rhl,**vrotl,**sigRl,**sigpl,**sigzl,**sigRzl;
+double ** __restrict rhl,** __restrict vrotl,** __restrict sigRl,
+       ** __restrict sigpl,** __restrict sigzl,** __restrict sigRzl;
 
 double Hpot(double r){
 	return -1./(1.+r);
@@ -72,11 +73,14 @@ int main(int argc, char **argv){
 		setDF(fJP,&p);
 		//testInteg(&p);
 
-		for (int k=0; k<4; k++){
+		for (int k=0; k<5; k++){
 			printf("\n Iter:%d\n",k);
+			//Potential ext(false);
+			//ext.selectGuessRho("NFWext");
+			//ext.computeGuessRhl(); ext.computePhil();
+			for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
 			computeNewPhi(&p);
 			writeOut(fJP,k);
-			//for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
 			vir2(&p);
 		}
 	}

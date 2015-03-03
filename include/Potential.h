@@ -10,17 +10,19 @@
 
 #include <iostream>
 #include <cstring>
+#include "Grid.h"
 
 class Potential {
 
 public:
-	Potential();
+	Potential(const bool istot_in=true);
 	virtual ~Potential();
 
 	/* data */
 	double ** __restrict poly, ** __restrict I_int, ** __restrict I_ext;
 	double * __restrict ci, * __restrict wi, * __restrict__ si, * __restrict pol;
-	bool canEv;
+	bool canEv,istot;
+	double rhlP[NR][NPOLY], philP[NR][NPOLY], PrP[NR][NPOLY], Pr2P[NR][NPOLY];
 
 	/* methods */
 	// Guess density methods

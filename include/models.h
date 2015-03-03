@@ -17,6 +17,7 @@ extern double mass,r0,J0;
 void SetModel(struct fJParams);
 double rhoHern(double, double);
 double rhoIsoch(double, double);
+double rhoNFW(double, double);
 
 
 

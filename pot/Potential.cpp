@@ -17,7 +17,9 @@
 #include "gsl/gsl_integration.h"
 #include "gsl/gsl_errno.h"
 
-Potential::Potential() {
+Potential::Potential(const bool istot_in) {
+
+	istot=istot_in;
 	poly = mat<double>(NPOLY,NGAUSS);
 	I_int = mat<double>(NR,NPOLY);
 	I_ext = mat<double>(NR,NPOLY);
@@ -52,6 +54,7 @@ void Potential::selectGuessRho(const std::string rhoName){
 
 	if      (rhoName=="Isochrone") this->rhoGuess = &rhoIsoch;
 	else if (rhoName=="Hernquist") this->rhoGuess = &rhoHern;
+	else if (rhoName=="NFWext")    this->rhoGuess = &rhoNFW;
 	else {
 		printf("\n\tCall selectGuessRho method with 'Isochrone' \n");
 		exit(1);
@@ -64,14 +67,19 @@ void Potential::computeGuessRhl(){
 
 	for (int nr=0; nr<NR; nr++)
 		for (int np=0; np<NPOLY; np++)
-			rhl[nr][np]=0.;
+			rhlP[nr][np]=0.;
 
 	for (int nr=0; nr<NR; nr++)
 		for (int np=0; np<NPOLY; np++)
 			for (int ng=0; ng<NGAUSS; ng++)
-				rhl[nr][np] += this->poly[np][ng] * this->rhoGuess(ar[nr]*this->si[ng],ar[nr]*this->ci[ng]);
+				rhlP[nr][np] += this->poly[np][ng] * this->rhoGuess(ar[nr]*this->si[ng],ar[nr]*this->ci[ng]);
 
-	rhl[0][0] = 2*this->rhoGuess(ar[0]*this->si[0],ar[0]*this->ci[0]);
+	rhlP[0][0] = 2*this->rhoGuess(ar[0]*this->si[0],ar[0]*this->ci[0]);
+
+	if (istot)
+		for (int nr=0; nr<NR; nr++)
+			for (int np=0; np<NPOLY; np++)
+				rhl[nr][np]=rhlP[nr][np];
 }
 
 struct I_par { int l; double *rhl_h;};
@@ -116,7 +124,10 @@ void Potential::computeInts(){
 
 		// array to be used by the linear interpolation scheme
 		double *rhl_h = arr<double> (NR);
-		for (int i=0; i<NR; i++) rhl_h[i] = rhl[i][np];
+		if (istot)
+			for (int i=0; i<NR; i++) rhl_h[i] = rhl[i][np];
+		else
+			for (int i=0; i<NR; i++) rhl_h[i] = rhlP[i][np];
 
 		for (int nr=0; nr<NR; nr++){
 
@@ -159,17 +170,38 @@ void Potential::computePhil(){
 	for (int np=0; np<NPOLY; np++){
 		int l=2*np; double G=1;
 		for(int n=0; n<NR; n++){
-			phil[n][np]=-TPI*G*(this->I_int[n][np]/pow(ar[n],l+1)+
+			philP[n][np]=-TPI*G*(this->I_int[n][np]/pow(ar[n],l+1)+
 						(this->I_ext[n][np])*pow(ar[n],l));
-			Pr[n][np]=-TPI*G*(-(l+1)*this->I_int[n][np]/pow(ar[n],l+2)+
+			PrP[n][np]=-TPI*G*(-(l+1)*this->I_int[n][np]/pow(ar[n],l+2)+
 					  l*(this->I_ext[n][np])*pow(ar[n],l-1));
-			Pr2[n][np]=-TPI*G*((l+2)*(l+1)*this->I_int[n][np]/pow(ar[n],l+3)+
+			if (istot)
+				Pr2P[n][np]=-TPI*G*((l+2)*(l+1)*this->I_int[n][np]/pow(ar[n],l+3)+
 					   (l-1)*l*(this->I_ext[n][np])*pow(ar[n],l-2)
 					   -(2*l+1)*rhl[n][np]);
+			else
+				Pr2P[n][np]=-TPI*G*((l+2)*(l+1)*this->I_int[n][np]/pow(ar[n],l+3)+
+						(l-1)*l*(this->I_ext[n][np])*pow(ar[n],l-2)
+						-(2*l+1)*rhlP[n][np]);
 		}
 	}
 
-	canEv = true;
+	if (istot)
+		for(int n=0; n<NR; n++)
+			for (int np=0; np<NPOLY; np++){
+				phil[n][np]=philP[n][np];
+				Pr[n][np]  =PrP[n][np];
+				Pr2[n][np] =Pr2P[n][np];
+			}
+	else
+		for(int n=0; n<NR; n++)
+			for (int np=0; np<NPOLY; np++){
+				phil[n][np]+=philP[n][np];
+				Pr[n][np]  +=PrP[n][np];
+				Pr2[n][np] +=Pr2P[n][np];
+			}
+
+
+	canEv = true; // automatically reset the potential to re-compute the integrals
 }
 
 /*

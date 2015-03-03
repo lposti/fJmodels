@@ -28,4 +28,14 @@ double rhoIsoch(double R, double z){
 	return mass/FPI/(q*pow((a+r0)*a,2)*a)*r0*(r0+2*a);
 }
 
+/*
+ *  For use as External Potential
+ */
+double aNFW=25.,GM_NFW=10.;
+double rhoNFW(double R,double z){
+	double m=sqrt(R*R+z*z/q2);
+	return GM_NFW/(m/aNFW*pow(aNFW+m,2))/FPI;
+}
+
+
 

@@ -19,7 +19,8 @@
 extern double ar[NR], phil[NR][NPOLY], Pr[NR][NPOLY], Pr2[NR][NPOLY];
 extern double Dgrid[NGRID], Egrid[NGRID];
 
-extern double **rhl, **vrotl, **sigRl, **sigpl, **sigzl, **sigRzl;
+extern double ** __restrict rhl, ** __restrict vrotl, ** __restrict sigRl,
+              ** __restrict sigpl, ** __restrict sigzl, ** __restrict sigRzl;
 
 
 #endif /* INCLUDE_GRID_H_ */
