@@ -9,7 +9,7 @@
 #define INCLUDE_GAUSSPTS_H_
 
 
-#define QUAD26
+#define QUAD12
 
 #ifdef QUAD12
 
