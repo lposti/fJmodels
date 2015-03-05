@@ -15,19 +15,36 @@
 using namespace std;
 
 
-string composeName(const struct fJParams fJP, const int iter){
+string composeName(const struct fJParams fJP, const int iter, const unsigned comp=1){
 
 	string name;
 
-	for (int i=0; i<5; i++)
-		name+=fJP.modName[i];
+	if (comp==1){
 
-	name+="_"; name+=toString(fJP.dphi_h_in);
-	name+="_"; name+=toString(fJP.dz_h_in);
-	name+="_"; name+=toString(fJP.dphi_g_in);
-	name+="_"; name+=toString(fJP.dz_g_in);
-	name+="_"; name+=toString(iter);
-	name+=".out";
+		// trim model name to 4 chars
+		name = fJP.modName;
+		if (name.size()>5) name.erase(5,name.size());
+
+		name+="_"; name+=toString(fJP.dphi_h_in);
+		name+="_"; name+=toString(fJP.dz_h_in);
+		name+="_"; name+=toString(fJP.dphi_g_in);
+		name+="_"; name+=toString(fJP.dz_g_in);
+		name+="_"; name+=toString(iter);
+		name+=".out";
+
+	} else if (comp==2) {
+
+		// trim model name to 4 chars
+		name = fJP.modName2;
+		if (name.size()>5) name.erase(5,name.size());
+
+		name+="_"; name+=toString(fJP.dphi_h_in2);
+		name+="_"; name+=toString(fJP.dz_h_in2);
+		name+="_"; name+=toString(fJP.dphi_g_in2);
+		name+="_"; name+=toString(fJP.dz_g_in2);
+		name+="_"; name+=toString(iter);
+		name+=".out";
+	}
 
 	return name;
 }
@@ -48,22 +65,47 @@ void writeMat( ofstream & outF, double **mat, int NX, int NY ){
 	}
 }
 
-void writeOut(const struct fJParams fJP, const int iter){
+void writeOut(const struct fJParams fJP, const int iter,
+		const unsigned comp,double **rhlH,double ** sigRlH,double **sigplH,
+		double ** sigzlH,double **sigRzlH,double **vrotlH,double **philH){
 
 	ofstream outF;
-	string name="models/";
-	name+=composeName(fJP,iter);
 
-	outF.open(name.c_str(), ios::out);
+	if (comp==1){
+		string name="models/";
+		name+=composeName(fJP,iter);
 
-	if (outF.is_open()){
+		outF.open(name.c_str(), ios::out);
 
-		outF << NR << " " << NPOLY << " " << NGAUSS << endl;
+		if (outF.is_open()){
 
-		writeArr(outF,ar,NR);
-		writeMat(outF,rhl,NR,NPOLY);   writeMat(outF,vrotl,NR,NPOLY);
-		writeMat(outF,sigRl,NR,NPOLY); writeMat(outF,sigpl,NR,NPOLY);
-		writeMat(outF,sigzl,NR,NPOLY); writeMat(outF,sigRzl,NR,NPOLY);
+			outF << NR << " " << NPOLY << " " << NGAUSS << endl;
+
+			writeArr(outF,ar,NR);
+			writeMat(outF,rhlH,NR,NPOLY);   writeMat(outF,vrotlH,NR,NPOLY);
+			writeMat(outF,sigRlH,NR,NPOLY); writeMat(outF,sigplH,NR,NPOLY);
+			writeMat(outF,sigzlH,NR,NPOLY); writeMat(outF,sigRzlH,NR,NPOLY);
+			writeMat(outF,philH,NR,NPOLY);
+		}
+
+	} else {
+
+		string name="models/";
+		name +=composeName(fJP,iter,comp);
+
+		outF.open(name.c_str(), ios::out);
+
+		if (outF.is_open()){
+
+			outF << NR << " " << NPOLY << " " << NGAUSS << endl;
+
+			writeArr(outF,ar,NR);
+			writeMat(outF,rhlH,NR,NPOLY);   writeMat(outF,vrotlH,NR,NPOLY);
+			writeMat(outF,sigRlH,NR,NPOLY); writeMat(outF,sigplH,NR,NPOLY);
+			writeMat(outF,sigzlH,NR,NPOLY); writeMat(outF,sigRzlH,NR,NPOLY);
+			writeMat(outF,philH,NR,NPOLY);
+		}
+
 	}
 
 	outF.close();

@@ -14,10 +14,11 @@
 extern double q,q2;
 extern double mass,r0,J0;
 
-void SetModel(struct fJParams);
+void SetModel(struct fJParams, const unsigned comp=1);
 double rhoHern(double, double);
 double rhoIsoch(double, double);
 double rhoNFW(double, double);
+double rhoNFWext(double, double);
 
 
 

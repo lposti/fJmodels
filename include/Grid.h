@@ -16,10 +16,9 @@
 /*
  *  Array definitions
  */
-extern double ar[NR], phil[NR][NPOLY], Pr[NR][NPOLY], Pr2[NR][NPOLY];
-extern double Dgrid[NGRID], Egrid[NGRID];
-
-extern double ** __restrict rhl, ** __restrict vrotl, ** __restrict sigRl,
+extern double ar[NR], Dgrid[NGRID], Egrid[NGRID];
+extern double ** __restrict phil, ** __restrict Pr, ** __restrict Pr2,
+			  ** __restrict rhl, ** __restrict vrotl, ** __restrict sigRl,
               ** __restrict sigpl, ** __restrict sigzl, ** __restrict sigRzl;
 
 

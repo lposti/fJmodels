@@ -31,6 +31,8 @@ struct fJParams readParam(){
 	ifstream pF("param.txt");
 	string line;
 	struct fJParams fJP;
+	fJP.modName  = "null";
+	fJP.modName2 = "null";
 
 	/* check is open */
 	if (pF.is_open()){
@@ -53,7 +55,7 @@ struct fJParams readParam(){
 					string par;
 					lineStream >> par;
 
-					if (par=="model")       fJP.modName   = readStr(lineStream);
+					if (par=="model")       {fJP.modName   = readStr(lineStream); fJP.comp=1;}
 					if (par=="h(J):dphi")   fJP.dphi_h_in = readVal(lineStream);
 					if (par=="h(J):dz")	    fJP.dz_h_in   = readVal(lineStream);
 					if (par=="g(J):dphi")   fJP.dphi_g_in = readVal(lineStream);
@@ -62,6 +64,14 @@ struct fJParams readParam(){
 					if (par=="r0")     		fJP.r0		  = readVal(lineStream);
 					if (par=="q")     		fJP.q		  = readVal(lineStream);
 
+					if (par=="2:model")       {fJP.modName2  = readStr(lineStream); fJP.comp=2;}
+					if (par=="2:h(J):dphi")   fJP.dphi_h_in2 = readVal(lineStream);
+					if (par=="2:h(J):dz")     fJP.dz_h_in2   = readVal(lineStream);
+					if (par=="2:g(J):dphi")   fJP.dphi_g_in2 = readVal(lineStream);
+					if (par=="2:g(J):dz")     fJP.dz_g_in2   = readVal(lineStream);
+					if (par=="2:mass")        fJP.mass_2	 = readVal(lineStream);
+					if (par=="2:r0")          fJP.r0_2		 = readVal(lineStream);
+					if (par=="2:q")           fJP.q_2		 = readVal(lineStream);
 			}
 
 	}
@@ -82,4 +92,15 @@ void printParam(struct fJParams fJP){
 	cout <<   " - r0   :\t\t" << fJP.r0 << endl;
 	cout <<   " - Flattening :\t\t" << fJP.q << endl;
 	cout << endl;
+
+	if (fJP.modName2 != "null"){
+			cout <<   "PARAMETERS of the second component model:\n" << endl;
+			cout <<   " - Classical model:\t" << fJP.modName2 << endl;
+			cout <<   " - h(J) :\t\tJr + " << fJP.dphi_h_in2 << " Jphi + " << fJP.dz_h_in2 << " Jz" << endl;
+			cout <<   " - g(J) :\t\tJr + " << fJP.dphi_g_in2 << " Jphi + " << fJP.dz_g_in2 << " Jz" << endl;
+			cout <<   " - Mass :\t\t" << fJP.mass_2 << endl;
+			cout <<   " - r0   :\t\t" << fJP.r0_2 << endl;
+			cout <<   " - Flattening :\t\t" << fJP.q_2 << endl;
+			cout << endl;
+	}
 }

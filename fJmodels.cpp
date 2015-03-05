@@ -24,10 +24,10 @@
 #include "Stats.h"
 #include "writeOut.h"
 
-double ar[NR], phil[NR][NPOLY], Pr[NR][NPOLY], Pr2[NR][NPOLY];
-double Dgrid[NGRID], Egrid[NGRID];
-double ** __restrict rhl,** __restrict vrotl,** __restrict sigRl,
-       ** __restrict sigpl,** __restrict sigzl,** __restrict sigRzl;
+double ar[NR], Dgrid[NGRID], Egrid[NGRID];
+double ** __restrict phil, ** __restrict Pr, ** __restrict Pr2,
+       ** __restrict rhl, ** __restrict vrotl, ** __restrict sigRl,
+       ** __restrict sigpl, ** __restrict sigzl, ** __restrict sigRzl;
 
 double Hpot(double r){
 	return -1./(1.+r);
@@ -43,6 +43,45 @@ void testInteg(Potential *p){
 	}
 }
 
+void twoComp(struct fJParams fJP){
+
+	double ** __restrict rhl2, ** __restrict vrotl2, ** __restrict sigRl2,
+    ** __restrict sigpl2, ** __restrict sigzl2, ** __restrict sigRzl2;
+	rhl2 = mat<double>(NR,NPOLY);   vrotl2 = mat<double>(NR,NPOLY);
+	sigRl2 = mat<double>(NR,NPOLY); sigpl2 = mat<double>(NR,NPOLY);
+	sigzl2 = mat<double>(NR,NPOLY); sigRzl2 = mat<double>(NR,NPOLY);
+
+	SetModel(fJP,1);
+
+	Potential p(1);
+	p.selectGuessRho(fJP.modName);
+	p.computeGuessRhl(); p.computePhil(p.rhlP);
+
+	SetModel(fJP,2);
+	Potential p2(2);
+	p2.selectGuessRho(fJP.modName2);
+	p2.computeGuessRhl(); p2.computePhil(p2.rhlP);
+
+	/*
+	 *  Now I can safely pass p since total phils and derivatives
+	 *  are that of the total potential.
+	 */
+	tabulateDelta(&p);
+
+	for (int k=0; k<5; k++){
+		printf("\n Iter:%d\n",k);
+
+		setDF(fJP,&p,1);
+		computeNewPhi(&p,rhl,sigRl,sigpl,sigzl,sigRzl,vrotl);
+
+		setDF(fJP,&p,2);
+		computeNewPhi(&p2,rhl2,sigRl2,sigpl2,sigzl2,sigRzl2,vrotl2);
+		for (int i=0; i<NR; i++) printf("%f %f %f %f %f %f %f\n",rhl[i][0],rhl2[i][0],sigRl[i][0],sigRl2[i][0],phil[i][0],p.philP[i][0],p2.philP[i][0]);
+		writeOut(fJP,k,1,rhl,sigRl,sigpl,sigzl,sigRzl,vrotl,p.philP);
+		writeOut(fJP,k,2,rhl2,sigRl2,sigpl2,sigzl2,sigRzl2,vrotl2,p2.philP);
+	}
+}
+
 int main(int argc, char **argv){
 
 	/*
@@ -51,15 +90,20 @@ int main(int argc, char **argv){
 
 	time_t start = clock();
 
+	phil = mat<double>(NR,NPOLY);  Pr = mat<double>(NR,NPOLY);    Pr2 = mat<double>(NR,NPOLY);
 	rhl = mat<double>(NR,NPOLY);   vrotl = mat<double>(NR,NPOLY);
 	sigRl = mat<double>(NR,NPOLY); sigpl = mat<double>(NR,NPOLY);
 	sigzl = mat<double>(NR,NPOLY); sigRzl = mat<double>(NR,NPOLY);
 
 	struct fJParams fJP = readParam(); printParam(fJP);
 
-	SetGrid(50.); SetModel(fJP);
+	SetGrid(50.);
 
-	if (1) {
+	twoComp(fJP);
+	if (0) {
+
+		SetModel(fJP);
+
 		Potential p;
 		p.selectGuessRho(fJP.modName);
 		p.computeGuessRhl(); p.computePhil();
@@ -78,7 +122,7 @@ int main(int argc, char **argv){
 			//Potential ext(false);
 			//ext.selectGuessRho("NFWext");
 			//ext.computeGuessRhl(); ext.computePhil();
-			for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
+			//for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
 			computeNewPhi(&p);
 			writeOut(fJP,k);
 			vir2(&p);

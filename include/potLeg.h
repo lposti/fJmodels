@@ -10,7 +10,9 @@
 
 #include "Potential.h"
 
-void computeNewPhi(Potential *);
+void computeNewPhi(Potential *,double **rhlH=rhl,double ** sigRlH=sigRl,
+		double **sigplH=sigpl,double ** sigzlH=sigzl,double **sigRzlH=sigRzl,
+		double **vrotlH=vrotl);
 
 
 #endif /* INCLUDE_POTLEG_H_ */

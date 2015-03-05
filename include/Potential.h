@@ -15,14 +15,15 @@
 class Potential {
 
 public:
-	Potential(const bool istot_in=true);
-	virtual ~Potential();
+	Potential(const unsigned howMany_in=1);
 
 	/* data */
 	double ** __restrict poly, ** __restrict I_int, ** __restrict I_ext;
 	double * __restrict ci, * __restrict wi, * __restrict__ si, * __restrict pol;
-	bool canEv,istot;
-	double rhlP[NR][NPOLY], philP[NR][NPOLY], PrP[NR][NPOLY], Pr2P[NR][NPOLY];
+	bool canEv;
+	unsigned comp;
+	double ** __restrict philP, ** __restrict PrP, ** __restrict Pr2P,
+	       ** __restrict rhlP;
 
 	/* methods */
 	// Guess density methods
@@ -31,7 +32,7 @@ public:
 	void computeGuessRhl();
 	// compute Phi and its derivative
 	double operator () (double, double);
-	void computePhil();
+	void computePhil(double **rhlH=rhl);
 	double dr(const double,const double,double *);
 	double dtheta(const double, const double);
 	double dR(const double,const double);
@@ -39,7 +40,7 @@ public:
 
 private:
 	void initLeg();
-	void computeInts();
+	void computeInts(double **);
 
 };
 

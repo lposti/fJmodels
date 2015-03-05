@@ -16,7 +16,9 @@
  *  Compute Legendre coefficients for new rho
  *  integrating the DF
  */
-void computeRhl(Potential *p){
+void computeRhl(Potential *p, double **rhlH=rhl,double ** sigRlH=sigRl,
+		double **sigplH=sigpl,double ** sigzlH=sigzl,double **sigRzlH=sigRzl,
+		double **vrotlH=vrotl){
 
 	double **rho  = mat<double>(NR,NGAUSS), **vrot  = mat<double>(NR,NGAUSS);
 	double **sigR = mat<double>(NR,NGAUSS), **sigp  = mat<double>(NR,NGAUSS),
@@ -48,7 +50,7 @@ void computeRhl(Potential *p){
 	 * 			 since the density was extremely large, implying very large Phi
 	 */
 	rho[0][0] = (rho[2][0]-rho[1][0])/(ar[2]-ar[1])*(ar[0]-ar[1])+rho[1][0];
-	get_Ylm<double>(rho,rhl,vrot,vrotl,sigR,sigRl,sigp,sigpl,sigz,sigzl,sigRz,sigRzl);
+	get_Ylm<double>(rho,rhlH,vrot,vrotlH,sigR,sigRlH,sigp,sigplH,sigz,sigzlH,sigRz,sigRzlH);
 
 }
 
@@ -56,10 +58,11 @@ void computeRhl(Potential *p){
  *  Compute new Potential (phil,Pr,Pr2)
  *  Computes rhl first and calls the integrator for the DF
  */
-void computeNewPhi(Potential *p){
+void computeNewPhi(Potential *p,double **rhlH,double ** sigRlH,
+		double **sigplH,double ** sigzlH,double **sigRzlH,double **vrotlH){
 
-	computeRhl(p);
-	p->computePhil();
+	computeRhl(p,rhlH,sigRlH,sigplH,sigzlH,sigRzlH,vrotlH);
+	p->computePhil(rhlH);
 }
 
 

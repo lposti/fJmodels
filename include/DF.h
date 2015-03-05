@@ -12,7 +12,7 @@
 #include "readParam.h"
 
 void setDF(const double, const double, const double, const double, Potential *);
-void setDF(struct fJParams, Potential *);
+void setDF(struct fJParams, Potential *,const unsigned comp=1);
 double df(const double *, const double *);
 
 

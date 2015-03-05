@@ -85,11 +85,12 @@ template <typename T> void fillPoly(T *si, T* ci, T* wi, T* pol, T **poly){
 }
 
 // interpolates Legendre coefficients for the potential
-template <typename T> void intpo2(T r, T *phip){
+// Default is fot the total potential
+template <typename T> void intpo2(T r, T *phip, double **philH=phil){
 	int npoly=NPOLY;
 	if(r>=ar[NR-1]){
 		for(int k=0; k<npoly; k++)
-			phip[k]=phil[NR-1][k]*pow(ar[NR-1]/r,2*k+1);
+			phip[k]=philH[NR-1][k]*pow(ar[NR-1]/r,2*k+1);
 
 	} else {
 		/*
@@ -100,7 +101,7 @@ template <typename T> void intpo2(T r, T *phip){
 		topbottom<T>(ar,NR,r,&bot,&top);
 		T db=r-ar[bot], f1=db/(ar[top]-ar[bot]);
 		for(int k=0; k<npoly; k++){// linear interpolation
-			phip[k]=f1*phil[top][k]+(1-f1)*phil[bot][k];
+			phip[k]=f1*philH[top][k]+(1-f1)*philH[bot][k];
 		}
 		if(top<10){// add quadratic contributions
 			int thr;
@@ -110,28 +111,29 @@ template <typename T> void intpo2(T r, T *phip){
 			f3=(ar[thr]-ar[bot])/(ar[top]-ar[bot]);
 
 			for(int k=0; k<npoly; k++)
-				phip[k]+=f2*(phil[thr][k]-phil[bot][k]-f3*(phil[top][k]-phil[bot][k]));
+				phip[k]+=f2*(philH[thr][k]-philH[bot][k]-f3*(philH[top][k]-philH[bot][k]));
 		}
 	}
 }
 
 // interpolates Legendre coefficients for the potential and its first and second derivative
-template <typename T> void intpo2(T r,T *phip,T *dphip,T *d2phip){
+template <typename T> void intpo2(T r,T *phip,T *dphip,T *d2phip,
+                                  double **philH=phil,double **PrH=Pr,double **Pr2H=Pr2){
 	unsigned nr=NR,npoly=NPOLY;
 	if(r>=ar[nr-1]){//r larger than end of grid
 		for(int k=0; k<npoly; k++){
-			phip[k]=phil[nr-1][k]*pow(ar[nr-1]/r,2*k+1);
-			dphip[k]=-(2*k+1)*phil[nr-1][k]*pow(ar[nr-1]/r,2*k+1)/r;
-			d2phip[k]=(2*k+2)*(2*k+1)*phil[nr-1][k]*pow(ar[nr-1]/r,2*k+1)/r/r;
+			phip[k]=philH[nr-1][k]*pow(ar[nr-1]/r,2*k+1);
+			dphip[k]=-(2*k+1)*philH[nr-1][k]*pow(ar[nr-1]/r,2*k+1)/r;
+			d2phip[k]=(2*k+2)*(2*k+1)*philH[nr-1][k]*pow(ar[nr-1]/r,2*k+1)/r/r;
 		}
 	} else {
 		int top=0,bot=0;
 		topbottom(ar,nr,r,&bot,&top);
 		double db=r-ar[bot], f1=db/(ar[top]-ar[bot]);
 		for(int k=0; k<npoly; k++){// linear interpolation
-			phip[k]=f1*phil[top][k]+(1-f1)*phil[bot][k];
-			dphip[k]=f1*Pr[top][k]+(1-f1)*Pr[bot][k];
-			d2phip[k]=f1*Pr2[top][k]+(1-f1)*Pr2[bot][k];
+			phip[k]=f1*philH[top][k]+(1-f1)*philH[bot][k];
+			dphip[k]=f1*PrH[top][k]+(1-f1)*PrH[bot][k];
+			d2phip[k]=f1*Pr2H[top][k]+(1-f1)*Pr2H[bot][k];
 		}
 		if(top<10){// add quadratic contributions
 			int thr;
@@ -140,9 +142,9 @@ template <typename T> void intpo2(T r,T *phip,T *dphip,T *d2phip){
 			double f2=dt*db/((ar[thr]-ar[top])*(ar[thr]-ar[bot])),
 			f3=(ar[thr]-ar[bot])/(ar[top]-ar[bot]);
 			for(int k=0; k<npoly; k++){
-				phip[k]+=f2*(phil[thr][k]-phil[bot][k]-f3*(phil[top][k]-phil[bot][k]));
-				dphip[k]+=f2*(Pr[thr][k]-Pr[bot][k]-f3*(Pr[top][k]-Pr[bot][k]));
-				d2phip[k]+=f2*(Pr2[thr][k]-Pr2[bot][k]-f3*(Pr2[top][k]-Pr2[bot][k]));
+				phip[k]+=f2*(philH[thr][k]-philH[bot][k]-f3*(philH[top][k]-philH[bot][k]));
+				dphip[k]+=f2*(PrH[thr][k]-PrH[bot][k]-f3*(PrH[top][k]-PrH[bot][k]));
+				d2phip[k]+=f2*(Pr2H[thr][k]-Pr2H[bot][k]-f3*(Pr2H[top][k]-Pr2H[bot][k]));
 			}
 		}
 	}
@@ -247,7 +249,7 @@ template <typename T> void get_Ylm(T **rho,T **rhL,T **vrot,T **vrotL,
  *  Density stuff
  ************************************************************************************/
 
-template <typename T> void int_dens(T r,T *densp){
+template <typename T> void int_dens(T r,T *densp,double **rhlH=rhl){
 	if(r>ar[NR-1]){
 		for(int i=0; i<NPOLY; i++){
 			densp[i]=0;
@@ -257,13 +259,16 @@ template <typename T> void int_dens(T r,T *densp){
 		topbottom<T>(ar,NR,r,&bot,&top);
 		double f=(r-ar[bot])/(ar[top]-ar[bot]);
 		for(int i=0; i<NPOLY; i++){
-			densp[i]=f*rhl[top][i]+(1-f)*rhl[bot][i];
+			densp[i]=f*rhlH[top][i]+(1-f)*rhlH[bot][i];
 		}
 	}
 }
 
 template <typename T> void int_dens(T r,T *densp,T *Vrotp,
-									T *sigup,T *sigpp,T *sigvp){
+									T *sigup,T *sigpp,T *sigvp,
+									double **rhlH=rhl,double ** sigRlH=sigRl,
+									double **sigplH=sigpl,double ** sigzlH=sigzl,
+									double **vrotlH=vrotl){
 	if(r>ar[NR-1]){
 		for(int i=0; i<NPOLY; i++){
 			densp[i]=0; Vrotp[i]=0; sigup[i]=0; sigpp[i]=0; sigvp[i]=0;
@@ -273,20 +278,20 @@ template <typename T> void int_dens(T r,T *densp,T *Vrotp,
 		topbottom<T>(ar,NR,r,&bot,&top);
 		float f=(r-ar[bot])/(ar[top]-ar[bot]);
 		for(int i=0; i<NPOLY; i++){
-			densp[i]=f*rhl[top][i]+(1-f)*rhl[bot][i];
-			sigup[i]=f*sigRl[top][i]+(1-f)*sigRl[bot][i];
-			sigpp[i]=f*sigpl[top][i]+(1-f)*sigpl[bot][i];
-			sigvp[i]=f*sigzl[top][i]+(1-f)*sigzl[bot][i];
-			Vrotp[i]=f*vrotl[top][i]+(1-f)*vrotl[bot][i];
+			densp[i]=f*rhlH[top][i]+(1-f)*rhlH[bot][i];
+			sigup[i]=f*sigRlH[top][i]+(1-f)*sigRlH[bot][i];
+			sigpp[i]=f*sigplH[top][i]+(1-f)*sigplH[bot][i];
+			sigvp[i]=f*sigzlH[top][i]+(1-f)*sigzlH[bot][i];
+			Vrotp[i]=f*vrotlH[top][i]+(1-f)*vrotlH[bot][i];
 		}
 	}
 }
 
-template <typename T> T ev_dens(T R,T z){//returns dens from rhl
+template <typename T> T ev_dens(T R,T z,double **rhlH=rhl){//returns dens from rhl
 
 	double pol[NPOLY],densp[NPOLY];
 	double c=z/sqrt(R*R+z*z), r=sqrt(R*R+z*z);
-	evenlegend<T>(pol,c); int_dens<T>(r,densp);
+	evenlegend<T>(pol,c); int_dens<T>(r,densp,rhlH);
 	double dens=.5*densp[0];
 	for(int np=1; np<NPOLY; np++){
 		double fac=.5*(4*np+1);
@@ -296,11 +301,14 @@ template <typename T> T ev_dens(T R,T z){//returns dens from rhl
 }
 
 
-template <typename T> T ev_dens(T R,T z,T *Vrot,T *sigu,T *sigp,T *sigv,T *sigRz){//returns dens from rhl
+template <typename T> T ev_dens(T R,T z,T *Vrot,T *sigu,T *sigp,T *sigv,T *sigRz,
+                                double **rhlH=rhl,double ** sigRlH=sigRl,
+								double **sigplH=sigpl,double ** sigzlH=sigzl,
+								double **vrotlH=vrotl){//returns dens from rhl
 
 	double pol[NPOLY],densp[NPOLY],Vrotp[NPOLY],sigup[NPOLY],sigpp[NPOLY],sigvp[NPOLY];
 	double c=z/sqrt(R*R+z*z), r=sqrt(R*R+z*z);
-	evenlegend(pol,c); int_dens(r,densp,Vrotp,sigup,sigpp,sigvp);
+	evenlegend(pol,c); int_dens(r,densp,Vrotp,sigup,sigpp,sigvp,rhlH,sigRlH,sigplH,sigzlH,vrotlH);
 	double dens=.5*densp[0];
 	(*Vrot)=.5*Vrotp[0]; (*sigu)=.5*sigup[0]; (*sigp)=.5*sigpp[0]; (*sigv)=.5*sigvp[0];
 	for(int np=1; np<NPOLY; np++){

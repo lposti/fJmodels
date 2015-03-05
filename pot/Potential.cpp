@@ -17,9 +17,13 @@
 #include "gsl/gsl_integration.h"
 #include "gsl/gsl_errno.h"
 
-Potential::Potential(const bool istot_in) {
+Potential::Potential(const unsigned comp_in) {
 
-	istot=istot_in;
+	comp=comp_in;
+
+	philP = mat<double>(NR,NPOLY);  PrP = mat<double>(NR,NPOLY);    Pr2P = mat<double>(NR,NPOLY);
+	rhlP = mat<double>(NR,NPOLY);
+
 	poly = mat<double>(NPOLY,NGAUSS);
 	I_int = mat<double>(NR,NPOLY);
 	I_ext = mat<double>(NR,NPOLY);
@@ -35,14 +39,6 @@ Potential::Potential(const bool istot_in) {
 	this->initLeg();
 }
 
-Potential::~Potential(){
-	//delMat(poly,NGAUSS);
-	//delMat(I_int,NPOLY); delMat(I_ext,NPOLY);
-
-	//delArr(ci); delArr(si); delArr(wi);
-	//delArr(pol);
-}
-
 /*
  *  Selects the guess density from a list of classical
  *  methods.
@@ -54,7 +50,8 @@ void Potential::selectGuessRho(const std::string rhoName){
 
 	if      (rhoName=="Isochrone") this->rhoGuess = &rhoIsoch;
 	else if (rhoName=="Hernquist") this->rhoGuess = &rhoHern;
-	else if (rhoName=="NFWext")    this->rhoGuess = &rhoNFW;
+	else if (rhoName=="NFW")       this->rhoGuess = &rhoNFW;
+	else if (rhoName=="NFWext")    this->rhoGuess = &rhoNFWext;
 	else {
 		printf("\n\tCall selectGuessRho method with 'Isochrone' \n");
 		exit(1);
@@ -76,7 +73,7 @@ void Potential::computeGuessRhl(){
 
 	rhlP[0][0] = 2*this->rhoGuess(ar[0]*this->si[0],ar[0]*this->ci[0]);
 
-	if (istot)
+	if (comp==1)
 		for (int nr=0; nr<NR; nr++)
 			for (int np=0; np<NPOLY; np++)
 				rhl[nr][np]=rhlP[nr][np];
@@ -110,7 +107,7 @@ double I_external(double x, void * params){
 #define EPSABS   1e-4
 #define EPSREL   1e-3
 #define WORKSIZE 1000
-void Potential::computeInts(){
+void Potential::computeInts(double **rhlH){
 
 	gsl_integration_workspace * w
 		= gsl_integration_workspace_alloc (WORKSIZE);
@@ -124,10 +121,8 @@ void Potential::computeInts(){
 
 		// array to be used by the linear interpolation scheme
 		double *rhl_h = arr<double> (NR);
-		if (istot)
-			for (int i=0; i<NR; i++) rhl_h[i] = rhl[i][np];
-		else
-			for (int i=0; i<NR; i++) rhl_h[i] = rhlP[i][np];
+
+		for (int i=0; i<NR; i++) rhl_h[i] = rhlH[i][np];
 
 		for (int nr=0; nr<NR; nr++){
 
@@ -162,10 +157,10 @@ void Potential::computeInts(){
  *  INPUT:  none, calls the function computeInts() if not already done
  *  OUTPUT: none, fills the global arrays phil, Pr, Pr2
  */
-void Potential::computePhil(){
+void Potential::computePhil(double **rhlH){
 
 	// Compute Internal and External Integrals, if not done before.
-	this->computeInts();
+	this->computeInts(rhlH);
 
 	for (int np=0; np<NPOLY; np++){
 		int l=2*np; double G=1;
@@ -174,18 +169,14 @@ void Potential::computePhil(){
 						(this->I_ext[n][np])*pow(ar[n],l));
 			PrP[n][np]=-TPI*G*(-(l+1)*this->I_int[n][np]/pow(ar[n],l+2)+
 					  l*(this->I_ext[n][np])*pow(ar[n],l-1));
-			if (istot)
-				Pr2P[n][np]=-TPI*G*((l+2)*(l+1)*this->I_int[n][np]/pow(ar[n],l+3)+
-					   (l-1)*l*(this->I_ext[n][np])*pow(ar[n],l-2)
-					   -(2*l+1)*rhl[n][np]);
-			else
-				Pr2P[n][np]=-TPI*G*((l+2)*(l+1)*this->I_int[n][np]/pow(ar[n],l+3)+
-						(l-1)*l*(this->I_ext[n][np])*pow(ar[n],l-2)
-						-(2*l+1)*rhlP[n][np]);
-		}
+
+			Pr2P[n][np]=-TPI*G*((l+2)*(l+1)*this->I_int[n][np]/pow(ar[n],l+3)+
+				   (l-1)*l*(this->I_ext[n][np])*pow(ar[n],l-2)
+				   -(2*l+1)*rhlH[n][np]);
+			}
 	}
 
-	if (istot)
+	if (comp==1)
 		for(int n=0; n<NR; n++)
 			for (int np=0; np<NPOLY; np++){
 				phil[n][np]=philP[n][np];
