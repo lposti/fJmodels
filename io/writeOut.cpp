@@ -29,8 +29,6 @@ string composeName(const struct fJParams fJP, const int iter, const unsigned com
 		name+="_"; name+=toString(fJP.dz_h_in);
 		name+="_"; name+=toString(fJP.dphi_g_in);
 		name+="_"; name+=toString(fJP.dz_g_in);
-		name+="_"; name+=toString(iter);
-		name+=".out";
 
 	} else if (comp==2) {
 
@@ -42,9 +40,10 @@ string composeName(const struct fJParams fJP, const int iter, const unsigned com
 		name+="_"; name+=toString(fJP.dz_h_in2);
 		name+="_"; name+=toString(fJP.dphi_g_in2);
 		name+="_"; name+=toString(fJP.dz_g_in2);
-		name+="_"; name+=toString(iter);
-		name+=".out";
 	}
+
+	name+="_"; name+=toString(iter);
+	name+=".out";
 
 	return name;
 }
