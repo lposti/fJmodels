@@ -10,6 +10,8 @@
 
 #include "Potential.h"
 
+void updatePhil(const Potential *, const Potential *);
+
 void computeNewPhi(Potential *,double **rhlH=rhl,double ** sigRlH=sigRl,
 		double **sigplH=sigpl,double ** sigzlH=sigzl,double **sigRzlH=sigRzl,
 		double **vrotlH=vrotl);

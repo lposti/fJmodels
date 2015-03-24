@@ -66,7 +66,8 @@ void writeMat( ofstream & outF, double **mat, int NX, int NY ){
 
 void writeOut(const struct fJParams fJP, const int iter,
 		const unsigned comp,double **rhlH,double ** sigRlH,double **sigplH,
-		double ** sigzlH,double **sigRzlH,double **vrotlH,double **philH){
+		double ** sigzlH,double **sigRzlH,double **vrotlH,double **philH,
+		double **PrH, double **Pr2H){
 
 	ofstream outF;
 
@@ -78,13 +79,18 @@ void writeOut(const struct fJParams fJP, const int iter,
 
 		if (outF.is_open()){
 
+			/* Print a meaningful header first */
 			outF << NR << " " << NPOLY << " " << NGAUSS << endl;
+			outF << fJP.dphi_h_in << " " << fJP.dz_h_in << " " << fJP.dphi_g_in << " " << fJP.dz_g_in << endl;
+			outF << fJP.chi << " " << fJP.mass << " " << fJP.r0 << endl;
+			outF << fJP.alpha << " " << fJP.beta << endl;
 
 			writeArr(outF,ar,NR);
 			writeMat(outF,rhlH,NR,NPOLY);   writeMat(outF,vrotlH,NR,NPOLY);
 			writeMat(outF,sigRlH,NR,NPOLY); writeMat(outF,sigplH,NR,NPOLY);
 			writeMat(outF,sigzlH,NR,NPOLY); writeMat(outF,sigRzlH,NR,NPOLY);
-			writeMat(outF,philH,NR,NPOLY);
+			writeMat(outF,philH,NR,NPOLY);  writeMat(outF,PrH,NR,NPOLY);
+			writeMat(outF,Pr2H,NR,NPOLY);
 		}
 
 	} else {
@@ -96,13 +102,18 @@ void writeOut(const struct fJParams fJP, const int iter,
 
 		if (outF.is_open()){
 
+			/* Print a meaningful header first */
 			outF << NR << " " << NPOLY << " " << NGAUSS << endl;
+			outF << fJP.dphi_h_in2 << " " << fJP.dz_h_in2 << " " << fJP.dphi_g_in2 << " " << fJP.dz_g_in2 << endl;
+			outF << fJP.chi_2 << " " << fJP.mass_2 << " " << fJP.r0_2 << endl;
+			outF << fJP.alpha_2 << " " << fJP.beta_2 << endl;
 
 			writeArr(outF,ar,NR);
 			writeMat(outF,rhlH,NR,NPOLY);   writeMat(outF,vrotlH,NR,NPOLY);
 			writeMat(outF,sigRlH,NR,NPOLY); writeMat(outF,sigplH,NR,NPOLY);
 			writeMat(outF,sigzlH,NR,NPOLY); writeMat(outF,sigRzlH,NR,NPOLY);
-			writeMat(outF,philH,NR,NPOLY);
+			writeMat(outF,philH,NR,NPOLY);  writeMat(outF,PrH,NR,NPOLY);
+			writeMat(outF,Pr2H,NR,NPOLY);
 		}
 
 	}

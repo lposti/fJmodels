@@ -50,6 +50,7 @@ void twoComp(struct fJParams fJP){
 	rhl2 = mat<double>(NR,NPOLY);   vrotl2 = mat<double>(NR,NPOLY);
 	sigRl2 = mat<double>(NR,NPOLY); sigpl2 = mat<double>(NR,NPOLY);
 	sigzl2 = mat<double>(NR,NPOLY); sigRzl2 = mat<double>(NR,NPOLY);
+	double **phil_mid = mat<double>(NR,NPOLY), **Pr_mid = mat<double>(NR,NPOLY), **Pr2_mid = mat<double>(NR,NPOLY);
 
 	SetModel(fJP,1);
 
@@ -62,23 +63,28 @@ void twoComp(struct fJParams fJP){
 	p2.selectGuessRho(fJP.modName2);
 	p2.computeGuessRhl(); p2.computePhil(p2.rhlP);
 
+	updatePhil(&p, &p2);		// update the total potential
 	/*
 	 *  Now I can safely pass p since total phils and derivatives
 	 *  are that of the total potential.
 	 */
 	tabulateDelta(&p);
 
+	for (int i=0; i<NR; i++) printf("%f %f %f %f %f \n",p.rhlP[i][0],p2.rhlP[i][0],phil[i][0],p.philP[i][0],p2.philP[i][0]);
 	for (int k=0; k<5; k++){
 		printf("\n Iter:%d\n",k);
 
-		setDF(fJP,&p,1);
+		setDF(&fJP,&p,1);
 		computeNewPhi(&p,rhl,sigRl,sigpl,sigzl,sigRzl,vrotl);
 
-		setDF(fJP,&p,2);
+		setDF(&fJP,&p,2);
 		computeNewPhi(&p2,rhl2,sigRl2,sigpl2,sigzl2,sigRzl2,vrotl2);
+
+		updatePhil(&p, &p2);		// update the total potential
+
 		for (int i=0; i<NR; i++) printf("%f %f %f %f %f %f %f\n",rhl[i][0],rhl2[i][0],sigRl[i][0],sigRl2[i][0],phil[i][0],p.philP[i][0],p2.philP[i][0]);
-		writeOut(fJP,k,1,rhl,sigRl,sigpl,sigzl,sigRzl,vrotl,p.philP);
-		writeOut(fJP,k,2,rhl2,sigRl2,sigpl2,sigzl2,sigRzl2,vrotl2,p2.philP);
+		writeOut(fJP,k,1,rhl,sigRl,sigpl,sigzl,sigRzl,vrotl,p.philP,p.PrP,p.Pr2P);
+		writeOut(fJP,k,2,rhl2,sigRl2,sigpl2,sigzl2,sigRzl2,vrotl2,p2.philP,p2.PrP,p2.Pr2P);
 	}
 }
 
@@ -99,8 +105,8 @@ int main(int argc, char **argv){
 
 	SetGrid(50.);
 
-	twoComp(fJP);
-	if (0) {
+	//twoComp(fJP);
+	if (1) {
 
 		SetModel(fJP);
 
@@ -114,7 +120,7 @@ int main(int argc, char **argv){
 		printf("\n-----TEST %d\n",QUADORD);
 		tabulateDelta(&p);
 
-		setDF(fJP,&p);
+		setDF(&fJP,&p,1);
 		//testInteg(&p);
 
 		for (int k=0; k<5; k++){
@@ -123,7 +129,11 @@ int main(int argc, char **argv){
 			//ext.selectGuessRho("NFWext");
 			//ext.computeGuessRhl(); ext.computePhil();
 			//for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
+
+			double **philOLD=mat<double>(NR,NPOLY), **PrOLD=mat<double>(NR,NPOLY),**Pr2OLD=mat<double>(NR,NPOLY);
+			//savePhi(philOLD,PrOLD,Pr2OLD);
 			computeNewPhi(&p);
+			//mergePhi(philOLD,PrOLD,Pr2OLD,.25);
 			writeOut(fJP,k);
 			vir2(&p);
 		}

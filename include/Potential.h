@@ -15,7 +15,7 @@
 class Potential {
 
 public:
-	Potential(const unsigned howMany_in=1);
+	Potential(const unsigned comp_in=1);
 
 	/* data */
 	double ** __restrict poly, ** __restrict I_int, ** __restrict I_ext;

@@ -11,3 +11,4 @@ include/press.h
 *.optrpt
 OLD_Makefile
 autom4te.cache/
+param2.txt

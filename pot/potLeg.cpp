@@ -12,6 +12,20 @@
 #include "UtilsLeg.h"
 #include "Progressbar.h"
 
+
+/*
+ *  Update total potential in a multi-component model
+ */
+void updatePhil(const Potential *p1, const Potential *p2){
+
+	for(int n=0; n<NR; n++)
+		for (int np=0; np<NPOLY; np++){
+			phil[n][np] = p1->philP[n][np] + p2->philP[n][np];
+			Pr[n][np]   = p1->PrP[n][np]   + p2->PrP[n][np];
+			Pr2[n][np]  = p1->Pr2P[n][np]  + p2->Pr2P[n][np];
+		}
+}
+
 /*
  *  Compute Legendre coefficients for new rho
  *  integrating the DF
@@ -62,6 +76,7 @@ void computeNewPhi(Potential *p,double **rhlH,double ** sigRlH,
 		double **sigplH,double ** sigzlH,double **sigRzlH,double **vrotlH){
 
 	computeRhl(p,rhlH,sigRlH,sigplH,sigzlH,sigRzlH,vrotlH);
+	/* CHANGE THIS //////////////////////////////////////////////////////////*/
 	p->computePhil(rhlH);
 }
 

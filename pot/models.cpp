@@ -9,7 +9,7 @@
 #include "Utils.h"
 #include "readParam.h"
 
-double mass,J0,r0;
+double mass,J0,r0,chi;
 double q,q2;
 
 void SetModel(struct fJParams fJP, const unsigned comp){

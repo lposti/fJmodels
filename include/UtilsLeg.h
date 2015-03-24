@@ -245,6 +245,32 @@ template <typename T> void get_Ylm(T **rho,T **rhL,T **vrot,T **vrotL,
 	delMat(poly,npoly);
 }
 
+
+template <typename T> void savePhi(T **philOLD, T **PrOLD, T **Pr2OLD){
+	for (int nr=0; nr<NR; nr++)
+		for (int np=0; np<NPOLY; np++){
+			philOLD[nr][np] = phil[nr][np];
+			PrOLD[nr][np]   = Pr[nr][np];
+			Pr2OLD[nr][np]  = Pr2[nr][np];
+		}
+}
+
+
+template <typename T> T mergePhi(T **philOLD, T **PrOLD, T **Pr2OLD, T f){
+	T fa=1+f,maxd=0;
+	for(int i=0; i<NR; i++)
+		for(int j=0; j<NPOLY; j++){
+			maxd=MAX(maxd,fabs((phil[i][j]-philOLD[i][j])/phil[i][0]));
+			phil[i][j]=fa*phil[i][j]-f*philOLD[i][j];
+			Pr[i][j]=fa*Pr[i][j]-f*PrOLD[i][j];
+			Pr2[i][j]=fa*Pr2[i][j]-f*Pr2OLD[i][j];
+		}
+
+	printf("-- Merge Phi: max distance %f \n",maxd);
+	return maxd;
+}
+
+
 /************************************************************************************
  *  Density stuff
  ************************************************************************************/

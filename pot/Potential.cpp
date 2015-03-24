@@ -43,7 +43,7 @@ Potential::Potential(const unsigned comp_in) {
  *  Selects the guess density from a list of classical
  *  methods.
  *
- *  INPUT:  string, can be ="Isochrone","Hernquist"
+ *  INPUT:  string, can be ="Isochrone","Hernquist","NFW","NFWext"
  *  OUTPUT: void, initializes the private data rho.
  */
 void Potential::selectGuessRho(const std::string rhoName){
@@ -177,12 +177,13 @@ void Potential::computePhil(double **rhlH){
 	}
 
 	if (comp==1)
-		for(int n=0; n<NR; n++)
+		for (int n=0; n<NR; n++)
 			for (int np=0; np<NPOLY; np++){
 				phil[n][np]=philP[n][np];
 				Pr[n][np]  =PrP[n][np];
 				Pr2[n][np] =Pr2P[n][np];
 			}
+	/*
 	else
 		for(int n=0; n<NR; n++)
 			for (int np=0; np<NPOLY; np++){
@@ -190,7 +191,7 @@ void Potential::computePhil(double **rhlH){
 				Pr[n][np]  +=PrP[n][np];
 				Pr2[n][np] +=Pr2P[n][np];
 			}
-
+	*/
 
 	canEv = true; // automatically reset the potential to re-compute the integrals
 }

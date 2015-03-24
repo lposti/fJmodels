@@ -13,12 +13,15 @@
 struct fJParams {
 	std::string modName;
 	double dphi_h_in,dz_h_in,dphi_g_in,dz_g_in;
-	double mass,r0,q;
+	double chi,mass,r0,q;
+	double alpha,beta;
 	unsigned comp;
 
 	std::string modName2;
+	bool rot_2;
 	double dphi_h_in2,dz_h_in2,dphi_g_in2,dz_g_in2;
-	double mass_2,r0_2,q_2;
+	double chi_2,mass_2,r0_2,q_2;
+	double alpha_2,beta_2;
 };
 
 struct fJParams readParam();

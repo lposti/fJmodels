@@ -34,31 +34,33 @@ void setDF(const double dphi_h_in, const double dz_h_in,
 	setDF(dphi_h_in,dz_h_in,dphi_g_in,dz_g_in);
 }
 
-void setDF(struct fJParams fJP, Potential *p, const unsigned comp){
+void setDF(struct fJParams * fJP, Potential *p, const unsigned comp){
 
 	if (comp==1){
 
-		modClassic = fJP.modName;
-		if (modClassic=="Hernquist") 	  {alpha[0] = 1.6;   alpha[1]=5.;}
-		else if (modClassic=="Isochrone") {alpha[0] = .0;    alpha[1]=5.;}
-		else if (modClassic=="NFW") 	  {alpha[0] = 1.6;   alpha[1]=3.;}
+		modClassic = fJP->modName;
+		if (modClassic=="Hernquist") 	  {alpha[0] = fJP->alpha = 1.667;   alpha[1] = fJP->beta = 5.;}
+		else if (modClassic=="Isochrone") {alpha[0] = fJP->alpha = .0;      alpha[1] = fJP->beta = 5.;}
+		else if (modClassic=="NFW") 	  {alpha[0] = fJP->alpha = 1.667;   alpha[1] = fJP->beta = 3.;}
 		else {printf("\n--> ERROR: currently only Isochrone and Hernquist models supported!\n"); exit(1);}
 
-		J0=sqrt(fJP.mass*fJP.r0);
-		setDF(fJP.dphi_h_in,fJP.dz_h_in,fJP.dphi_g_in,fJP.dz_g_in,p);
+		J0=sqrt(fJP->mass*fJP->r0); mass=fJP->mass; chi=fJP->chi;
+		setDF(fJP->dphi_h_in,fJP->dz_h_in,fJP->dphi_g_in,fJP->dz_g_in,p);
 
 	} else if (comp==2){
 
-		modClassic = fJP.modName2;
-		if (modClassic=="Hernquist") 	  {alpha[0] = 1.6; alpha[1]=5.;}
-		else if (modClassic=="Isochrone") {alpha[0] = 0.;  alpha[1]=5.;}
-		else if (modClassic=="NFW") 	  {alpha[0] = 1.6; alpha[1]=3.;}
+		modClassic = fJP->modName2;
+		if (modClassic=="Hernquist") 	  {alpha[0] = fJP->alpha_2 = 1.667;   alpha[1] = fJP->beta_2 = 5.;}
+		else if (modClassic=="Isochrone") {alpha[0] = fJP->alpha_2 = .0;      alpha[1] = fJP->beta_2 = 5.;}
+		else if (modClassic=="NFW") 	  {alpha[0] = fJP->alpha_2 = 1.667;   alpha[1] = fJP->beta_2 = 3.;}
 		else {printf("\n--> ERROR: currently only Isochrone, Hernquist and NFW models supported!\n"); exit(1);}
 
-		J0=sqrt(fJP.mass_2*fJP.r0_2);
-		setDF(fJP.dphi_h_in2,fJP.dz_h_in2,fJP.dphi_g_in2,fJP.dz_g_in2,p);
+		J0=sqrt(fJP->mass_2*fJP->r0_2); mass=fJP->mass_2; chi=fJP->chi_2;
+		setDF(fJP->dphi_h_in2,fJP->dz_h_in2,fJP->dphi_g_in2,fJP->dz_g_in2,p);
 
 	}
+
+	printf("===========  DF Set as: ==============\n a=%f b=%f \n",alpha[0],alpha[1]);
 }
 
 inline void hJgJ(double * hg, const double Jr, const double Jphi, const double Jz){
@@ -71,7 +73,7 @@ inline void hJgJ(double * hg, const double Jr, const double Jphi, const double J
 double df_hg(const double Jr, const double Jphi, const double Jz){
 
 	double hg[2]; hJgJ(hg,Jr,Jphi,Jz);
-	return mass/pow(J0,3)*MAX(0.,pow(1.+J0/hg[0],alpha[0])/(pow(1.+hg[1]/J0,alpha[1]))) / (pow(TPI,3.));
+	return mass/pow(J0,3) * MAX(0., pow(1.+J0/hg[0],alpha[0])/(pow(1.+hg[1]/J0,alpha[1]))) / (pow(TPI,3.));
 }
 
 double df(const double *x, const double *v){
@@ -87,5 +89,10 @@ double df(const double *x, const double *v){
 	uvOrb uvorb(Deltafn(H),Lz,Phi_h,x,p,gP);
 	Jr=uvorb.Ju(); Jz=uvorb.Jv(); Jphi=Lz;
 
-	return df_hg(Jr,Jphi,Jz);
+	if (chi==0.) return df_hg(Jr,Jphi,Jz);
+	else {
+		double k=0.5;
+		double DFeven = df_hg(Jr,Jphi,Jz);
+		return (1-k)*DFeven + k*tanh(chi*Jphi/J0)*DFeven;
+	}
 }
