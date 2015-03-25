@@ -21,5 +21,7 @@ extern double ** __restrict phil, ** __restrict Pr, ** __restrict Pr2,
 			  ** __restrict rhl, ** __restrict vrotl, ** __restrict sigRl,
               ** __restrict sigpl, ** __restrict sigzl, ** __restrict sigRzl;
 
+extern unsigned components;
+
 
 #endif /* INCLUDE_GRID_H_ */

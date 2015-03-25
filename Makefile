@@ -2,7 +2,7 @@
 # GCC flags & Opts.
 #
 FLAGS_GNU   = -g3 -fopenmp
-OPT_GNU     = -O3 -ftree-vectorizer-verbose=1 -march=corei7-avx -mtune=corei7-avx -mavx
+OPT_GNU     = -O3 -ftree-vectorizer-verbose=0 -march=corei7-avx -mtune=corei7-avx -mavx
 
 #
 # Intel flags & Opts.

@@ -11,9 +11,10 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include "Grid.h"
 #include "readParam.h"
 
-void writeOut(const struct fJParams, const int,
+void writeOut(const struct fJParams&, const int,
 		const unsigned comp=1, double **rhlH=rhl,double **sigRlH=sigRl,
 		double **sigplH=sigpl,double **sigzlH=sigzl,double **sigRzlH=sigRzl,
 		double **vrotlH=vrotl,double **philH=phil, double **PrH=Pr, double **Pr2H=Pr2);

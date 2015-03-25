@@ -19,8 +19,8 @@ string composeName(const struct fJParams fJP, const int iter, const unsigned com
 
 	string name;
 
-	if (comp==1){
-
+	if (comp==1)
+	{
 		// trim model name to 4 chars
 		name = fJP.modName;
 		if (name.size()>5) name.erase(5,name.size());
@@ -30,8 +30,9 @@ string composeName(const struct fJParams fJP, const int iter, const unsigned com
 		name+="_"; name+=toString(fJP.dphi_g_in);
 		name+="_"; name+=toString(fJP.dz_g_in);
 
-	} else if (comp==2) {
-
+	}
+	else if (comp==2)
+	{
 		// trim model name to 4 chars
 		name = fJP.modName2;
 		if (name.size()>5) name.erase(5,name.size());
@@ -64,16 +65,20 @@ void writeMat( ofstream & outF, double **mat, int NX, int NY ){
 	}
 }
 
-void writeOut(const struct fJParams fJP, const int iter,
+void writeOut(const struct fJParams& fJP, const int iter,
 		const unsigned comp,double **rhlH,double ** sigRlH,double **sigplH,
 		double ** sigzlH,double **sigRzlH,double **vrotlH,double **philH,
 		double **PrH, double **Pr2H){
 
 	ofstream outF;
 
-	if (comp==1){
+	if (comp==1)
+	{
 		string name="models/";
-		name+=composeName(fJP,iter);
+
+		/* if the user's specified outName is not null use that, else compose name */
+		if (fJP.outName != "null") name += fJP.outName+"_"+toString(iter)+".out";
+		else name+=composeName(fJP,iter);
 
 		outF.open(name.c_str(), ios::out);
 
@@ -93,10 +98,14 @@ void writeOut(const struct fJParams fJP, const int iter,
 			writeMat(outF,Pr2H,NR,NPOLY);
 		}
 
-	} else {
-
+	}
+	else if (comp==2)
+	{
 		string name="models/";
-		name +=composeName(fJP,iter,comp);
+
+		/* if the user's specified outName is not null use that, else compose name */
+		if (fJP.outName2 != "null") name += fJP.outName2+"_"+toString(iter)+".out";
+		else name+=composeName(fJP,iter,comp);
 
 		outF.open(name.c_str(), ios::out);
 

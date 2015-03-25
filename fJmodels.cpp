@@ -50,8 +50,8 @@ void twoComp(struct fJParams fJP){
 	rhl2 = mat<double>(NR,NPOLY);   vrotl2 = mat<double>(NR,NPOLY);
 	sigRl2 = mat<double>(NR,NPOLY); sigpl2 = mat<double>(NR,NPOLY);
 	sigzl2 = mat<double>(NR,NPOLY); sigRzl2 = mat<double>(NR,NPOLY);
-	double **phil_mid = mat<double>(NR,NPOLY), **Pr_mid = mat<double>(NR,NPOLY), **Pr2_mid = mat<double>(NR,NPOLY);
 
+	printf("\nSetting up two-component f(J) model...\n");
 	SetModel(fJP,1);
 
 	Potential p(1);
@@ -88,6 +88,37 @@ void twoComp(struct fJParams fJP){
 	}
 }
 
+void oneComp(struct fJParams fJP){
+
+	printf("\nSetting up one-component f(J) model...\n");
+	SetModel(fJP);
+
+	Potential p;
+	p.selectGuessRho(fJP.modName);
+	p.computeGuessRhl(); p.computePhil();
+
+	tabulateDelta(&p);
+
+	setDF(&fJP,&p,1);
+
+	for (int k=0; k<5; k++){
+		printf("\n Iter:%d\n",k);
+
+		/* external potential ----------- TO BE FIXED!!! */
+		//Potential ext(false);
+		//ext.selectGuessRho("NFWext");
+		//ext.computeGuessRhl(); ext.computePhil();
+		//for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
+
+		//double **philOLD=mat<double>(NR,NPOLY), **PrOLD=mat<double>(NR,NPOLY),**Pr2OLD=mat<double>(NR,NPOLY);
+		//savePhi(philOLD,PrOLD,Pr2OLD);
+		computeNewPhi(&p);
+		//mergePhi(philOLD,PrOLD,Pr2OLD,.25);
+		writeOut(fJP,k);
+		vir2(&p);
+	}
+}
+
 int main(int argc, char **argv){
 
 	/*
@@ -101,42 +132,27 @@ int main(int argc, char **argv){
 	sigRl = mat<double>(NR,NPOLY); sigpl = mat<double>(NR,NPOLY);
 	sigzl = mat<double>(NR,NPOLY); sigRzl = mat<double>(NR,NPOLY);
 
-	struct fJParams fJP = readParam(); printParam(fJP);
+	/*
+	 *  read parameter file:
+	 *  if the program was launched with an argument interpret it as an input file.
+	 *  if nothig was specified by default the program will search for a file called "param.txt"
+	 *  in the root dir
+	 */
+	struct fJParams fJP;
+	if (argc>1) fJP = readParam(argv[1]);
+	else fJP = readParam();
+	printParam(&fJP);
 
 	SetGrid(50.);
+	printf("=");
+	printf("\n======================================================================\n");
 
-	//twoComp(fJP);
-	if (1) {
-
-		SetModel(fJP);
-
-		Potential p;
-		p.selectGuessRho(fJP.modName);
-		p.computeGuessRhl(); p.computePhil();
-		//for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
-
-		printf("\n======================================================================\n");
-
-		printf("\n-----TEST %d\n",QUADORD);
-		tabulateDelta(&p);
-
-		setDF(&fJP,&p,1);
-		//testInteg(&p);
-
-		for (int k=0; k<5; k++){
-			printf("\n Iter:%d\n",k);
-			//Potential ext(false);
-			//ext.selectGuessRho("NFWext");
-			//ext.computeGuessRhl(); ext.computePhil();
-			//for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
-
-			double **philOLD=mat<double>(NR,NPOLY), **PrOLD=mat<double>(NR,NPOLY),**Pr2OLD=mat<double>(NR,NPOLY);
-			//savePhi(philOLD,PrOLD,Pr2OLD);
-			computeNewPhi(&p);
-			//mergePhi(philOLD,PrOLD,Pr2OLD,.25);
-			writeOut(fJP,k);
-			vir2(&p);
-		}
+	if (components == 1) oneComp(fJP);
+	else if (components == 2) twoComp(fJP);
+	else
+	{
+		printf("ERROR: Cannot initialize neither one- nor two-component models!");
+		exit(6);
 	}
 
 	printf("\n----> Elapsed time of computation: %7.5f s\n",(clock()-start) / (double) CLOCKS_PER_SEC);
