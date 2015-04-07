@@ -36,7 +36,7 @@ All the DFs are of the following general form:
 
 [DF]: doc/imgs/DF.png "Distribution Function"
 and A, B are slopes defined by the model type desired (see [Posti et al. (2015)](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)).
-The above DF is an even function in the azimuthal velocity (since it depends only on the absolute value of the vertical angular momentum $J_\phi$), so the models do not roatate. We parametrize rotation adding an odd component in $J_\phi$:
+The above DF is an even function in the azimuthal velocity (since it depends only on the absolute value of the vertical angular momentum ![alt text] http://www.sciweavers.org/tex2img.php?eq=J_%5Cphi&bc=White&fc=Black&im=jpg&fs=18&ff=modern&edit=0 "vertical angular momentum"), so the models do not roatate. We parametrize rotation adding an odd component in ![alt text] http://www.sciweavers.org/tex2img.php?eq=J_%5Cphi&bc=White&fc=Black&im=jpg&fs=18&ff=modern&edit=0 "vertical angular momentum":
 ![alt text][rot]
 
 [rot]: http://www.sciweavers.org/tex2img.php?eq=f_%7B%5Crm%20tot%7D%28%7B%5Cbf%20J%7D%29%20%3D%20%281-k%29f%28%7B%5Cbf%20J%7D%29%20%2B%20k%5Ctanh%5Cleft%28%5Cfrac%7B%5Cchi%20J_%5Cphi%7D%7BJ_0%7D%5Cright%29f%28%7B%5Cbf%20J%7D%29&bc=White&fc=Black&im=jpg&fs=18&ff=modern&edit=0 "Rotation"
