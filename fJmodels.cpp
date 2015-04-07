@@ -29,20 +29,9 @@ double ** __restrict phil, ** __restrict Pr, ** __restrict Pr2,
        ** __restrict rhl, ** __restrict vrotl, ** __restrict sigRl,
        ** __restrict sigpl, ** __restrict sigzl, ** __restrict sigRzl;
 
-double Hpot(double r){
-	return -1./(1.+r);
-}
-
-void testInteg(Potential *p){
-
-	double vrot,sigR,sigp,sigz,sigRz;
-	FILE*fp=fopen("rho.dat","w");
-	for(int n=0; n<NR; n++){
-		double rhoh=rhofDF(ar[n],0.,p,&vrot,&sigR,&sigp,&sigz,&sigRz);
-		fprintf(fp,"%f %f %f %f %f %f %f\n",ar[n],rhoh,vrot,sigR,sigp,sigz,sigRz);
-	}
-}
-
+/*
+ * Compute 2-component models
+ */
 void twoComp(struct fJParams fJP){
 
 	double ** __restrict rhl2, ** __restrict vrotl2, ** __restrict sigRl2,
@@ -71,7 +60,7 @@ void twoComp(struct fJParams fJP){
 	tabulateDelta(&p);
 
 	for (int i=0; i<NR; i++) printf("%f %f %f %f %f \n",p.rhlP[i][0],p2.rhlP[i][0],phil[i][0],p.philP[i][0],p2.philP[i][0]);
-	for (int k=0; k<5; k++){
+	for (int k=0; k<fJP.itermax; k++){
 		printf("\n Iter:%d\n",k);
 
 		setDF(&fJP,&p,1);
@@ -82,12 +71,15 @@ void twoComp(struct fJParams fJP){
 
 		updatePhil(&p, &p2);		// update the total potential
 
-		for (int i=0; i<NR; i++) printf("%f %f %f %f %f %f %f\n",rhl[i][0],rhl2[i][0],sigRl[i][0],sigRl2[i][0],phil[i][0],p.philP[i][0],p2.philP[i][0]);
+		//for (int i=0; i<NR; i++) printf("%f %f %f %f %f %f %f\n",rhl[i][0],rhl2[i][0],sigRl[i][0],sigRl2[i][0],phil[i][0],p.philP[i][0],p2.philP[i][0]);
 		writeOut(fJP,k,1,rhl,sigRl,sigpl,sigzl,sigRzl,vrotl,p.philP,p.PrP,p.Pr2P);
 		writeOut(fJP,k,2,rhl2,sigRl2,sigpl2,sigzl2,sigRzl2,vrotl2,p2.philP,p2.PrP,p2.Pr2P);
 	}
 }
 
+/*
+ * Compute 1-component models
+ */
 void oneComp(struct fJParams fJP){
 
 	printf("\nSetting up one-component f(J) model...\n");
@@ -101,7 +93,7 @@ void oneComp(struct fJParams fJP){
 
 	setDF(&fJP,&p,1);
 
-	for (int k=0; k<5; k++){
+	for (int k=0; k<fJP.itermax; k++){
 		printf("\n Iter:%d\n",k);
 
 		/* external potential ----------- TO BE FIXED!!! */

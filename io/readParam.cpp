@@ -38,6 +38,8 @@ struct fJParams readParam(char const * fName){
 	struct fJParams fJP;
 
 	/* default variables */
+	fJP.itermax = 5;
+
 	fJP.modName  = "null"; fJP.outName  = "null";
 	fJP.dphi_h_in = UNSET; fJP.dz_h_in = UNSET; fJP.dphi_g_in = UNSET; fJP.dz_g_in = UNSET;
 	fJP.chi = UNSET; fJP.mass = UNSET; fJP.r0 = UNSET; fJP.q = UNSET;
@@ -68,6 +70,8 @@ struct fJParams readParam(char const * fName){
 					/* now use stream with >> */
 					string par;
 					lineStream >> par;
+
+					if (par=="itermax")		fJP.itermax	  = readVal(lineStream);
 
 					if (par=="model")       fJP.modName   = readStr(lineStream);
 					if (par=="outfile")     fJP.outName   = readStr(lineStream);
@@ -139,6 +143,8 @@ void printParam(const struct fJParams * fJP){
 
 	cout << "\n======================================================================" << endl;
 	cout <<   "= f(J) Model computation" << endl;
+	cout <<   "======================================================================\n" << endl;
+	cout <<   "= Maximum number of iterations: " << fJP->itermax << endl;
 	cout <<   "=\n" << endl;
 	cout <<   "PARAMETERS of the model:\n" << endl;
 	cout <<   " - Classical model:\t" << fJP->modName << endl;

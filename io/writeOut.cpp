@@ -44,7 +44,7 @@ string composeName(const struct fJParams fJP, const int iter, const unsigned com
 	}
 
 	name+="_"; name+=toString(iter);
-	name+=".out";
+	name+=".out2c";
 
 	return name;
 }

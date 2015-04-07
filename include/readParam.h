@@ -12,6 +12,9 @@
 
 struct fJParams {
 
+	/* number of iterations */
+	int itermax;
+
 	/* first component */
 	std::string modName, outName;
 	double dphi_h_in,dz_h_in,dphi_g_in,dz_g_in;
