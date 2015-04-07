@@ -1,10 +1,14 @@
 # ignored files by git
 fJmodels
 orb.dat
+rho.dat
 # gitcommands.txt
 models/
 input/
 Debug/
-rhof*out
-DFen.dat
-xvJ.dat
+binney/
+include/press.h
+*.optrpt
+OLD_Makefile
+autom4te.cache/
+param2.txt

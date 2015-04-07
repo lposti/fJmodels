@@ -1,0 +1,31 @@
+#
+# Comment lines
+#
+
+itermax		4
+	
+model		Hernquist
+#outfile		nfwtest
+h(J):dphi	0.55
+h(J):dz		0.55
+g(J):dphi	1.
+g(J):dz		1.
+chi		0.
+mass		1.
+r0		1.
+q		1.
+
+#
+# Optional: second component
+#
+
+2:model 	  NFW
+2:h(J):dphi       0.55
+2:h(J):dz         0.55
+2:g(J):dphi       1.
+2:g(J):dz         1.
+2:chi		  0.
+2:mass            10.
+2:r0              25.
+2:q               1.
+

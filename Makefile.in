@@ -1,0 +1,19 @@
+CC=@CC@
+CXX=@CXX@
+
+FLAGS=@FLAGS@
+OPTFLAGS=@OPTFLAGS@
+
+CPPFLAGS=@CPPFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+LOCALINC=-I${PWD}/include/
+#
+# Build with no optimization flags
+#
+
+fJmodels:
+	$(CXX) -o fJmodels $(FLAGS) $(CPPFLAGS) $(LOCALINC) $(LDFLAGS) fJmodels.cpp pot/*.cpp delta/*.cpp uvOrb/*.cpp df/*.cpp integ/*.cpp io/*.cpp libs/*.cpp $(LIBS)
+
+clean:
+	rm fJmodels *.optrpt config.*
