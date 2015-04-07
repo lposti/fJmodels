@@ -31,6 +31,11 @@ The outputs will be written in the directory named `models`, which must exist.
 The code can currently compute both 1-component and 2-component models, for which all the parameters are specified in the parameter file.
 An example is given as the file `param.txt`.
 
+All the DFs are of the following general form:
+![alt text][DF]
+
+[DF]: doc/imgs/DF.png "Distribution Function"
+
 One component is mandatory (and also all its parameters are), the second is optional.
 - `itermax [optional]` defines the number of iterations computed. It is defaulted to 5.
 - `model / 2:model [mandatory / optional]` 1- and 2-component model type: currently it can be `Hernquist`, `Isochrone`, `NFW`
