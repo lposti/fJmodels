@@ -35,6 +35,12 @@ All the DFs are of the following general form:
 ![alt text][DF]
 
 [DF]: doc/imgs/DF.png "Distribution Function"
+and A, B are slopes defined by the model type desired (see [Posti et al. (2015)](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)).
+The above DF is an even function in the azimuthal velocity (since it depends only on the absolute value of the vertical angular momentum $J_\phi$), so the models do not roatate. We parametrize rotation adding an odd component in $J_\phi$:
+$$
+f_{\rm tot}({\bf J}) = (1-k)f({\bf J}) + k\tanh\left(\frac{\chi J_\phi}{J_0}\right)f({\bf J})
+$$
+
 
 One component is mandatory (and also all its parameters are), the second is optional.
 - `itermax [optional]` defines the number of iterations computed. It is defaulted to 5.
@@ -50,6 +56,6 @@ One component is mandatory (and also all its parameters are), the second is opti
 
 ## References
 
-Main paper: [Posti et al. (2014)](http://adsabs.harvard.edu/abs/2014arXiv1411.7897P)
+Main paper: [Posti et al. (2015)](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)
 
 Staeckel Fudge: [Binney (2012)](http://adsabs.harvard.edu/abs/2012MNRAS.426.1324B)
