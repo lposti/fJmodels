@@ -52,6 +52,10 @@ One component is mandatory (and also all its parameters are), the second is opti
 - `r0 / 2:r0 [mandatory / optional]` 1- and 2-component model scale radius: together with `M0` defines `J0=sqrt(GM0*r0)`
 - `q / 2:q [mandatory / optional]` 1- and 2-component model initial flattening of the guess potential
 
+### Output
+
+Use [pyfJmod](https://github.com/lposti/pyfJmod) package for analysis and plotting f(J) models data.
+
 ## References
 
 Main paper: [Posti et al. (2015)](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)
