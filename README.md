@@ -39,8 +39,7 @@ and A, B are slopes defined by the model type desired (see [Posti et al. (2015)]
 The above DF is an even function in the azimuthal velocity (since it depends only on the absolute value of the vertical angular momentum ![alt text] (doc/imgs/Jphi.png "vertical angular momentum")), so the models do not roatate. We parametrize rotation adding an odd component in ![alt text] (doc/imgs/Jphi.png "vertical angular momentum"):
 ![alt text] (doc/imgs/rot.png)
 
-The hyberbolic tangent is an odd function and the parameter ```tex
-\chi``` controls the steepness of the model's rotation curve.
+The hyberbolic tangent is an odd function and the parameter `\chi` controls the steepness of the model's rotation curve.
 
 One component is mandatory (and also all its parameters are), the second is optional.
 - `itermax [optional]` defines the number of iterations computed. It is defaulted to 5.
