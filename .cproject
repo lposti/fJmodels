@@ -28,11 +28,13 @@
 								<option id="gnu.cpp.compiler.option.optimization.level.1959263392" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1378640" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.826267769" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${PROJROOT}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJROOT}&quot;/include"/>
+									<listOptionValue builtIn="false" value="&quot;${HOME}/utils/Cuba-4.1/&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${HOME}/utils/gsl-install/include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1561811379" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fopenmp" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.optimization.flags.1776808632" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-funsafe-math-optimizations  -msse4.1 -Wstrict-aliasing=2 -march=native -mtune=native" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.optimization.flags.1776808632" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-funsafe-math-optimizations  -msse4.1 -Wstrict-aliasing=2 -march=corei7-avx -mtune=native" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.dialect.std.321923422" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.908315830" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.343930041" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
@@ -40,10 +42,12 @@
 								<option id="gnu.cpp.link.option.libs.723322266" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="gsl"/>
 									<listOptionValue builtIn="false" value="gslcblas"/>
+									<listOptionValue builtIn="false" value="cuba"/>
 									<listOptionValue builtIn="false" value="m"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.673468696" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${HOME}/utils/gsl-install/lib/&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${HOME}/utils/Cuba-4.1/&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.352032157" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-fopenmp" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.728092149" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -134,5 +138,13 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/multiComp"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/multiComp"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

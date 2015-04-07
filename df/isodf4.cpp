@@ -159,8 +159,8 @@ double hj_hernq(double Jr, double Lz, double Jz, double R){
 
 #ifdef HJGJ
 	double hJ=hj_COmRatio(Jr,Lz,Jz),gJ=gj_COmRatio(Jr,Lz,Jz);
-	if (hJ<1e-4) return 0.;
-	else return mass/pow(J0,3)*MAX(0.,pow(1.+J0/hJ,1.5)/(pow(1.+gJ/J0,5.))) / (pow(TPI,3.)) ;
+	if (hJ<1e-8) return 0.;
+	else return mass/pow(J0,3)*MAX(0.,pow(1.+J0/hJ,1.667)/(pow(1.+gJ/J0,5.))) / (pow(TPI,3.)) ;
 
 #else
 #	ifdef CONSTOMRATIO
@@ -215,6 +215,20 @@ double hj_jaffe(double Jr, double Lz, double Jz, double R){
 }
 
 
+static double RcEfn(double *Ep,double R){//what vanishes at Rc for given E
+	return .5*R*dPhiR(R)+PhiR(R)-(*Ep);
+}
+static double RcE(double E,double Rc){
+	double R0=.8*Rc,f0=RcEfn(&E,R0);
+	while(f0>0){
+		R0*=.8; f0=RcEfn(&E,R0);
+	}
+	double R1=1.2*Rc, f1=RcEfn(&E,R1);
+	while(f1<0){
+		R1*=1.2;  f1=RcEfn(&E,R1);
+	}
+	return zbrent(&E,&RcEfn,R0,R1,f0,f1,1.e-5,25);
+}
 double df(double *x,double *v){
 	double R=x[0],Lz=R*v[1],Phigl=x[2];
 

@@ -4,6 +4,7 @@ double rho(double,double,double*,double*,double*,double*,double*);
 double rho(double,double,double*,double*,double*,double*);
 double rho(double,double,double*);
 double rho(double,double);
+double rhoCuba(double,double,double*,double*,double*);
 double nU(double,double,double);
 double nV(double,double,double);
 double nW(double,double,double);

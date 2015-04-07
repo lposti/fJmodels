@@ -96,7 +96,7 @@ int main(int nargs,char **args){
 	double b=1,q=1.;
 	isopot_init(b,q);//compute Phi of flattened isochrone for isopot()
 	double Rmax=100*b;
-	nr=120;	ar = new double[nr]; //allocate storage for potent()
+	nr=30;	ar = new double[nr]; //allocate storage for potent()
 	ngauss=6; npoly=3;
 	double **phil_old, **phil_old2, **Pr_old, **Pr2_old, **Pr_old2, **Pr2_old2;
 	phil_old=dmatrix(nr,npoly); phil_old2=dmatrix(nr,npoly);
@@ -149,7 +149,7 @@ int main(int nargs,char **args){
 	setMJ0(1.,1.);
 	phil_ini=dmatrix(nr,npoly); Pr_ini=dmatrix(nr,npoly); Pr2_ini=dmatrix(nr,npoly);
 	char base[30],fname[30],stuff[30];
-        strcpy(base,"models/Isoth_rt_");
+        strcpy(base,"models/Hern_NFWself_");
 	int kontrl=1;
 
 

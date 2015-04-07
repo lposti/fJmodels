@@ -9,6 +9,7 @@
 #include "isodf4.h"
 #include "potLEG.h"
 #include "isopot.h"
+#include "moments.h"
 #include "gsl/gsl_integration.h"
 
 #define TINY 1e-6
@@ -21,10 +22,16 @@ int nr,ngauss,npoly;
 const double G=1;
 static int iter=0;
 
+void setLogGrid(double rmin, double rmax){
+	for (int i=0;i<nr;i++) ar[i] = pow(10.,log10(rmin)+(log10(rmax)-log10(rmin))*i/(nr-1));
+}
 void setgrid(double a_scale,double rmax){
+	setLogGrid(1e-3,rmax);
+	/*
 	double dpsi=asinh(rmax/a_scale)/(double)(nr-1);
 	for(int n=0; n<nr; n++)	ar[n]=a_scale*sinh(n*dpsi);
 	ar[0]+=.25*ar[1];													// adding tiny number to innermost grid point
+	*/
 }
 void evenlegend(double *pol,double c,int npoly){
 // evaluates even legendre polys up to l=2*(npoly-1) at c -------------
@@ -376,17 +383,6 @@ void potent(char *fname,double (*dens)(double,double),int rd,int prnt){
 	for(int np=0; np<npoly; np++){
 		int l=2*np;
 		double r=ar[0],a,p1=0;
-		/*
-		 * get rid of quadratic terms in l=0
-		 *
-		 *	if(np==0){
-		 *		a=rhl[0][np];
-		 *		I_int[1][np]=-.5*(a*ar[0])*(pow(ar[1],2)-pow(ar[0],2));		// before: -.2*(a-rhl[1][0])*pow(ar[1],3);
-		 *		I_ext[1][np]=-(a*ar[0])*(ar[1]-ar[0]);		// before: -.25*(a-rhl[1][0])*pow(ar[1],2);
-		 *	} else {//assume const density inside ar[1] and rhl_l~r^l
-		 *		a=rhl[1][np]/pow(ar[1],l-1);			// singular version, before:rhl[1][np]/pow(ar[1],l)
-		 *	}
-		*/
 
 		/*
 		 *  replacing these integrals with their singular r^-1 versions
@@ -565,6 +561,40 @@ void potent(char *fname,double (*dens)(double,double),int rd,int prnt){
 		fprintf(rhof,"%e %e %e %e %e %e\n",ar[i],rho[i][0],evpot(ar[i]*ar[i],0),phi_isoth(ar[i]),rho_isoth(ar[i]),phil[i][0]);
 	}
 
+#if defined EXTERNPOT
+	/*
+	 * non self-consistent potential
+	 */
+	int potleg(double (*dens)(double,double),double **philT,double **PrT,double **Pr2T);
+	double **philH,**PrH,**Pr2H;
+	philH=dmatrix(nr,npoly); PrH=dmatrix(nr,npoly); Pr2H=dmatrix(nr,npoly);
+	potleg(&rhoNFW,philH,PrH,Pr2H);
+
+
+	/*
+	for (int n=0; n<nr; n++) {
+	    double r=ar[n];
+	    for(int np=0; np<npoly; np++)
+	    	for(int i=0; i<ngauss; i++){
+	    		philH[n][np]+=poly[np][i]*phiNFW(r*si[i],r*ci[i]);
+	    		PrH[n][np]  +=poly[np][i]*dphidrNFW(r*si[i],r*ci[i]);
+	    		Pr2H[n][np] +=poly[np][i]*d2phidr2NFW(r*si[i],r*ci[i]);
+	    	}
+	}
+	*/
+
+
+
+	for (int n=0;n<nr;n++)
+		for (int np=0;np<npoly;np++){
+			phil[n][np] += philH[n][np];
+			Pr[n][np]   += PrH[n][np];
+			Pr2[n][np]  += Pr2H[n][np];
+		}
+
+	delmatrix(philH,nr); delmatrix(PrH,nr); delmatrix(Pr2H,nr);
+#endif
+
 	// debug purposes
 	for (int n=0;n<nr;n++) printf(">> phil[%d][0]=%f rhl[%d][0]=%f rho[%d][0]=%f\n",n,phil[n][0],n,rhl[n][0],n,rho[n][0]);
 	fclose(rhof); iter++;	delmatrix(poly,npoly); delmatrix(rho,nr);
@@ -608,24 +638,23 @@ void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,do
 		/* initialize bar */
 		ProgressBar bar(60);
 		bar.init(nr);
-		int nn=0;
 
 		//for(int n=nr-1; n>0; n--){//Get density @ grid pts
 		for(int n=0; n<nr-1; n++){
 			/* update bar*/
-			bar.update(nn+1); nn++;
+			bar.update(n+1);
 			double r=ar[n];
 			for(int np=0; np<npoly; np++) rhl[n][np]=0;
-#pragma omp parallel for
+//#pragma omp parallel for
 			for(int i=0; i<ngauss; i++){
 
-				rho[n][i]=(*dens)(r*si[i],r*ci[i],Vbar[n]+i,sigR[n]+i,sigp[n]+i,sigz[n]+i,sigRz[n]+i);
+				//rho[n][i]=(*dens)(r*si[i],r*ci[i],Vbar[n]+i,sigR[n]+i,sigp[n]+i,sigz[n]+i,sigRz[n]+i);
+				rho[n][i]=rhoCuba(r*si[i],r*ci[i],sigR[n]+i,sigp[n]+i,sigz[n]+i);
 				if(isnan(rho[n][i])){
 					printf("in potent5: %d %d %g\n",n,i,rho[n][i]);
 					exit(0);
 				}
 			}
-			//printf("%f %f %f %f\n",ar[n],Vbar[n][0],Vbar[n][1],Vbar[n][2]);
 		}
 		/* finalize bar */
 		bar.fillSpace("..done potential computation!!\n\n");
@@ -633,7 +662,7 @@ void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,do
 		/*
 		 * 03/09/14: linear interpolation in the first grid point!
 		 * 			 it was causing troubles in the potential computation
-		 * 			 since the density was extremely high, implying very high Phi
+		 * 			 since the density was extremely large, implying very large Phi
 		 */
 		rho[0][0] = (rho[2][0]-rho[1][0])/(ar[2]-ar[1])*(ar[0]-ar[1])+rho[1][0];
 		printf("rho0 %g %f %f\n",rho[0][0],sigR[0][0],Vbar[0][0]);
@@ -858,6 +887,40 @@ void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,do
 	}
 	fclose(rhof); iter++;
 
+#if defined EXTERNPOT
+	/*
+	 * non self-consistent potential
+	 */
+	int potleg(double (*dens)(double,double),double **philT,double **PrT,double **Pr2T);
+	double **philH,**PrH,**Pr2H;
+	philH=dmatrix(nr,npoly); PrH=dmatrix(nr,npoly); Pr2H=dmatrix(nr,npoly);
+	potleg(&rhoNFW,philH,PrH,Pr2H);
+
+
+	/*
+	for (int n=0; n<nr; n++) {
+	    double r=ar[n];
+	    for(int np=0; np<npoly; np++)
+	    	for(int i=0; i<ngauss; i++){
+	    		philH[n][np]+=poly[np][i]*phiNFW(r*si[i],r*ci[i]);
+	    		PrH[n][np]  +=poly[np][i]*dphidrNFW(r*si[i],r*ci[i]);
+	    		Pr2H[n][np] +=poly[np][i]*d2phidr2NFW(r*si[i],r*ci[i]);
+	    	}
+	}
+	*/
+
+
+
+	for (int n=0;n<nr;n++)
+		for (int np=0;np<npoly;np++){
+			phil[n][np] += philH[n][np];
+			Pr[n][np]   += PrH[n][np];
+			Pr2[n][np]  += Pr2H[n][np];
+		}
+
+	delmatrix(philH,nr); delmatrix(PrH,nr); delmatrix(Pr2H,nr);
+#endif
+
 	// debug purposes
 	for (int n=0;n<nr;n++) printf(">> phil[%d][0]=%f rhl[%d][0]=%f rho[%d][0]=%f\n",n,phil[n][0],n,rhl[n][0],n,rho[n][0]);
 	// check forces: -G*M/r^2=Pr(r) for very large r (Keplerian regime)
@@ -866,4 +929,152 @@ void potent5(char *fname,double (*dens)(double,double,double*,double*,double*,do
 	delmatrix(sigR,nr); delmatrix(sigp,nr); delmatrix(sigz,nr);
 	delmatrix(sigRz,nr);
 	delmatrix(I_int,nr); delmatrix(I_ext,nr);
+}
+
+
+int potleg(double (*dens)(double,double),double **philT,double **PrT,double **Pr2T){
+
+#define HERNQUIST_TOT
+    double r,pol[npoly],**poly=dmatrix(npoly,ngauss);
+    double ci[ngauss],si[ngauss],wi[ngauss];
+    gauleg(0,1,ci,wi,ngauss);
+    // npoly coeffs for Gauss integration over angles ----------------------------
+    for(int i=0; i<ngauss; i++){
+    	si[i]=sqrt(1-ci[i]*ci[i]);
+    	evenlegend(pol,ci[i],npoly);
+    	for(int np=0; np<npoly; np++) poly[np][i]=2*pol[np]*wi[i];
+    }
+
+    double **rhlT; rhlT=dmatrix(nr,npoly);
+    /* Computing rhl */
+    for (int n=0; n<nr; n++) {
+    	r=ar[n];
+    	for(int np=0; np<npoly; np++)
+    		for(int i=0; i<ngauss; i++)
+    			rhlT[n][np]+=poly[np][i]*(*dens)(r*si[i],r*ci[i]);
+    }
+
+    rhlT[0][0]=2*(*dens)(ar[0],ar[0]);
+    for(int i=1;i<npoly;i++) rhlT[0][i]=0;
+
+    double I_int[nr][npoly],I_ext[nr][npoly];
+    int nc=nr/12;// change integration technique at this grid pt
+	for(int i=0;i<npoly;i++){
+		I_int[0][i]=0; I_ext[0][i]=0;//integrals from zero to zero
+	}
+
+#if defined(HERNQUIST_TOT) || defined(NFW_TOT)
+	/*
+	 * 	Corrections for singular models (e.g. Hernquist)
+	 */
+	for(int np=0; np<npoly; np++){
+		int l=2*np;
+		double r=ar[0],a,p1=0;
+		/*
+		 *  replacing these integrals with their singular r^-1 versions
+		 */
+		p1=pow(ar[0],2*l+2); a=rhlT[0][np]/pow(ar[0],l-1);
+		for(int n=1; n<nc; n++){//leading terms in all integrals
+			r=ar[n]; double p2=pow(r,2*l+2);
+			double b=rhlT[n][np]/pow(r,l-1), arg=.5*(a+b);
+			I_int[n][np]=I_int[n-1][np]+arg*(p2-p1)/(double)(2*l+2);
+			I_ext[n][np]=I_ext[n-1][np]+arg*(r-ar[n-1]);
+			a=b; p1=p2;
+		}
+		a*=pow(r,l); p1=pow(r,l+3);
+		for(int n=nc; n<nr; n++){
+			r=ar[n]; double p2=pow(r,l+3);
+			double b=rhlT[n][np], arg=.5*(a+b);
+			I_int[n][np]=I_int[n-1][np]+arg*(p2-p1)/(double)(l+3);
+			if(l!=2) I_ext[n][np]=I_ext[n-1][np]+arg*(pow(r,2-l)-pow(ar[n-1],2-l))/(double)(2-l);
+			else I_ext[n][np]=I_ext[n-1][np]+arg*(log(r)-log(ar[n-1]));
+			a=b; p1=p2;
+		}
+	}
+#elif defined ISOTHERMAL_TOT
+
+	for(int np=0; np<npoly; np++){
+			int l=2*np;
+			double r,a,p1=0;
+			if(np==0){//corrections for quadratic term in a at a<a[1]
+				a=rhlT[0][np];
+				I_int[1][np]=-.2*(a-rhlT[1][0])*pow(ar[1],3);
+				I_ext[1][np]=-.25*(a-rhlT[1][0])*pow(ar[1],2);
+			} else {//assume const density inside ar[1] and rhll~r^l
+				a=rhlT[1][np]/pow(ar[1],l);
+			}
+			for(int n=1; n<nc; n++){//leading terms in all integrals
+				r=ar[n]; double p2=pow(r,2*l+3);
+				double b=rhlT[n][np]/pow(r,l), arg=.5*(a+b);
+				I_int[n][np]=I_int[n-1][np]+arg*(p2-p1)/(double)(2*l+3);
+				I_ext[n][np]=I_ext[n-1][np]+.5*arg*(r*r-ar[n-1]*ar[n-1]);
+				a=b; p1=p2;
+			}
+			// replaced for r^-2 at r --> + infty
+			a=rhlT[nc-1][np]*pow(ar[nc-1],2); p1=pow(ar[nc-1],l+1);
+			for(int n=nc; n<nr; n++){
+				r=ar[n]; double p2=pow(r,l+1);
+				double b=rhlT[n][np]*pow(r,2), arg=.5*(a+b);
+				I_int[n][np]=I_int[n-1][np]+arg*(p2-p1)/(double)(l+1);
+				if(l!=0)I_ext[n][np]=I_ext[n-1][np]+arg*(pow(r,-l)-pow(ar[n-1],-l))/(double)(-l);
+				else I_ext[n][np]=I_ext[n-1][np]+arg*(log(r)-log(ar[n-1]));
+				a=b; p1=p2;
+			}
+	}
+
+#elif defined ISOCHRONE_TOT
+	for(int np=0; np<npoly; np++){
+			int l=2*np;
+			double r,a,p1=0;
+			if(np==0){//corrections for quadratic term in a at a<a[1]
+				a=rhlT[0][np];
+				I_int[1][np]=-.2*(a-rhlT[1][0])*pow(ar[1],3);
+				I_ext[1][np]=-.25*(a-rhlT[1][0])*pow(ar[1],2);
+			} else {//assume const density inside ar[1] and rhlTl~r^l
+				a=rhlT[1][np]/pow(ar[1],l);
+			}
+			for(int n=1; n<nc; n++){//leading terms in all integrals
+				r=ar[n]; double p2=pow(r,2*l+3);
+				double b=rhlT[n][np]/pow(r,l), arg=.5*(a+b);
+				I_int[n][np]=I_int[n-1][np]+arg*(p2-p1)/(double)(2*l+3);
+				I_ext[n][np]=I_ext[n-1][np]+.5*arg*(r*r-ar[n-1]*ar[n-1]);
+				a=b; p1=p2;
+			}
+			a*=pow(r,l); p1=pow(r,l+3);
+			for(int n=nc; n<nr; n++){
+				r=ar[n]; double p2=pow(r,l+3);
+				double b=rhlT[n][np], arg=.5*(a+b);
+				I_int[n][np]=I_int[n-1][np]+arg*(p2-p1)/(double)(l+3);
+				if(l!=2) I_ext[n][np]=I_ext[n-1][np]+arg*(pow(r,2-l)-pow(ar[n-1],2-l))/(double)(2-l);
+				else I_ext[n][np]=I_ext[n-1][np]+arg*(log(r)-log(ar[n-1]));
+				a=b; p1=p2;
+			}
+		}
+#endif
+	for(int np=0; np<npoly; np++){
+		int l=2*np;
+		if(l==0){
+			//philT[0][np]=-TPI*G*(I_ext[nr-1][np]-I_ext[0][np]);
+			philT[0][np]=-TPI*G*(I_int[0][np]/pow(ar[0],l+1)+
+						(I_ext[nr-1][np]-I_ext[0][np])*pow(ar[0],l));
+			Pr2T[0][np]=TPI*G*rhlT[0][np];
+		}else{
+			philT[0][np]=0;
+			if(l==2) Pr2T[0][np]=-TPI*G*((l-1)*l*I_ext[nr-1][np]-(2*l+1)*rhlT[0][np]);
+			else Pr2T[0][np]=TPI*G*(2*l+1)*rhlT[0][np];
+		}
+		PrT[0][np]=0;
+		for(int n=1; n<nr; n++){
+			philT[n][np]=-TPI*G*(I_int[n][np]/pow(ar[n],l+1)+
+					    (I_ext[nr-1][np]-I_ext[n][np])*pow(ar[n],l));
+			PrT[n][np]=-TPI*G*(-(l+1)*I_int[n][np]/pow(ar[n],l+2)+
+					  l*(I_ext[nr-1][np]-I_ext[n][np])*pow(ar[n],l-1));
+			Pr2T[n][np]=-TPI*G*((l+2)*(l+1)*I_int[n][np]/pow(ar[n],l+3)+
+					   (l-1)*l*(I_ext[nr-1][np]-I_ext[n][np])*pow(ar[n],l-2)
+					   -(2*l+1)*rhlT[n][np]);
+		}
+	}
+	delmatrix(rhlT,nr);
+#undef HERNQUIST_TOT
+    return 1.;
 }
