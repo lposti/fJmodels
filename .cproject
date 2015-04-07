@@ -39,7 +39,6 @@
 								<option id="gnu.cpp.compiler.option.optimization.level.1959263392" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1378640" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.826267769" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="/home/morpheus/utils/Cuba-4.1/"/>
 									<listOptionValue builtIn="false" value="/home/morpheus/utils/gsl-install/include"/>
 									<listOptionValue builtIn="false" value="/home/morpheus/git/reworked/fJmodels/include"/>
 								</option>
