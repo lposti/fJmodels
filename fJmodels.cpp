@@ -118,7 +118,8 @@ int main(int argc, char **argv){
 	 * Initializing parameters
 	 */
 
-	time_t start = clock();
+	//time_t start = clock();
+	double   start = omp_get_wtime();
 
 	phil = mat<double>(NR,NPOLY);  Pr = mat<double>(NR,NPOLY);    Pr2 = mat<double>(NR,NPOLY);
 	rhl = mat<double>(NR,NPOLY);   vrotl = mat<double>(NR,NPOLY);
@@ -148,8 +149,8 @@ int main(int argc, char **argv){
 		exit(6);
 	}
 
-	printf("\n----> Elapsed time of computation: %7.5f s\n",(clock()-start) / (double) CLOCKS_PER_SEC
-	                                                                        / omp_get_max_threads());
+	// printf("\n----> Elapsed time of computation: %7.5f s\n",(clock()-start) / (double) CLOCKS_PER_SEC);
+	printf("\n----> Elapsed time of computation: %7.5f s\n",(omp_get_wtime()-start));
 }
 
 
