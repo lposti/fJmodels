@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <omp.h>
 #include "Grid.h"
 #include "Utils.h"
 #include "UtilsLeg.h"
@@ -147,7 +148,8 @@ int main(int argc, char **argv){
 		exit(6);
 	}
 
-	printf("\n----> Elapsed time of computation: %7.5f s\n",(clock()-start) / (double) CLOCKS_PER_SEC);
+	printf("\n----> Elapsed time of computation: %7.5f s\n",(clock()-start) / (double) CLOCKS_PER_SEC
+	                                                                        / omp_get_num_threads());
 }
 
 
