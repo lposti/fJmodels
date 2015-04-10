@@ -149,7 +149,7 @@ int main(int argc, char **argv){
 	}
 
 	printf("\n----> Elapsed time of computation: %7.5f s\n",(clock()-start) / (double) CLOCKS_PER_SEC
-	                                                                        / omp_get_num_threads());
+	                                                                        / omp_get_max_threads());
 }
 
 
