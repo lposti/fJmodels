@@ -2,7 +2,7 @@
  * GaussPts.h
  *
  *  Created on: Feb 25, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef INCLUDE_GAUSSPTS_H_

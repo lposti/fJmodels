@@ -2,7 +2,7 @@
  * Tabulate.h
  *
  *  Created on: Feb 22, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef INCLUDE_TABULATE_H_

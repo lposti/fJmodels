@@ -2,7 +2,7 @@
  * Progressbar.h
  *
  *  Created on: Feb 24, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  *
  *  Special Thanks to EdT (enrico.diteodoro@gmail.com)
  *  who allowed me to basically copy the following version

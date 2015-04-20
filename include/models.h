@@ -2,7 +2,7 @@
  * models.h
  *
  *  Created on: Feb 15, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef INCLUDE_MODELS_H_

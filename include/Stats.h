@@ -2,7 +2,7 @@
  * Stats.h
  *
  *  Created on: Feb 26, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef INCLUDE_STATS_H_

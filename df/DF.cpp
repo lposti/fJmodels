@@ -2,7 +2,7 @@
  * df.cpp
  *
  *  Created on: Feb 23, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #include <cstring>

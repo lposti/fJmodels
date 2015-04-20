@@ -2,7 +2,7 @@
  * UtilsLeg.h
  *
  *  Created on: Feb 24, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef INCLUDE_UTILSLEG_H_

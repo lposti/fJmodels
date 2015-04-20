@@ -2,7 +2,7 @@
  * integ.h
  *
  *  Created on: Feb 23, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef INCLUDE_INTEG_H_

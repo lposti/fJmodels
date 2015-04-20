@@ -2,7 +2,7 @@
  * Potential.cpp
  *
  *  Created on: Feb 15, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #include <stdio.h>

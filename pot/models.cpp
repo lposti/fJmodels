@@ -2,8 +2,9 @@
  * models.cpp
  *
  *  Created on: Feb 15, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
+
 #include <math.h>
 #include "models.h"
 #include "Utils.h"

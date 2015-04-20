@@ -2,7 +2,7 @@
  * Potential.h
  *
  *  Created on: Feb 15, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef POT_POTENTIAL_H_

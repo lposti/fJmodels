@@ -2,7 +2,7 @@
  * Delta.h
  *
  *  Created on: Feb 16, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef DELTA_H_

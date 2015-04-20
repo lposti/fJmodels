@@ -2,7 +2,7 @@
  * readParam.cpp
  *
  *  Created on: Feb 24, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #include <iostream>

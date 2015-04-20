@@ -2,7 +2,7 @@
  * Delta.cpp
  *
  *  Created on: Feb 16, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #include "Delta.h"

@@ -2,7 +2,7 @@
  * tabulate.cpp
  *
  *  Created on: Feb 22, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #include "Grid.h"

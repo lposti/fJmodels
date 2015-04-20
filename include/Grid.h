@@ -2,7 +2,7 @@
  * Grid.h
  *
  *  Created on: Feb 13, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef INCLUDE_GRID_H_

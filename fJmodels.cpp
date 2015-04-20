@@ -2,8 +2,9 @@
  * fJmodels.cpp
  *
  *  Created on: Feb 13, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

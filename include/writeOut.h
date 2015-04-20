@@ -2,7 +2,7 @@
  * writeOut.h
  *
  *  Created on: Feb 27, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef INCLUDE_WRITEOUT_H_

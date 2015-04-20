@@ -2,7 +2,7 @@
  * Uvpt.h
  *
  *  Created on: Feb 22, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef INCLUDE_UVPT_H_

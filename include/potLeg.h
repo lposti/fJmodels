@@ -2,7 +2,7 @@
  * potLeg.h
  *
  *  Created on: Feb 24, 2015
- *      Author: morpheus
+ *      Author: L. Posti
  */
 
 #ifndef INCLUDE_POTLEG_H_
