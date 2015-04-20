@@ -41,18 +41,6 @@ The above DF is an even function in the azimuthal velocity (since it depends onl
 
 The hyberbolic tangent is an odd function and the parameter `\chi` controls the steepness of the model's rotation curve.
 
-One component is mandatory (and also all its parameters are), the second is optional.
-- `itermax [optional]` defines the number of iterations computed. It is defaulted to 5.
-- `model / 2:model [mandatory / optional]` 1- and 2-component model type: currently it can be `Hernquist`, `Isochrone`, `NFW`
-- `h(J):dphi / 2:h(J):dphi [mandatory / optional]` 1- and 2-component model DF parameter
-- `h(J):dz / 2:h(J):dz [mandatory / optional]` 1- and 2-component model DF parameter
-- `g(J):dphi / 2:g(J):dphi [mandatory / optional]` 1- and 2-component model DF parameter
-- `g(J):dz / 2:g(J):dz [mandatory / optional]` 1- and 2-component model DF parameter
-- `chi / 2:chi [mandatory / optional]` 1- and 2-component model DF parameter controlling the steepness of the rotation curve (0 is non-rotating).
-- `mass / 2:mass [mandatory / optional]` 1- and 2-component model mass (parameter `M0`)
-- `r0 / 2:r0 [mandatory / optional]` 1- and 2-component model scale radius: together with `M0` defines `J0=sqrt(GM0*r0)`
-- `q / 2:q [mandatory / optional]` 1- and 2-component model initial flattening of the guess potential
-
 | Name | Description: mandatory for the first component, optional for the second | Default Value |
 |:---- |:-----------------------------------------------------------------------:| -------------:|
 | `model / 2:model` | Model type: currently `Hernquist`, `Isochrone`, `NFW` | `Hernquist` | 
@@ -64,7 +52,8 @@ One component is mandatory (and also all its parameters are), the second is opti
 | `mass / 2:mass` | Component's mass (parameter `M0` in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
 | `r0 / 2:r0` | Component's scale radius (defines parameter `J0=sqrt(GM0*r0)` as in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
 | `q / 2:q` | Flattening of the initial guess potential | 1.0 |
-\[ d_p \]
+|:----- |:-------------------------------------:| --------:|
+| `itermax` | Defines the number of iterations computed | 5 | 
 
 
 ### Output
