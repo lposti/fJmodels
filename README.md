@@ -64,8 +64,8 @@ Follows a schematic descriptions of the implemented parameters that can be set i
 | `g(J):dphi / 2:g(J):dphi` | DF parameter `\delta_\phi` for g(**J**) | 1.0 |
 | `g(J):dz / 2:g(J):dz` | DF parameter `\delta_z` for g(**J**) | 1.0 |
 | `chi / 2:chi` | Controls the steepness of the rotation curve. If greater than 0 an odd part is added to the DF | 0.0 |
-| `mass / 2:mass` | Component's mass (parameter `M0` in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
-| `r0 / 2:r0` | Component's scale radius (defines parameter `J0=sqrt(GM0*r0)` as in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
+| `mass / 2:mass` | Component's mass (parameter `M_0` in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
+| `r0 / 2:r0` | Component's scale radius (defines parameter `J_0=sqrt(GM_0*r_0)` as in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
 | `q / 2:q` | Flattening of the initial guess potential | 1.0 |
 | `itermax` | Defines the number of iterations computed | 5 | 
 
