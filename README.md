@@ -7,7 +7,7 @@ as described in [Posti et al. (2015)](http://adsabs.harvard.edu/abs/2015MNRAS.44
 
 The code generates an axisymmetric self-consistent model by specifying a Distribution Function (DF) which is a double-power law function of the action integrals. The model's density (and higher moments) are computed integrating the DF, then the self-consistent potential is found by iterative procedure (convergence criteria are currently in the form of distance from the potential of the previous iteration and on the tensor Virial theorem). The action integrals are computed in the Staeckel Fudge ([Binney 2012](http://adsabs.harvard.edu/abs/2012MNRAS.426.1324B)) approximation.
 
-- the models have a double-power law density profile: the central and outer slopes in the density profile are determined mainly by the DF's power law slope in the small- and large-action regimes. The code has currently hardwired such DF's parameters such that the final profile follows that of classical models, such as Hernquist, Isochrone and NFW.
+- the models have a double-power law density profile: the central and outer slopes in the density profile are determined mainly by the DF's power law slope in the small- and large-action regimes. The code has currently *hardwired* such DF's parameters such that the final profile follows that of classical models, such as Hernquist, Isochrone and NFW.
 - the code stores the coefficients of the multipole expansion of e.g., density, potential and velocity dispersion distributions in output files at every iterations. Such output files can be managed easily with the Python tool [pyfJmod](https://github.com/lposti/pyfJmod).
 - the models can currently be
   - self-consistent single-component
@@ -52,7 +52,7 @@ and A, B are slopes defined by the model type desired (see [Posti et al. 2015](h
 The above DF is an even function in the azimuthal velocity (since it depends only on the absolute value of the vertical angular momentum ![alt text] (doc/imgs/Jphi.png "vertical angular momentum")), so the models do not roatate. We parametrize rotation adding an odd component in ![alt text] (doc/imgs/Jphi.png "vertical angular momentum"):
 ![alt text] (doc/imgs/rot.png)
 
-The hyberbolic tangent is an odd function and the parameter `\chi` controls the steepness of the model's rotation curve.  
+The hyberbolic tangent is an odd function and the parameter `\chi` controls the steepness of the model's rotation curve. If `\chi` is greater than zero, the odd term is added to the DF with k=0.5 (currently *hardwired* for a maximally rotating configuration), else it isn't. 
 
 Follows a schematic descriptions of the implemented parameters that can be set in the file to specify the model.
 
