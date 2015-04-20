@@ -90,6 +90,11 @@ void oneComp(struct fJParams fJP){
 	p.selectGuessRho(fJP.modName);
 	p.computeGuessRhl(); p.computePhil();
 
+	Potential ext(2);
+	ext.selectGuessRho("NFWext");
+	ext.computeGuessRhl(); ext.computePhil();
+	updatePhil(&p, &ext);		// update the total potential
+
 	tabulateDelta(&p);
 
 	setDF(&fJP,&p,1);
@@ -106,6 +111,7 @@ void oneComp(struct fJParams fJP){
 		//double **philOLD=mat<double>(NR,NPOLY), **PrOLD=mat<double>(NR,NPOLY),**Pr2OLD=mat<double>(NR,NPOLY);
 		//savePhi(philOLD,PrOLD,Pr2OLD);
 		computeNewPhi(&p);
+		updatePhil(&p, &ext);		// update the total potential
 		//mergePhi(philOLD,PrOLD,Pr2OLD,.25);
 		writeOut(fJP,k);
 		vir2(&p);
@@ -137,7 +143,7 @@ int main(int argc, char **argv){
 	else fJP = readParam();
 	printParam(&fJP);
 
-	SetGrid(50.);
+	SetGrid(100.);
 	printf("=");
 	printf("\n======================================================================\n");
 

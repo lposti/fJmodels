@@ -35,7 +35,7 @@ All the DFs are of the following general form:
 ![alt text][DF]
 
 [DF]: doc/imgs/DF.png "Distribution Function"
-and A, B are slopes defined by the model type desired (see [Posti et al. (2015)](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)).
+and A, B are slopes defined by the model type desired (see [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)).
 The above DF is an even function in the azimuthal velocity (since it depends only on the absolute value of the vertical angular momentum ![alt text] (doc/imgs/Jphi.png "vertical angular momentum")), so the models do not roatate. We parametrize rotation adding an odd component in ![alt text] (doc/imgs/Jphi.png "vertical angular momentum"):
 ![alt text] (doc/imgs/rot.png)
 
@@ -52,6 +52,20 @@ One component is mandatory (and also all its parameters are), the second is opti
 - `mass / 2:mass [mandatory / optional]` 1- and 2-component model mass (parameter `M0`)
 - `r0 / 2:r0 [mandatory / optional]` 1- and 2-component model scale radius: together with `M0` defines `J0=sqrt(GM0*r0)`
 - `q / 2:q [mandatory / optional]` 1- and 2-component model initial flattening of the guess potential
+
+| Name | Description: mandatory for the first component, optional for the second | Default Value |
+|:---- |:-----------------------------------------------------------------------:| -------------:|
+| `model / 2:model` | Model type: currently `Hernquist`, `Isochrone`, `NFW` | `Hernquist` | 
+| `h(J):dphi / 2:h(J):dphi` | DF parameter `\delta_\phi` for h(**J**) | 0.5 |
+| `h(J):dz / 2:h(J):dz` | DF parameter `\delta_z` for h(**J**) | 0.5 |
+| `g(J):dphi / 2:g(J):dphi` | DF parameter `\delta_\phi` for g(**J**) | 1.0 |
+| `g(J):dz / 2:g(J):dz` | DF parameter `\delta_z` for g(**J**) | 1.0 |
+| `chi / 2:chi` | Controls the steepness of the rotation curve | 1.0 |
+| `mass / 2:mass` | Component's mass (parameter `M0` in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
+| `r0 / 2:r0` | Component's scale radius (defines parameter `J0=sqrt(GM0*r0)` as in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
+| `q / 2:q` | Flattening of the initial guess potential | 1.0 |
+
+
 
 ### Output
 

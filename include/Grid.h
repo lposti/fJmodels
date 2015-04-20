@@ -8,7 +8,7 @@
 #ifndef INCLUDE_GRID_H_
 #define INCLUDE_GRID_H_
 
-#define NR 		60
+#define NR 		30
 #define NGRID 	30
 #define NGAUSS  6
 #define NPOLY   4
