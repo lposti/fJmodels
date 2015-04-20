@@ -14,6 +14,7 @@ The code generates an axisymmetric self-consistent model by specifying a Distrib
   - single-component with external potential (to be fully implemented...)
   - self-consistent two-components
 - it uses a  22-points *tanh-sinh quadrature* (see [Takahasi & Mori 1973](http://www.ems-ph.org/journals/show_abstract.php?issn=0034-5318&vol=9&iss=3&rank=12)) three-dimensional integrator to optimize a (typically) highly peaked DF at the centre. Different choices for the integration rule (e.g., Gauss-Legendre) and for the number of points used are implemented and can be switched on.
+- the code benefits from an multi-threaded OpenMP implementation, vector-register instructions (SSE/AVX) and compiler's optimization flags.
 
 ## Installation
 
