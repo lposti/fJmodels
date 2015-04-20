@@ -90,9 +90,13 @@ double df(const double *x, const double *v){
 	Jr=uvorb.Ju(); Jz=uvorb.Jv(); Jphi=Lz;
 
 	if (chi==0.) return df_hg(Jr,Jphi,Jz);
-	else {
+	else if (chi>0.){
 		double k=0.5;
 		double DFeven = df_hg(Jr,Jphi,Jz);
 		return (1-k)*DFeven + k*tanh(chi*Jphi/J0)*DFeven;
+	}
+	else {
+		printf("\n  --ERROR: chi must be >= 0!");
+		exit(1);
 	}
 }
