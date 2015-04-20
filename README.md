@@ -39,10 +39,12 @@ and A, B are slopes defined by the model type desired (see [Posti et al. 2015](h
 The above DF is an even function in the azimuthal velocity (since it depends only on the absolute value of the vertical angular momentum ![alt text] (doc/imgs/Jphi.png "vertical angular momentum")), so the models do not roatate. We parametrize rotation adding an odd component in ![alt text] (doc/imgs/Jphi.png "vertical angular momentum"):
 ![alt text] (doc/imgs/rot.png)
 
-The hyberbolic tangent is an odd function and the parameter `\chi` controls the steepness of the model's rotation curve.
+The hyberbolic tangent is an odd function and the parameter `\chi` controls the steepness of the model's rotation curve.  
 
-| Name | Description: mandatory for the first component, optional for the second | Default Value |
-|:---- |:-----------------------------------------------------------------------:| -------------:|
+Follows a schematic descriptions of the implemented parameters that can be set in the file to specify the model.
+
+| Parameter Name | Description: mandatory for the first component, optional for the second | Default Value |
+|:-------------- |:-----------------------------------------------------------------------:| -------------:|
 | `model / 2:model` | Model type: currently `Hernquist`, `Isochrone`, `NFW` | `Hernquist` | 
 | `h(J):dphi / 2:h(J):dphi` | DF parameter `\delta_\phi` for h(**J**) | 0.5 |
 | `h(J):dz / 2:h(J):dz` | DF parameter `\delta_z` for h(**J**) | 0.5 |
@@ -52,7 +54,6 @@ The hyberbolic tangent is an odd function and the parameter `\chi` controls the 
 | `mass / 2:mass` | Component's mass (parameter `M0` in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
 | `r0 / 2:r0` | Component's scale radius (defines parameter `J0=sqrt(GM0*r0)` as in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
 | `q / 2:q` | Flattening of the initial guess potential | 1.0 |
-|:----- |:-------------------------------------:| --------:|
 | `itermax` | Defines the number of iterations computed | 5 | 
 
 
