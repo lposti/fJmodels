@@ -64,7 +64,7 @@ One component is mandatory (and also all its parameters are), the second is opti
 | `mass / 2:mass` | Component's mass (parameter `M0` in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
 | `r0 / 2:r0` | Component's scale radius (defines parameter `J0=sqrt(GM0*r0)` as in [Posti et al. 2015](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P)) | 1.0 |
 | `q / 2:q` | Flattening of the initial guess potential | 1.0 |
-
+\[ d_p \]
 
 
 ### Output
