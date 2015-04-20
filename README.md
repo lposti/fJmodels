@@ -1,11 +1,23 @@
 # f(J) models code  [![Build Status](https://drone.io/github.com/lposti/fJmodels/status.png)](https://drone.io/github.com/lposti/fJmodels/latest) 
 
 Code for generating action-based distribution function models for spheroids,
-as described in [Posti et al. (2014)](http://adsabs.harvard.edu/abs/2014arXiv1411.7897P).
+as described in [Posti et al. (2015)](http://adsabs.harvard.edu/abs/2015MNRAS.447.3060P).
+
+## Features
+
+The code generates an axisymmetric self-consistent model by specifying a Distribution Function (DF) which is a double-power law function of the action integrals. The model's density (and higher moments) are computed integrating the DF, then the self-consistent potential is found by iterative procedure (convergence criteria are currently in the form of distance from the potential of the previous iteration and on the tensor Virial theorem). The action integrals are computed in the Staeckel Fudge ([Binney 2012](http://adsabs.harvard.edu/abs/2012MNRAS.426.1324B)) approximation.
+
+- the models have a double-power law density profile: the central and outer slopes in the density profile are determined mainly by the DF's power law slope in the small- and large-action regimes. The code has currently hardwired such DF's parameters such that the final profile follows that of classical models, such as Hernquist, Isochrone and NFW.
+- the code stores the coefficients of the multipole expansion of e.g., density, potential and velocity dispersion distributions in output files at every iterations. Such output files can be managed easily with the Python tool [pyfJmod](https://github.com/lposti/pyfJmod).
+- the models can currently be
+  - self-consistent single-component
+  - single-component with external potential (to be fully implemented...)
+  - self-consistent two-components
+- it uses a  22-points *tanh-sinh quadrature* (see [Takahasi & Mori 1973](http://www.ems-ph.org/journals/show_abstract.php?issn=0034-5318&vol=9&iss=3&rank=12)) three-dimensional integrator to optimize a (typically) highly peaked DF at the centre. Different choices for the integration rule (e.g., Gauss-Legendre) and for the number of points used are implemented and can be switched on.
 
 ## Installation
 
-Simply download the package as a `.tar.gz` file (see Releases) or clone it
+Simply download the package as a `.tar.gz` file (see Releases) or clone it (*recommended*)
 ```
 git clone https://github.com/lposti/fJmodels
 ```
