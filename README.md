@@ -48,7 +48,7 @@ Download the `.tar` or compressed `.tar.gz` package from the release tab at the 
 At this step you have to make sure that either GSL are installed in standard paths (e.g., `/usr/lib`, `/usr/local/lib`, etc.) or that you pass the prefix of the local GSL installation to the `configure` script.
 The latter can be done configuring with the option
 ```
-./configure --with-gslprefix=</absolute/path/to/prefix>
+./configure --with-gslprefix=/absolute/path/to/prefix
 ```
 
 If the installation was successful, an executable named `fJmodels` was created in the current directory.
