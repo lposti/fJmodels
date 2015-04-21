@@ -51,10 +51,13 @@ The latter can be done configuring with the option
 ./configure --with-gslprefix=/absolute/path/to/prefix
 ```
 
-If the installation was successful, an executable named `fJmodels` was created in the current directory.
+If GSL are still not found an error will occur: please check that you have a functional GSL installation in the standard paths (e.g., by installing from official repositories) or use the correct prefix of the local install (please remember not to append `/lib` or `/include` to the prefix, which should be a directory containing both of them!)
 
 
 -------------------------------------------
+
+If the installation was successful, an executable named `fJmodels` was created in the current directory.
+
 ## Usage
 
 The code can be launched as follows:
