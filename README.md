@@ -37,6 +37,7 @@ Then `cd` to the unpacked/cloned directory and
 
 If the installation was successful, an executable named `fJmodels` was created in the current directory.
 
+-------------------------------------------
 ## Usage
 
 The code can be launched as follows:
