@@ -18,7 +18,14 @@ The code generates an axisymmetric self-consistent model by specifying a Distrib
 
 ## Installation
 
-Simply download the package as a `.tar.gz` file (see Releases) or clone it (*recommended*)
+### Prerequisites
+
+* Gnu Scientific Library - [GSL](http://www.gnu.org/software/gsl/)
+If you use a Debian-like Linux distribution (e.g., Ubuntu) you can download from the official repositories the packages `libgsl0ldbl` `libgsl0-dev`.
+
+### Use `git` (*recommended*)
+
+Clone the repository in your preferred directory:
 ```
 git clone https://github.com/lposti/fJmodels
 ```
