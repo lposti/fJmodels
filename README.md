@@ -30,7 +30,16 @@ Clone the repository in your preferred directory:
 git clone https://github.com/lposti/fJmodels
 ```
 
-Then `cd` to the unpacked/cloned directory and
+Then `cd` to the cloned directory and
+```
+./configure && make
+```
+
+If the installation was successful, an executable named `fJmodels` was created in the current directory.
+
+### Download release
+
+Download the `.tar` or compressed `.tar.gz` package from the release tab at the beginning of the code homepage. Then unpack the package, `cd` to the unpacked directory and 
 ```
 ./configure && make
 ```
