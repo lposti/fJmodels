@@ -56,7 +56,7 @@ If GSL are still not found an error will occur: please check that you have a fun
 
 -------------------------------------------
 
-If the installation was successful, an executable named `fJmodels` was created in the current directory.
+After running `make`, if the installation was successful an executable named `fJmodels` was created in the current directory.
 
 ## Usage
 
