@@ -20,7 +20,7 @@ The code generates an axisymmetric self-consistent model by specifying a Distrib
 
 ### Prerequisites
 
-* Gnu Scientific Library - [GSL](http://www.gnu.org/software/gsl/)
+* Gnu Scientific Library - [GSL](http://www.gnu.org/software/gsl/).
 If you use a Debian-like Linux distribution (e.g., Ubuntu) you can download from the official repositories the packages `libgsl0ldbl` `libgsl0-dev`.
 
 ### Use `git` (*recommended*)
