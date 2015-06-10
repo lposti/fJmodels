@@ -13,8 +13,6 @@
 #include "Grid.h"
 #include "readParam.h"
 
-#define UNSET -999.
-
 unsigned components;
 using namespace std;
 
@@ -41,10 +39,12 @@ struct fJParams readParam(char const * fName){
 	fJP.itermax = 5;
 
 	fJP.modName  = "null"; fJP.outName  = "null";
+	fJP.alpha = UNSET; fJP.beta = UNSET;
 	fJP.dphi_h_in = UNSET; fJP.dz_h_in = UNSET; fJP.dphi_g_in = UNSET; fJP.dz_g_in = UNSET;
 	fJP.chi = UNSET; fJP.mass = UNSET; fJP.r0 = UNSET; fJP.q = UNSET;
 
 	fJP.modName2 = "null"; fJP.outName2  = "null";
+	fJP.alpha_2 = UNSET; fJP.beta_2 = UNSET;
 	fJP.dphi_h_in2 = UNSET; fJP.dz_h_in2 = UNSET; fJP.dphi_g_in2 = UNSET; fJP.dz_g_in2 = UNSET;
 	fJP.chi_2 = UNSET; fJP.mass_2 = UNSET; fJP.r0_2 = UNSET; fJP.q_2 = UNSET;
 
@@ -74,6 +74,8 @@ struct fJParams readParam(char const * fName){
 					if (par=="itermax")		fJP.itermax	  = readVal(lineStream);
 
 					if (par=="model")       fJP.modName   = readStr(lineStream);
+					if (par=="alpha")		fJP.alpha	  = readVal(lineStream);
+					if (par=="beta")		fJP.beta	  = readVal(lineStream);
 					if (par=="outfile")     fJP.outName   = readStr(lineStream);
 					if (par=="chi")			fJP.chi		  = readVal(lineStream);
 					if (par=="h(J):dphi")   fJP.dphi_h_in = readVal(lineStream);
@@ -86,6 +88,8 @@ struct fJParams readParam(char const * fName){
 
 					if (par=="2:model")       fJP.modName2   = readStr(lineStream);
 					if (par=="2:outfile")     fJP.outName2   = readStr(lineStream);
+					if (par=="2:alpha")		  fJP.alpha_2	 = readVal(lineStream);
+					if (par=="2:beta")		  fJP.beta_2	 = readVal(lineStream);
 					if (par=="2:chi")		  fJP.chi_2		 = readVal(lineStream);
 					if (par=="2:h(J):dphi")   fJP.dphi_h_in2 = readVal(lineStream);
 					if (par=="2:h(J):dz")     fJP.dz_h_in2   = readVal(lineStream);
@@ -110,14 +114,15 @@ struct fJParams readParam(char const * fName){
 void checkParameterFile(const struct fJParams * fJP){
 
 	/* check for one component */
-	if (fJP->modName != "null" and fJP->chi != UNSET and fJP->mass != UNSET and fJP->r0 != UNSET and fJP->q != UNSET
+	if ((fJP->modName != "null" or (fJP->alpha != UNSET and fJP->beta != UNSET)) and
+			fJP->chi != UNSET and fJP->mass != UNSET and fJP->r0 != UNSET and fJP->q != UNSET
 			and fJP->dphi_h_in != UNSET and fJP->dz_h_in != UNSET and fJP->dphi_g_in != UNSET and fJP->dz_g_in != UNSET)
 	{
 		/*  set the number of components  */
 		components = 1;
 
 		/* check for second component */
-		if (fJP->modName2 != "null")
+		if (fJP->modName2 != "null" or (fJP->alpha_2 != UNSET and fJP->beta_2 != UNSET))
 		{
 			if (fJP->chi_2 != UNSET and fJP->mass_2 != UNSET and fJP->r0_2 != UNSET and fJP->q_2 != UNSET
 				and fJP->dphi_h_in2 != UNSET and fJP->dz_h_in2 != UNSET and fJP->dphi_g_in2 != UNSET and fJP->dz_g_in2 != UNSET)

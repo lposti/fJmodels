@@ -10,6 +10,8 @@
 
 #include <string>
 
+#define UNSET -999.
+
 struct fJParams {
 
 	/* number of iterations */

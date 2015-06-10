@@ -18,7 +18,6 @@
 static double alpha[2] = {5./3.,5.};
 static double dphi_h, dz_h, dphi_g, dz_g;
 static Potential *gP;
-static std::string modClassic="Hernquist";
 
 inline void setDF(const double dphi_h_in, const double dz_h_in,
                   const double dphi_g_in, const double dz_g_in){
@@ -38,22 +37,22 @@ void setDF(struct fJParams * fJP, Potential *p, const unsigned comp){
 
 	if (comp==1){
 
-		modClassic = fJP->modName;
-		if (modClassic=="Hernquist") 	  {alpha[0] = fJP->alpha = 1.667;   alpha[1] = fJP->beta = 5.;}
-		else if (modClassic=="Isochrone") {alpha[0] = fJP->alpha = .0;      alpha[1] = fJP->beta = 5.;}
-		else if (modClassic=="NFW") 	  {alpha[0] = fJP->alpha = 1.667;   alpha[1] = fJP->beta = 3.;}
-		else {printf("\n--> ERROR: currently only Isochrone and Hernquist models supported!\n"); exit(1);}
+		if (fJP->modName=="Hernquist")				{alpha[0] = fJP->alpha = 1.667;   alpha[1] = fJP->beta = 5.;}
+		else if (fJP->modName=="Isochrone") 		{alpha[0] = fJP->alpha = 0.0;     alpha[1] = fJP->beta = 5.;}
+		else if (fJP->modName=="NFW")				{alpha[0] = fJP->alpha = 1.667;   alpha[1] = fJP->beta = 3.;}
+		else if (fJP->alpha != UNSET and fJP->beta != UNSET)     {alpha[0] = fJP->alpha;   alpha[1] = fJP->beta;}
+		else {printf("\n--> ERROR: either set parameter 'model' or 'alpha' and 'beta'!\n"); exit(1);}
 
 		J0=sqrt(fJP->mass*fJP->r0); mass=fJP->mass; chi=fJP->chi;
 		setDF(fJP->dphi_h_in,fJP->dz_h_in,fJP->dphi_g_in,fJP->dz_g_in,p);
 
 	} else if (comp==2){
 
-		modClassic = fJP->modName2;
-		if (modClassic=="Hernquist") 	  {alpha[0] = fJP->alpha_2 = 1.667;   alpha[1] = fJP->beta_2 = 5.;}
-		else if (modClassic=="Isochrone") {alpha[0] = fJP->alpha_2 = .0;      alpha[1] = fJP->beta_2 = 5.;}
-		else if (modClassic=="NFW") 	  {alpha[0] = fJP->alpha_2 = 1.667;   alpha[1] = fJP->beta_2 = 3.;}
-		else {printf("\n--> ERROR: currently only Isochrone, Hernquist and NFW models supported!\n"); exit(1);}
+		if (fJP->modName2=="Hernquist")				{alpha[0] = fJP->alpha_2 = 1.667;   alpha[1] = fJP->beta_2 = 5.;}
+		else if (fJP->modName2=="Isochrone")		{alpha[0] = fJP->alpha_2 = 0.0;     alpha[1] = fJP->beta_2 = 5.;}
+		else if (fJP->modName2=="NFW")				{alpha[0] = fJP->alpha_2 = 1.667;   alpha[1] = fJP->beta_2 = 3.;}
+		else if (fJP->alpha != UNSET and fJP->beta != UNSET)     {alpha[0] = fJP->alpha_2;   alpha[1] = fJP->beta_2;}
+		else {printf("\n--> ERROR: either set parameter '2:model' or '2:alpha' and '2:beta'!\n"); exit(1);}
 
 		J0=sqrt(fJP->mass_2*fJP->r0_2); mass=fJP->mass_2; chi=fJP->chi_2;
 		setDF(fJP->dphi_h_in2,fJP->dz_h_in2,fJP->dphi_g_in2,fJP->dz_g_in2,p);
@@ -93,7 +92,7 @@ double df(const double *x, const double *v){
 	else if (chi>0.){
 		double k=0.5;
 		double DFeven = df_hg(Jr,Jphi,Jz);
-		return (1-k)*DFeven + k*tanh(chi*Jphi/J0)*DFeven;
+		return (1-k)*DFeven + k * 2. * tanh(chi*Jphi/J0)*DFeven;
 	}
 	else {
 		printf("\n  --ERROR: chi must be >= 0!");

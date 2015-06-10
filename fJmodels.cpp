@@ -46,12 +46,12 @@ void twoComp(struct fJParams fJP){
 	SetModel(fJP,1);
 
 	Potential p(1);
-	p.selectGuessRho(fJP.modName);
+	p.selectGuessRho( fJP.modName!="null" ? fJP.modName : "Hernquist" );
 	p.computeGuessRhl(); p.computePhil(p.rhlP);
 
 	SetModel(fJP,2);
 	Potential p2(2);
-	p2.selectGuessRho(fJP.modName2);
+	p2.selectGuessRho( fJP.modName2!="null" ? fJP.modName2 : "Hernquist" );
 	p2.computeGuessRhl(); p2.computePhil(p2.rhlP);
 
 	updatePhil(&p, &p2);		// update the total potential
@@ -88,13 +88,15 @@ void oneComp(struct fJParams fJP){
 	SetModel(fJP);
 
 	Potential p;
-	p.selectGuessRho(fJP.modName);
+	p.selectGuessRho( fJP.modName!="null" ? fJP.modName : "Hernquist" );
 	p.computeGuessRhl(); p.computePhil();
 
+	/*
 	Potential ext(2);
 	ext.selectGuessRho("NFWext");
 	ext.computeGuessRhl(); ext.computePhil();
 	updatePhil(&p, &ext);		// update the total potential
+	*/
 
 	tabulateDelta(&p);
 
@@ -103,16 +105,10 @@ void oneComp(struct fJParams fJP){
 	for (int k=0; k<fJP.itermax; k++){
 		printf("\n Iter:%d\n",k);
 
-		/* external potential ----------- TO BE FIXED!!! */
-		//Potential ext(false);
-		//ext.selectGuessRho("NFWext");
-		//ext.computeGuessRhl(); ext.computePhil();
-		//for (int i=0; i<NR; i++) printf("%f %f %f\n",ar[i],p(ar[i],0),ev_dens<double>(ar[i],0));
-
 		//double **philOLD=mat<double>(NR,NPOLY), **PrOLD=mat<double>(NR,NPOLY),**Pr2OLD=mat<double>(NR,NPOLY);
 		//savePhi(philOLD,PrOLD,Pr2OLD);
-		computeNewPhi(&p);
-		updatePhil(&p, &ext);		// update the total potential
+		computeNewPhi(&p,rhl,sigRl,sigpl,sigzl,sigRzl,vrotl);
+		//updatePhil(&p, &ext);		// update the total potential
 		//mergePhi(philOLD,PrOLD,Pr2OLD,.25);
 		writeOut(fJP,k);
 		vir2(&p);
