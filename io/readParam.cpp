@@ -74,8 +74,8 @@ struct fJParams readParam(char const * fName){
 					if (par=="itermax")		fJP.itermax	  = readVal(lineStream);
 
 					if (par=="model")       fJP.modName   = readStr(lineStream);
-					if (par=="alpha")		fJP.alpha	  = readVal(lineStream);
-					if (par=="beta")		fJP.beta	  = readVal(lineStream);
+					if (par=="A")			fJP.alpha	  = readVal(lineStream);
+					if (par=="B")			fJP.beta	  = readVal(lineStream);
 					if (par=="outfile")     fJP.outName   = readStr(lineStream);
 					if (par=="chi")			fJP.chi		  = readVal(lineStream);
 					if (par=="h(J):dphi")   fJP.dphi_h_in = readVal(lineStream);
@@ -88,8 +88,8 @@ struct fJParams readParam(char const * fName){
 
 					if (par=="2:model")       fJP.modName2   = readStr(lineStream);
 					if (par=="2:outfile")     fJP.outName2   = readStr(lineStream);
-					if (par=="2:alpha")		  fJP.alpha_2	 = readVal(lineStream);
-					if (par=="2:beta")		  fJP.beta_2	 = readVal(lineStream);
+					if (par=="2:A")			  fJP.alpha_2	 = readVal(lineStream);
+					if (par=="2:B")			  fJP.beta_2	 = readVal(lineStream);
 					if (par=="2:chi")		  fJP.chi_2		 = readVal(lineStream);
 					if (par=="2:h(J):dphi")   fJP.dphi_h_in2 = readVal(lineStream);
 					if (par=="2:h(J):dz")     fJP.dz_h_in2   = readVal(lineStream);
