@@ -87,6 +87,7 @@ Follows a schematic descriptions of the implemented parameters that can be set i
 | Parameter Name | Description: mandatory for the first component, optional for the second | Default Value |
 |:-------------- |:-----------------------------------------------------------------------:| -------------:|
 | `model / 2:model` | Model type: currently `Hernquist`, `Isochrone`, `NFW` | `Hernquist` | 
+| `alpha, beta / 2:alpha, 2:beta` | A, B slopes of the DF. They are ignored if `model` is specified | None |
 | `h(J):dphi / 2:h(J):dphi` | DF parameter `\delta_\phi` for h(**J**) | 0.55 |
 | `h(J):dz / 2:h(J):dz` | DF parameter `\delta_z` for h(**J**) | 0.55 |
 | `g(J):dphi / 2:g(J):dphi` | DF parameter `\delta_\phi` for g(**J**) | 1.0 |
