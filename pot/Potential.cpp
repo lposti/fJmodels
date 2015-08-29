@@ -141,6 +141,9 @@ void Potential::computeInts(double **rhlH){
 			while(status!=GSL_SUCCESS){
 				status = gsl_integration_qagiu (&G, ar[nr], epsabs, epsrel, WORKSIZE, w, &res, &err);
 				epsabs*=2; epsrel*=2;
+				if (isnan(res) == 1){
+					exit(1);
+				}
 			}
 			this->I_ext[nr][np] = res;
 

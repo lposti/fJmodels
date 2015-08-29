@@ -31,6 +31,7 @@ double ** __restrict phil, ** __restrict Pr, ** __restrict Pr2,
        ** __restrict rhl, ** __restrict vrotl, ** __restrict sigRl,
        ** __restrict sigpl, ** __restrict sigzl, ** __restrict sigRzl;
 
+FILE * __restrict f_lz;
 /*
  * Compute 2-component models
  */
@@ -91,12 +92,12 @@ void oneComp(struct fJParams fJP){
 	p.selectGuessRho( fJP.modName!="null" ? fJP.modName : "Hernquist" );
 	p.computeGuessRhl(); p.computePhil();
 
-	/*
+/*
 	Potential ext(2);
 	ext.selectGuessRho("NFWext");
 	ext.computeGuessRhl(); ext.computePhil();
 	updatePhil(&p, &ext);		// update the total potential
-	*/
+*/
 
 	tabulateDelta(&p);
 
@@ -104,6 +105,7 @@ void oneComp(struct fJParams fJP){
 
 	for (int k=0; k<fJP.itermax; k++){
 		printf("\n Iter:%d\n",k);
+		f_lz = fopen("f_lz.dat","w");
 
 		//double **philOLD=mat<double>(NR,NPOLY), **PrOLD=mat<double>(NR,NPOLY),**Pr2OLD=mat<double>(NR,NPOLY);
 		//savePhi(philOLD,PrOLD,Pr2OLD);
@@ -112,6 +114,7 @@ void oneComp(struct fJParams fJP){
 		//mergePhi(philOLD,PrOLD,Pr2OLD,.25);
 		writeOut(fJP,k);
 		vir2(&p);
+		fclose(f_lz);
 	}
 }
 

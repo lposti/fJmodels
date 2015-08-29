@@ -74,7 +74,7 @@ template <typename T> inline void SetGrid (T const& a_scale, T const& rmax){
 
 // logarithmic Grid
 template <typename T> inline void SetGrid (T const& rmax){
-	T rmin=5e-5*rmax;  // minimum radius
+	T rmin=5e-6*rmax;  // minimum radius
 
 	for (int i=0;i<NR;i++)
 		ar[i] = pow(10.,log10(rmin)+(log10(rmax)-log10(rmin))*i/(NR-1));
@@ -227,5 +227,13 @@ template <typename T> T RcE(double E, double Rc, Potential *p){
 	return wrp_GSLroots(F,R0,R1);
 }
 
+
+/********************************************************************************************
+ * Sign function
+ ********************************************************************************************/
+
+template <typename T> T sgn(T x) {
+	return T((T(0) < x) - (x < T(0)));
+}
 
 #endif /* INCLUDE_UTILS_H_ */

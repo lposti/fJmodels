@@ -88,11 +88,16 @@ double df(const double *x, const double *v){
 	uvOrb uvorb(Deltafn(H),Lz,Phi_h,x,p,gP);
 	Jr=uvorb.Ju(); Jz=uvorb.Jv(); Jphi=Lz;
 
-	if (chi==0.) return df_hg(Jr,Jphi,Jz);
+	double DFeven = df_hg(Jr,Jphi,Jz);
+	double k=K_SATOH;
+	//double rc=RcE<double>(H, 1., gP);
+	//if ((1.-k)*DFeven + k * tanh(chi*Jphi/J0)*DFeven>1e-6)
+	//	fprintf(f_lz, "%e %e %e %e %e %e \n", R, log10((1.-k)*DFeven + k * tanh(chi*Jphi/J0)*DFeven), H, Jphi, rc*sqrt(rc*gP->dR(rc, 0.)), Lz / (rc*sqrt(rc*gP->dR(rc, 0.))));
+
+	if (chi==0.) return DFeven;
 	else if (chi>0.){
-		double k=0.5;
-		double DFeven = df_hg(Jr,Jphi,Jz);
-		return (1-k)*DFeven + k * 2. * tanh(chi*Jphi/J0)*DFeven;
+		//double k=0.5;  // 0.625 for ngc6427
+		return (1.-k)*DFeven + k * tanh(chi * Jphi / J0)*DFeven;
 	}
 	else {
 		printf("\n  --ERROR: chi must be >= 0!");

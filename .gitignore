@@ -12,3 +12,5 @@ include/press.h
 OLD_Makefile
 autom4te.cache/
 param2.txt
+f_lz.dat
+

@@ -62,7 +62,7 @@ double rhofDF(double R, double z, Potential *p){
 double rhofDF(double R, double z, Potential *p, double * vrot, double * sigR,
 		      double * sigp, double * sigz, double * sigRz){
 	double Phi_h=(*p)(R,z);
-	double Rz[3]={R,z,Phi_h},Ve=sqrt(-2*(Phi_h-(*p)(100,100)));
+	double Rz[3]={R,z,Phi_h},Ve=sqrt(-2*(Phi_h-(*p)(1000,1000)));
 
 	struct IntegPar par = {&Rz[0],Ve};
 	double * out = arr<double>(6);

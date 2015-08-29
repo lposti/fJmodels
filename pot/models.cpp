@@ -46,7 +46,7 @@ double rhoNFW(double R,double z){
 double aNFW=25.,GM_NFW=.01;
 double rhoNFWext(double R,double z){
 	double m=sqrt(R*R+z*z/q2);
-	return GM_NFW/(m/aNFW*pow(aNFW+m,2))/FPI + 3.*.05/(4.*PI)*pow(1.+m*m, -2.5);
+	return GM_NFW/(m/aNFW*pow(aNFW+m,1))/FPI; // + 3.*.05/(4.*PI)*pow(1.+m*m, -2.5);
 }
 
 
