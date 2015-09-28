@@ -18,6 +18,26 @@ double Int1D_11 (double (*f)(double)){
 	return sum;
 }
 
+double Int1D_01 (double (*f)(double)){
+	double sum=0.;
+
+#pragma omp parallel for reduction(+:sum)
+	for (unsigned i=0; i<QUADORD; i++)
+		sum+= xw01[i]*f(xpt01[i]);
+
+	return sum;
+}
+
+double Int1D_01 (double (*f)(double,void*), void * params){
+	double sum=0.;
+
+#pragma omp parallel for reduction(+:sum)
+	for (unsigned i=0; i<QUADORD; i++)
+		sum+= xw01[i]*f(xpt01[i], params);
+
+	return sum;
+}
+
 double Int2D_1111 (double (*f)(double,double)){
 	double sum=0;
 
@@ -52,6 +72,19 @@ double Int3D_011101 (double (*f)(double,double,double)){
 }
 
 /* Version with paramters passed as void ptr. */
+double Int3D_010101 (double (*f)(double,double,double,void*), void * params){
+	double sum=0;
+
+#pragma omp parallel for collapse(3) reduction(+:sum)
+	for (unsigned i=0; i<QUADORD; i++)
+		for (unsigned j=0; j<QUADORD; j++)
+			for (unsigned k=0; k<QUADORD; k++)
+				sum+=xw01[i]*xw01[j]*xw01[k]*f(xpt01[i],xpt01[j],xpt01[k],params);
+
+	return sum;
+}
+
+/* Version with paramters passed as void ptr. */
 double Int3D_011101 (double (*f)(double,double,double,void*), void * params){
 	double sum=0;
 
@@ -60,6 +93,32 @@ double Int3D_011101 (double (*f)(double,double,double,void*), void * params){
 		for (unsigned j=0; j<QUADORD; j++)
 			for (unsigned k=0; k<QUADORD; k++)
 				sum+=xw01[i]*xw11[j]*xw01[k]*f(xpt01[i],xpt11[j],xpt01[k],params);
+
+	return sum;
+}
+
+/* Version with paramters passed as void ptr. */
+double Int3D_111101 (double (*f)(double,double,double,void*), void * params){
+	double sum=0;
+
+#pragma omp parallel for collapse(3) reduction(+:sum)
+	for (unsigned i=0; i<QUADORD; i++)
+		for (unsigned j=0; j<QUADORD; j++)
+			for (unsigned k=0; k<QUADORD; k++)
+				sum+=xw11[i]*xw11[j]*xw01[k]*f(xpt11[i],xpt11[j],xpt01[k],params);
+
+	return sum;
+}
+
+/* Version with paramters passed as void ptr. */
+double Int3D_111111 (double (*f)(double,double,double,void*), void * params){
+	double sum=0;
+
+#pragma omp parallel for collapse(3) reduction(+:sum)
+	for (unsigned i=0; i<QUADORD; i++)
+		for (unsigned j=0; j<QUADORD; j++)
+			for (unsigned k=0; k<QUADORD; k++)
+				sum+=xw11[i]*xw11[j]*xw11[k]*f(xpt11[i],xpt11[j],xpt11[k],params);
 
 	return sum;
 }

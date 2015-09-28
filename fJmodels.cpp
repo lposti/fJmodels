@@ -112,7 +112,7 @@ void oneComp(struct fJParams fJP){
 		computeNewPhi(&p,rhl,sigRl,sigpl,sigzl,sigRzl,vrotl);
 		//updatePhil(&p, &ext);		// update the total potential
 		//mergePhi(philOLD,PrOLD,Pr2OLD,.25);
-		writeOut(fJP,k);
+		writeOut(fJP,k,&p);
 		vir2(&p);
 		fclose(f_lz);
 	}

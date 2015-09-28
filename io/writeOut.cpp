@@ -8,9 +8,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "math.h"
 #include "Grid.h"
 #include "writeOut.h"
 #include "readParam.h"
+#include "Potential.h"
+#include "Integ.h"
 
 using namespace std;
 
@@ -67,16 +70,16 @@ void writeMat( ofstream & outF, double **mat, int NX, int NY ){
 	}
 }
 
-void writeOut(const struct fJParams& fJP, const int iter,
+string _writeOut(const struct fJParams& fJP, const int iter,
 		const unsigned comp,double **rhlH,double ** sigRlH,double **sigplH,
 		double ** sigzlH,double **sigRzlH,double **vrotlH,double **philH,
 		double **PrH, double **Pr2H){
 
 	ofstream outF;
+	string name="models/";
 
 	if (comp==1)
 	{
-		string name="models/";
 
 		/* if the user's specified outName is not null use that, else compose name */
 		if (fJP.outName != "null") name += fJP.outName+"_"+toString(iter)+".out";
@@ -103,7 +106,6 @@ void writeOut(const struct fJParams& fJP, const int iter,
 	}
 	else if (comp==2)
 	{
-		string name="models/";
 
 		/* if the user's specified outName is not null use that, else compose name */
 		if (fJP.outName2 != "null") name += fJP.outName2+"_"+toString(iter)+".out";
@@ -130,6 +132,55 @@ void writeOut(const struct fJParams& fJP, const int iter,
 	}
 
 	outF.close();
+
+	return name;
+}
+
+void writeOut(const struct fJParams& fJP, const int iter,
+		const unsigned comp,double **rhlH,double ** sigRlH,double **sigplH,
+		double ** sigzlH,double **sigRzlH,double **vrotlH,double **philH,
+		double **PrH, double **Pr2H){
+
+	string name = _writeOut(fJP, iter, comp, rhlH, sigRlH, sigplH,
+		 sigzlH, sigRzlH, vrotlH, philH, PrH, Pr2H);
+}
+
+void writeOut(const struct fJParams& fJP, const int iter, Potential *p,
+		const unsigned comp,double **rhlH,double ** sigRlH,double **sigplH,
+		double ** sigzlH,double **sigRzlH,double **vrotlH,double **philH,
+		double **PrH, double **Pr2H){
+
+	string name = _writeOut(fJP, iter, comp, rhlH, sigRlH, sigplH,
+		 sigzlH, sigRzlH, vrotlH, philH, PrH, Pr2H);
+	/*
+	 * Line profile output
+	 */
+#ifdef LINEPROFILE
+	name.erase(name.end()-3, name.end());
+	name += "lp";
+
+	int size_lp = 150;
+	std::ofstream outF; outF.open(name.c_str(), std::ios::out);
+
+	double ve_c = sqrt(-2*((*p)(ar[0],ar[0])-(*p)(10 * ar[NR-1],10 * ar[NR-1]))),
+		   ve_m = sqrt(-2*((*p)(ar[NR*2/3],ar[0])-(*p)(10 * ar[NR-1],10 * ar[NR-1]))),  //5/8  2/3
+		   ve_out = sqrt(-2*((*p)(ar[NR*5/6],ar[0])-(*p)(10 * ar[NR-1],10 * ar[NR-1])));  //13/16   5/6
+
+	double v[size_lp];
+	for (int i=0; i<size_lp/2; i++)
+		v[i] = -pow(10., -3.+(size_lp/2-1-i)*(3.)/(size_lp/2-1));
+
+	for (int i=size_lp/2; i<size_lp; i++)
+		v[i] = pow(10., -3.+(i-size_lp/2)*(3.)/(size_lp/2-1));
+
+	for (int i=0; i<size_lp; i++){
+		outF << ve_c * 3. * v[i] << " " << line_profile(ar[0], ar[0], 3. * v[i], p) << " " <<
+				ve_m * 3. * v[i] << " " << line_profile(ar[NR*2/3], ar[0], 3. * v[i], p) << " " <<
+				ve_out * 3. * v[i] << " " << line_profile(ar[NR*5/6], ar[0], 3. * v[i], p) << std::endl;
+	}
+
+#endif
+
 }
 
 

@@ -5,6 +5,8 @@
  *      Author: L. Posti
  */
 
+#include <iostream>
+#include <fstream>
 #include "Grid.h"
 #include "Potential.h"
 #include "Integ.h"
@@ -65,7 +67,6 @@ void computeRhl(Potential *p, double **rhlH=rhl,double ** sigRlH=sigRl,
 	 */
 	rho[0][0] = (rho[2][0]-rho[1][0])/(ar[2]-ar[1])*(ar[0]-ar[1])+rho[1][0];
 	get_Ylm<double>(rho,rhlH,vrot,vrotlH,sigR,sigRlH,sigp,sigplH,sigz,sigzlH,sigRz,sigRzlH);
-
 }
 
 /*
