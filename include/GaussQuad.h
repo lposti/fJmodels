@@ -23,6 +23,7 @@ double Int3D_011101 (double (*f)(double,double,double,void*), void *);
 double Int3D_111101 (double (*f)(double,double,double,void*), void *);
 double Int3D_111111 (double (*f)(double,double,double,void*), void *);
 double Int3D_011101_vec (struct vec6d (*f)(double,double,double,void*), void *, double *);
+double Int3D_111111_vec (struct vec6d (*f)(double,double,double,void*), void *, double *);
 
 
 

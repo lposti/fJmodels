@@ -112,10 +112,11 @@ double rhofDF(double R, double z, Potential *p, double * vrot, double * sigR,
 
 	struct IntegPar par = {&Rz[0],Ve};
 	double * out = arr<double>(6);
-	double dens=4*Int3D_011101_vec(&rhoInteg_vec,&par,out);
+	//double dens=4*Int3D_011101_vec(&rhoInteg_vec,&par,out);
+	double dens=Int3D_111111_vec(&rhoInteg_vec,&par,out);
 
 	*vrot=out[1]/out[0];
-	*sigR=sqrt(out[2]/out[0]); *sigp=sqrt(out[3]/out[0]); *sigz=sqrt(out[4]/out[0]); *sigRz=sqrt(out[5]/out[0]);
+	*sigR=sqrt(out[2]/out[0]); *sigp=sqrt(out[3]/out[0]); *sigz=sqrt(out[4]/out[0]); *sigRz=sqrt(fabs(out[5])/out[0]); // *sigRz=sqrt(MAX(0., out[5])/out[0]);
 	return dens;
 }
 

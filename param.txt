@@ -5,7 +5,7 @@
 itermax		4
 	
 model		Hernquist
-#outfile		nfwtest
+outfile		2comp_test
 h(J):dphi	0.55
 h(J):dz		0.55
 g(J):dphi	1.
@@ -19,13 +19,16 @@ q		1.
 # Optional: second component
 #
 
-2:model 	  NFW
+#2:model 	  NFW
+2:outfile	  2comp_test2
+2:A		  0.
+2:B		  2.
 2:h(J):dphi       0.55
-2:h(J):dz         0.55
+2:h(J):dz         2.
 2:g(J):dphi       1.
-2:g(J):dz         1.
-2:chi		  0.
-2:mass            10.
-2:r0              25.
-2:q               1.
+2:g(J):dz         4.
+2:chi		  10.
+2:mass            2.
+2:r0              2.
+2:q               .6
 
