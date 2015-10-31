@@ -116,6 +116,44 @@ void oneComp(struct fJParams fJP){
 		vir2(&p);
 		fclose(f_lz);
 	}
+
+	/*
+	double ci[6],si[6],wi[6];
+	// write f_lz file
+	gauleg<double>(0,1,ci,wi);
+	for(int i=0; i<6; i++)
+		si[i]=sqrt(1-ci[i]*ci[i]);
+
+	f_lz = fopen("f_lz.dat","w");
+	double Ve;
+	int nn=20;
+	double r,vr,vphi,vz,V[3],X[3],Phi_h;
+	for(int nr=0; nr<NR; nr++){
+		printf("%d\n",nr);
+		r = ar[0] + 15. * float(nr)/float(NR-1);
+		for(int ng=0; ng<6; ng++){
+			Phi_h = p(r*si[ng],r*ci[ng]);
+			X[0]=r*si[ng]; X[1]=r*ci[ng]; X[2]=Phi_h;
+
+#pragma omp parallel
+{
+#pragma omp parallel for private(Ve,vr,vphi,vz)
+			for (int ir=0; ir<nn; ir++){
+				Ve = sqrt(-2*(Phi_h-p(10 * ar[NR-1],10 * ar[NR-1])));
+				vr = 1e-6+Ve * float(ir)/float(nn-1) * .5;
+				for (int ip=0; ip<nn; ip++){
+					vphi =(1e-6-Ve + 2. * Ve * float(ip)/float(nn-1)) * .5;
+					for (int iz=0; iz<nn; iz++){
+						vz = 1e-6+Ve * float(iz)/float(nn-1) * .5;
+						V[0]=vr; V[1]=vphi; V[2]=vz;
+						df(X,V);
+					}
+				}
+			}
+}
+		}
+	}
+	*/
 }
 
 int main(int argc, char **argv){
