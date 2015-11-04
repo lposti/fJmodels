@@ -14,6 +14,7 @@
 #include "readParam.h"
 #include "Potential.h"
 #include "Integ.h"
+#include "UtilsLeg.h"
 
 using namespace std;
 
@@ -181,6 +182,55 @@ void writeOut(const struct fJParams& fJP, const int iter, Potential *p,
 
 #endif
 
+	name.erase(name.end()-3, name.end());
+	name += "Pvp";
+
+	int size_lp = 200;
+	std::ofstream outF; outF.open(name.c_str(), std::ios::out);
+
+	double ve_c = sqrt(-2*((*p)(ar[0],ar[0])-(*p)(10 * ar[NR-1],10 * ar[NR-1]))),
+		   ve_m = sqrt(-2*((*p)(ar[NR*2/3],ar[0])-(*p)(10 * ar[NR-1],10 * ar[NR-1]))),  //5/8  2/3
+		   ve_out = sqrt(-2*((*p)(ar[NR-5],ar[0])-(*p)(10 * ar[NR-1],10 * ar[NR-1])));  //13/16   5/6
+
+	double vc_c = sqrt(ar[0] * p->dR(ar[0], ar[0])),
+		   vc_m = sqrt(ar[NR*2/3] * p->dR(ar[NR*2/3], ar[0])),
+		   vc_out = sqrt(ar[NR-5] * p->dR(ar[NR-5], ar[0]));
+
+	double v[size_lp];
+	for (int i=0; i<size_lp; i++)
+		v[i] = -1. + 2. * i / (size_lp-1);
+
+	for (int i=0; i<size_lp; i++){
+		outF << ve_c * v[i] / 10. / vc_c << " " << P_vp(ar[0], ar[0], ve_c * v[i] / 10., p) / ev_dens(ar[0], ar[0]) << " " <<
+				ve_m * v[i] / vc_m << " " << P_vp(ar[NR*2/3], ar[0], ve_m * v[i], p) / ev_dens(ar[NR*2/3], ar[0]) << " " <<
+				ve_out * v[i] / vc_out << " " << P_vp(ar[NR-5], ar[0], ve_out * v[i], p) / ev_dens(ar[NR-5], ar[0]) << std::endl;
+	}
+
+	////////////////////  P(vz)
+
+	name.erase(name.end()-3, name.end());
+	name += "Pvz";
+
+	std::ofstream outFz; outFz.open(name.c_str(), std::ios::out);
+
+	for (int i=0; i<size_lp; i++){
+		outFz << ve_c * v[i] / 10. / vc_c << " " << P_vz(ar[0], ar[0], ve_c * v[i] / 10., p) / ev_dens(ar[0], ar[0]) << " " <<
+				ve_m * v[i] / vc_m << " " << P_vz(ar[NR*2/3], ar[0], ve_m * v[i], p) / ev_dens(ar[NR*2/3], ar[0]) << " " <<
+				ve_out * v[i] / vc_out << " " << P_vz(ar[NR-5], ar[0], ve_out * v[i], p) / ev_dens(ar[NR-5], ar[0]) << std::endl;
+	}
+
+	////////////////////  P(vr)
+
+	name.erase(name.end()-3, name.end());
+	name += "Pvr";
+
+	std::ofstream outFr; outFr.open(name.c_str(), std::ios::out);
+
+	for (int i=0; i<size_lp; i++){
+		outFr << ve_c * v[i] / 10. / vc_c << " " << P_vr(ar[0], ar[0], ve_c * v[i] / 10., p) / ev_dens(ar[0], ar[0]) << " " <<
+				ve_m * v[i] / vc_m << " " << P_vr(ar[NR*2/3], ar[0], ve_m * v[i], p) / ev_dens(ar[NR*2/3], ar[0]) << " " <<
+				ve_out * v[i] / vc_out << " " << P_vr(ar[NR-5], ar[0], ve_out * v[i], p) / ev_dens(ar[NR-5], ar[0]) << std::endl;
+	}
 }
 
 

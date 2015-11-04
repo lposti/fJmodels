@@ -49,13 +49,23 @@ double Int2D_1111 (double (*f)(double,double)){
 	return sum;
 }
 
-double Int2D_0111 (double (*f)(double,double)){
+double Int2D_0111 (double (*f)(double,double,void*), void * params){
 	double sum=0;
 
 #pragma omp parallel for collapse(2) reduction(+:sum)
 	for (unsigned i=0; i<QUADORD; i++)
 		for (unsigned j=0; j<QUADORD; j++)
-			sum+=xw01[i]*xw11[j]*f(xpt01[i],xpt11[j]);
+			sum+=xw01[i]*xw11[j]*f(xpt01[i],xpt11[j],params);
+	return sum;
+}
+
+double Int2D_0101 (double (*f)(double,double,void*), void * params){
+	double sum=0;
+
+#pragma omp parallel for collapse(2) reduction(+:sum)
+	for (unsigned i=0; i<QUADORD; i++)
+		for (unsigned j=0; j<QUADORD; j++)
+			sum+=xw01[i]*xw01[j]*f(xpt01[i],xpt01[j],params);
 	return sum;
 }
 

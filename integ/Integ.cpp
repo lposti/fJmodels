@@ -61,13 +61,12 @@ struct vec6d rhoInteg_vec (const double vr, const double vphi, const double vz, 
 	return res;
 }
 
-struct LPPar { double * Rz; double Ve; Potential *p; double vx;};
+struct LPPar { double * Rz; double Ve; double vx;};
 double lineProfile(const double vy, const double x, const double vz, void * params){
 
 	struct LPPar * par = (struct LPPar*) params;
 	double Ve = par->Ve;
 	double *Rz = par->Rz;
-	Potential *p = par->p;
 	double vx = par->vx;
 
 	double R = sqrt(pow(Rz[0],2) + pow(x * (ar[NR-1]),2)), z = Rz[1], y = Rz[0];
@@ -87,6 +86,49 @@ double lineProfile(const double vy, const double x, const double vz, void * para
 
 	//if (x<0.)
 	//	printf("%e %e %e %e %e %e\n",vr,vphi,vz,vx,vy,Ve);
+
+	return jacob*df(Rz,V);
+}
+
+/*
+ *  Velocity distributions
+ */
+double Pvphi(const double vr, const double vz, void * params){
+
+	struct LPPar * par = (struct LPPar*) params;
+	double Ve = par->Ve;
+	double *Rz = par->Rz;
+	double vphi = par->vx;
+
+	/* rescaling the integral to [0,1]x[0,1] */
+	double V[3] = {1e-6+Ve*vr, vphi, 1e-6+Ve*vz};
+	double jacob = Ve*Ve;
+
+	return jacob*df(Rz,V);
+}
+double Pvz(const double vr, const double vphi, void * params){
+
+	struct LPPar * par = (struct LPPar*) params;
+	double Ve = par->Ve;
+	double *Rz = par->Rz;
+	double vz = par->vx;
+
+	/* rescaling the integral to [0,1]x[-1,1] */
+	double V[3] = {1e-6+Ve*vr, 1e-6+Ve*vphi, vz};
+	double jacob = Ve*Ve;
+
+	return jacob*df(Rz,V);
+}
+double Pvr(const double vz, const double vphi, void * params){
+
+	struct LPPar * par = (struct LPPar*) params;
+	double Ve = par->Ve;
+	double *Rz = par->Rz;
+	double vr = par->vx;
+
+	/* rescaling the integral to [0,1]x[-1,1] */
+	double V[3] = {vr, 1e-6+Ve*vphi, 1e-6+Ve*vz};
+	double jacob = Ve*Ve;
 
 	return jacob*df(Rz,V);
 }
@@ -139,6 +181,40 @@ double line_profile(double R, double z, double vx, Potential *p){
 
 	double Sigma = SigmaDF(R,z);
 
-	struct LPPar par = {&Rz[0], Ve, p, vx};
+	struct LPPar par = {&Rz[0], Ve, vx};
 	return Int3D_111111(&lineProfile, &par) / Sigma;
+}
+
+/*
+ *  Probability distribution of vphi
+ */
+double P_vp(double R, double z, double vphi, Potential *p){
+
+	double Phi_h=(*p)(R,z);
+	double Rz[3]={R,z,Phi_h},Ve=sqrt(-2*(Phi_h-(*p)(10 * ar[NR-1],10 * ar[NR-1])));
+
+	struct LPPar par = {&Rz[0], Ve, vphi};
+	return Int2D_0101(&Pvphi, &par);
+}
+/*
+ *  Probability distribution of vz
+ */
+double P_vz(double R, double z, double vz, Potential *p){
+
+	double Phi_h=(*p)(R,z);
+	double Rz[3]={R,z,Phi_h},Ve=sqrt(-2*(Phi_h-(*p)(10 * ar[NR-1],10 * ar[NR-1])));
+
+	struct LPPar par = {&Rz[0], Ve, vz};
+	return Int2D_0111(&Pvz, &par);
+}
+/*
+ *  Probability distribution of vr
+ */
+double P_vr(double R, double z, double vr, Potential *p){
+
+	double Phi_h=(*p)(R,z);
+	double Rz[3]={R,z,Phi_h},Ve=sqrt(-2*(Phi_h-(*p)(10 * ar[NR-1],10 * ar[NR-1])));
+
+	struct LPPar par = {&Rz[0], Ve, vr};
+	return Int2D_0111(&Pvr, &par);
 }

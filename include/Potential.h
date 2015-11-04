@@ -35,8 +35,12 @@ public:
 	void computePhil(double **rhlH=rhl);
 	double dr(const double,const double,double *);
 	double dtheta(const double, const double);
+	double d2theta(const double, const double);
 	double dR(const double,const double);
 	double dz(const double,const double);
+	double d2R(const double);
+	double d2z(const double);
+	void getfreqs(const double,double *,double *,double *);
 
 private:
 	void initLeg();

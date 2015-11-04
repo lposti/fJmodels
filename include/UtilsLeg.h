@@ -55,6 +55,13 @@ template <typename T> T dlegend(T const c, int n) {
 	legend(allpol, c, n);
 	return (n*allpol[n-1] - n*c*allpol[n]) / (1 - c*c);
 }
+template <typename T> T d2legend(T const c, int n) {
+    //evaluates the second derivative of the legendre polynomial of order n
+    double allpol[n+1];
+    legend(allpol, c, n);
+    return (2*c*dlegend(c, n) - n*(n+1)*allpol[n]) / (1. - c*c);
+}
+
 
 
 // evaluates even legendre polys up to l=2*(npoly-1) at c -------------
