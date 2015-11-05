@@ -91,21 +91,19 @@ double df(const double *x, const double *v){
 	/*
 	 *  quasi isothermal DF
 	 */
-	/*
-	double rc=GetRc<double>(Jphi*Jphi, 1., gP);
+	double rc=GetRc<double>(Jphi*Jphi, R, gP);
 	//double rc=RcE<double>(H, 1., gP);
 	double Omega, kappa, nu;
-	gP->getfreqs(R, &kappa, &nu, &Omega);
-	double sigmar=exp(-rc/4.);
-	double sigmaz=exp(-rc/4.)*.1;
+	gP->getfreqs(rc, &kappa, &nu, &Omega);
+	double sigmar=exp(-rc/2.)*5.; // raise sigmar to get rid of polar orbits
+	double sigmaz=exp(-rc/4.)*.316;
 
-	double fr = Omega*exp(-rc/4.)/(sigmar*sigmar*kappa) * (1.+tanh(Jphi/10.)) * exp(-kappa*Jr/(sigmar*sigmar));
-	double fz = nu/(sigmaz*sigmaz) * exp(-nu*Jz/(sigmaz*sigmaz));
+	double fr = Omega*1e-1*exp(-rc/1.)/(PI*sigmar*sigmar*kappa) * (1.+tanh(Jphi/.1)) * exp(-kappa*Jr/(sigmar*sigmar));
+	double fz = nu/(2*PI*sigmaz*sigmaz) * exp(-2*Jz/(sigmaz*sigmaz));
 
 	double DF=MAX(0.,fr*fz);
 	if (isnan(DF)==1) return 0.;
 	return DF;
-	*/
 
 	double DFeven = df_hg(Jr,Jphi,Jz);
 	double k=1.;  // 0.4 for ngc6125

@@ -92,6 +92,31 @@ void oneComp(struct fJParams fJP){
 	p.selectGuessRho( fJP.modName!="null" ? fJP.modName : "Hernquist" );
 	p.computeGuessRhl(); p.computePhil();
 
+	/*
+	FILE * ff=fopen("pottest.dat","w");
+	FILE * fp=fopen("potMN.dat","w");
+	FILE * fd=fopen("dtest.dat","w");
+	double * gg = (double *) malloc(100*sizeof(double));
+	gg=giveLinGrid<double>(0.01,10,100);
+
+	for (int i=0; i<100; i++){
+		for (int j=0; j<100; j++)
+			fprintf(ff,"%e ", p(gg[i],gg[j]));
+		fprintf(ff,"\n");
+	}
+	for (int i=0; i<100; i++){
+		for (int j=0; j<100; j++)
+			fprintf(fp,"%e ", -1./sqrt(gg[i]*gg[i] + pow(1.+sqrt(gg[j]*gg[j]+0.3*0.3),2))  );
+		fprintf(fp,"\n");
+	}
+	for (int i=0; i<100; i++){
+		for (int j=0; j<100; j++)
+			fprintf(fd,"%e ", ev_dens(gg[i],gg[j]));
+		fprintf(fd,"\n");
+	}
+	fclose(ff); fclose(fd); fclose(fp);
+	exit(1);
+	*/
 /*
 	Potential ext(2);
 	ext.selectGuessRho("NFWext");

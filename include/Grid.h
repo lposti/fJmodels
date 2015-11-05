@@ -8,10 +8,10 @@
 #ifndef INCLUDE_GRID_H_
 #define INCLUDE_GRID_H_
 
-#define NR 		30
+#define NR 		60
 #define NGRID 	30
-#define NGAUSS  6
-#define NPOLY   4
+#define NGAUSS  30
+#define NPOLY   22
 
 /*
  *  Array definitions

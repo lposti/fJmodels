@@ -244,14 +244,14 @@ double Potential::dtheta(const double r, const double c) {
 }
 double Potential::d2theta(const double r, const double c) {
     //returns the second derivative of the whole potential wrt spherical theta
-        double d2phitheta = 0;
-        double d2pol[NPOLY], phinterp[NPOLY];
-        intpo2(r, phinterp);
-        for(int k=0; k<NPOLY; k++) d2pol[k] = d2legend<double>(c, 2*k);
-        for(int j=0; j<NPOLY; j++) d2phitheta += phinterp[j]*d2pol[j]; //2nd derivative wrt cos(theta)
-        d2phitheta *= (1 - c*c);
-        d2phitheta += ( (this->dtheta(r, c)*c) / sqrt(1 - c*c) ); //add the first derivative term from the product rule and ensure the correct factor
-        return d2phitheta;
+    double d2phitheta = 0;
+    double d2pol[NPOLY], phinterp[NPOLY];
+    intpo2(r, phinterp);
+    for(int k=0; k<NPOLY; k++) d2pol[k] = d2legend<double>(c, 2*k);
+    for(int j=0; j<NPOLY; j++) d2phitheta += phinterp[j]*d2pol[j]; //2nd derivative wrt cos(theta)
+    d2phitheta *= (1 - c*c);
+    d2phitheta += ( (this->dtheta(r, c)*c) / sqrt(1 - c*c) ); //add the first derivative term from the product rule and ensure the correct factor
+    return d2phitheta;
 }
 
 
@@ -280,19 +280,19 @@ double Potential::dz(const double R, const double z) {//derivative of Phi with r
  */
 double Potential::d2R(const double R) {
     //returns the second derivative of Phi wrt cylindrical R in the plane
-        double r = R, theta=asin(1), d2Phidr2;
-        this->dr(r, theta, &d2Phidr2);
-        return d2Phidr2;
+    double r = R, theta=asin(1), d2Phidr2;
+    this->dr(r, theta, &d2Phidr2);
+    return d2Phidr2;
 }
 double Potential::d2z(const double R) {
     //returns the second derivative of Phi wrt cylindrical z
-        double r = R, theta=asin(1), d2;
-        return (1./r)*this->dr(r, theta, &d2) + (1./(r*r))*this->d2theta(r, 0);
+    double r = R, theta=asin(1), d2;
+    return (1./r)*this->dr(r, theta, &d2) + (1./(r*r))*this->d2theta(r, 0);
 }
 void Potential::getfreqs(const double R,double *kappa,double *nu,double *Omega){
-        (*kappa)=sqrt(this->d2R(R)+3/R*this->dR(R,0));
-        (*nu)=sqrt(this->d2z(R));
-        (*Omega)=sqrt(this->dR(R,0)/R);
+    (*kappa)=sqrt(this->d2R(R)+3/R*this->dR(R,0));
+    (*nu)=sqrt(this->d2z(R));
+    (*Omega)=sqrt(this->dR(R,0)/R);
 }
 
 /*

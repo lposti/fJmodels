@@ -80,6 +80,14 @@ template <typename T> inline void SetGrid (T const& rmax){
 		ar[i] = pow(10.,log10(rmin)+(log10(rmax)-log10(rmin))*i/(NR-1));
 }
 
+template <typename T> inline T* giveLinGrid (T const& rmin, T const& rmax, int N){
+	T* t = arr<T>(N);
+
+	for (int i=0;i<N;i++)
+			t[i] = rmin+(rmax-rmin)*i/(N-1);
+	return t;
+}
+
 template <typename T> inline T* giveLogGrid (T const& rmin, T const& rmax, int N){
 	T* t = arr<T>(N);
 

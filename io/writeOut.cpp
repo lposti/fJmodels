@@ -182,6 +182,7 @@ void writeOut(const struct fJParams& fJP, const int iter, Potential *p,
 
 #endif
 
+	/*
 	name.erase(name.end()-3, name.end());
 	name += "Pvp";
 
@@ -231,6 +232,7 @@ void writeOut(const struct fJParams& fJP, const int iter, Potential *p,
 				ve_m * v[i] / vc_m << " " << P_vr(ar[NR*2/3], ar[0], ve_m * v[i], p) / ev_dens(ar[NR*2/3], ar[0]) << " " <<
 				ve_out * v[i] / vc_out << " " << P_vr(ar[NR-5], ar[0], ve_out * v[i], p) / ev_dens(ar[NR-5], ar[0]) << std::endl;
 	}
+	*/
 }
 
 

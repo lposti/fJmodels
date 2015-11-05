@@ -24,7 +24,22 @@ void SetModel(struct fJParams fJP, const unsigned comp){
 	}
 }
 
+double logFlat(double R, double z){
+	double v0=.15, Rc=.1;
+	return v0*v0/(FPI*q2) * (Rc*Rc*(2*q2+1)+R*R+(2.-1./q2)*z*z) /
+			pow(Rc*Rc+R*R+z*z/q2,2);
+}
+
+double MN(double R, double z){
+	double b=.3, a=1, M=1;
+	double b2=b*b, a2=a*a;
+	return b2*M/FPI * (a*R*R + (a+3.*sqrt(z*z+b2))*pow(a+sqrt(z*z+b2),2) ) /
+			pow(R*R + (a+sqrt(z*z+b2)), 5./2.) / pow(z*z+b2,3./2.);
+}
+
 double rhoHern(double R, double z){
+	//return logFlat(R,z);
+	//return MN(R,z);
 	double m=sqrt(R*R+z*z/q2);
 	return mass/(m/r0*pow(r0+m,3))/TPI;
 }
